@@ -21165,17 +21165,19 @@ function cb(e) {
       Ta = Q => !!Q.dest && Q.sceneId === Q.dest.sceneId && Q.path.length === 0 && Math.round(Q.x) === Q.dest.x && Math.round(Q.y) === Q.dest.y,
       Kk = D => {
         let t = D.label || "",
+          x = `${t} ${D.text || ""}`,
           l = D.locId || "";
         if (/钓鱼|垂钓/.test(t) || l === "fishing" || l === "pier" || l === "lakeshore") return "fish";
         if (/下矿|挖矿/.test(t) || l === "deep") return "mine";
-        if (/砍|伐木/.test(t)) return "chop";
-        if (/采集|探险|捡|采蘑菇/.test(t) || l === "grove" || l === "pond") return "forage";
-        if (/种地|农场|播种|锄|收获|打理/.test(t) || l === "field") return /浇/.test(t) ? "water" : "farm";
-        if (/浇水|浇地/.test(t)) return "water";
+        if (/浇/.test(x) && !/不用浇|替他浇|老天替/.test(x)) return "water";
+        if (/砍|伐木/.test(t) || l === "grove") return "chop";
+        if (/探险/.test(t) || l === "pond") return "explore";
+        if (/种地|农场|播种|锄|收获|打理/.test(t) || l === "field") return "farm";
         if (/零工|打工|帮工|摆摊/.test(t) || l === "shop" || l === "market") return "work";
         if (/看书|读书|琢磨|写日记|写/.test(t)) return "read";
         if (l === "home" || /回家|睡觉|休息|过夜|睡/.test(t)) return "sleep";
         if (/聊天|串门|唠嗑|聚会|过节|节日|节|逛/.test(t) || l === "plaza" || l === "townplaza" || l === "saloon" || l === "beach") return "chat";
+        if (/采集|捡|采蘑菇/.test(x)) return "forage";
         return "busy";
       },
       _a = (Q, be, ne) => {
@@ -21248,14 +21250,17 @@ function cb(e) {
             });
           }
           let h = ne.plan;
+          if (S.mode === "done" && S.doneAt) {
+            if (ft - S.doneAt >= 2400) S.doneAt = 0, ne.onPlanDone();else S.dwellUntil = Math.max(S.dwellUntil, ft + 500);
+          }
           if (ne.skipSignal !== O.current) {
             if (O.current = ne.skipSignal, h && S.mode === "plan" && S.finishedRunId !== h.runId) {
               let D = ya("home");
-              S.sceneId = D.sceneId, S.x = D.x, S.y = D.y, S.path = [], S.dest = null, S.mode = "done", S.finishedRunId = h.runId, S.actKind = "sleep", S.actT0 = ft, ne.onPlanDone();
+              S.sceneId = D.sceneId, S.x = D.x, S.y = D.y, S.path = [], S.dest = null, S.mode = "done", S.finishedRunId = h.runId, S.actKind = "sleep", S.actT0 = ft, S.doneAt = ft;
             }
           }
           if (h && S.planRunId !== h.runId) {
-            S.planRunId = h.runId, S.mode = "plan", S.stepIdx = 0, S.dwellUntil = 0, S.actKind = null, S.actT0 = 0, k.current = {
+            S.planRunId = h.runId, S.mode = "plan", S.stepIdx = 0, S.dwellUntil = 0, S.actKind = null, S.actT0 = 0, S.doneAt = 0, k.current = {
               runId: h.runId,
               ids: new Set()
             };
@@ -21269,11 +21274,33 @@ function cb(e) {
           if (S.mode === "plan" && h) {
             if (_a(S, be, 2.6 * ne.speed * Rn(ne.profile).vid.gaitSpeed), S.stepIdx >= h.steps.length && Ta(S)) {
               let D = ya("home");
-              if (S.sceneId === D.sceneId && Math.round(S.x) === D.x && Math.round(S.y) === D.y) S.mode = "done", S.finishedRunId = h.runId, S.actKind = "sleep", S.actT0 = ft, ne.onPlanDone();
+              if (S.sceneId === D.sceneId && Math.round(S.x) === D.x && Math.round(S.y) === D.y) S.mode = "done", S.finishedRunId = h.runId, S.actKind = "sleep", S.actT0 = ft, S.doneAt = ft;
             } else if (Ta(S)) {
               if (S.dwellUntil === 0) {
                 let D = h.steps[S.stepIdx];
                 S.dwellUntil = ft + (D ? D.dwellMs : 2000) / ne.speed, S.actKind = D ? Kk(D) : null, S.actT0 = ft, S.facing4 = S.actKind === "sleep" || S.actKind === "read" ? "up" : S.facing4;
+                if (S.actKind === "chat" && D) {
+                  let mate = null,
+                    mateD = 1e9;
+                  for (let q of p.current) {
+                    if ((D.text || "").includes(q.npc.name)) {
+                      mate = q;
+                      break;
+                    }
+                    if (q.sceneId === S.sceneId) {
+                      let dd = Math.hypot(q.x - S.x, q.y - S.y);
+                      if (dd < mateD) mateD = dd, mate = q;
+                    }
+                  }
+                  if (!mate) mate = p.current[0] ?? null;
+                  if (mate) {
+                    let gx = Math.round(S.x) + (S.facing4 === "left" ? -1 : 1),
+                      gy = Math.round(S.y),
+                      stay = (D.dwellMs ?? 3000) / ne.speed + 6000;
+                    S.facing4 = gx >= S.x ? "right" : "left", S.facing = gx >= S.x ? 1 : -1, mate.facing4 = gx < S.x ? "right" : "left";
+                    if (mate.sceneId === S.sceneId && Math.hypot(mate.x - S.x, mate.y - S.y) <= 3.5) mate.hidden = !1, la(mate, S.sceneId, gx, gy), mate.pendingDwell = stay, mate.pendingInside = !1;else mate.sceneId = S.sceneId, mate.x = gx, mate.y = gy, mate.path = [], mate.dest = null, mate.moving = !1, mate.hidden = !1, mate.dwellUntil = ft + stay;
+                  }
+                }
               } else if (ft >= S.dwellUntil) {
                 S.actKind = null, S.dwellUntil = 0, S.stepIdx += 1;
                 let D = h.steps[S.stepIdx];
@@ -21803,7 +21830,26 @@ function cb(e) {
               kk = A.actKind,
               el = ft - (A.actT0 || 0);
             if ((kk === "sleep" || kk === "read") && el > 750) return;
-            Ja(A.x, A.y + (kk === "fish" ? 0.15 : 0), Rn(V.profile), A.moving, A.walkPhase, A.facing4, V.profile.name, !0);
+            let jx = A.x,
+              jy = A.y + (kk === "fish" ? 0.15 : 0);
+            if ((kk === "sleep" || kk === "read") && el > 200) {
+              let bd = null,
+                bdd = 9;
+              for (let bld of ia) {
+                let ddx = bld.x + (bld.doorX ?? 1) - A.x,
+                  ddy = bld.y + bld.h - A.y,
+                  dd = ddx * ddx + ddy * ddy;
+                if (dd < bdd) bdd = dd, bd = { x: bld.x + (bld.doorX ?? 1), y: bld.y + bld.h };
+              }
+              if (bd) {
+                let o = Math.min(1, (el - 200) / 500);
+                jx += (bd.x - A.x) * o, jy += (bd.y - A.y) * o;
+              }
+            } else if (kk === "explore") jy += 0.13;else if (kk === "forage") jy += 0.07;else if (kk === "farm" || kk === "chop" || kk === "mine" || kk === "work") {
+              let cyc2 = (el % 950) / 950;
+              if (cyc2 > 0.52 && cyc2 < 0.78) jy += 0.05;
+            }
+            Ja(jx, jy, Rn(V.profile), A.moving, A.walkPhase, A.facing4, V.profile.name, !0);
           }
         }), pt.sort((S, g) => S.y - g.y);
         for (let S of pt) S.draw();
@@ -21823,19 +21869,33 @@ function cb(e) {
               hx = cx + fv[0] * s * 0.3,
               hy = fy - s * 0.88;
             if (kk === "sleep" || kk === "read") {
+              let bd = null,
+                bdd = 9;
+              for (let bld of ia) {
+                let ddx = bld.x + (bld.doorX ?? 1) - A.x,
+                  ddy = bld.y + bld.h - A.y,
+                  dd = ddx * ddx + ddy * ddy;
+                if (dd < bdd) bdd = dd, bd = bld;
+              }
+              let dx0 = bd ? B + (bd.x + (bd.doorX ?? 1)) * s + s * 0.18 : cx - s * 0.26,
+                dy0 = bd ? P + bd.y * s + bd.h * s * 0.52 : fy - s * 0.92,
+                dw0 = bd ? s * 0.64 : s * 0.52,
+                dh0 = bd ? bd.h * s * 0.48 : s * 0.92,
+                dcx = dx0 + dw0 / 2,
+                dbot = dy0 + dh0;
               if (el <= 750) {
                 let o = el / 750;
-                r.fillStyle = `rgba(255,206,105,${0.55 - o * 0.25})`, r.beginPath(), r.moveTo(cx - s * 0.26, fy + 2), r.lineTo(cx + s * 0.26, fy + 2), r.lineTo(cx + s * 0.44, fy + s * 0.34), r.lineTo(cx - s * 0.44, fy + s * 0.34), r.closePath(), r.fill(), r.save(), r.translate(cx - s * 0.24, fy + 2), r.rotate(-0.95 * o), r.fillStyle = "#6f4a2c", r.fillRect(0, -s * 0.92, 3.4, s * 0.92), r.fillStyle = "#8a5f36", r.fillRect(0, -s * 0.92, 1.4, s * 0.92), r.restore();
+                r.fillStyle = `rgba(255,214,120,${0.92 - o * 0.15})`, r.fillRect(dx0, dy0, dw0, dh0), r.fillStyle = `rgba(255,206,105,${0.55 - o * 0.2})`, r.beginPath(), r.moveTo(dx0, dbot), r.lineTo(dx0 + dw0, dbot), r.lineTo(dx0 + dw0 + s * 0.24, dbot + s * 0.38), r.lineTo(dx0 - s * 0.24, dbot + s * 0.38), r.closePath(), r.fill(), r.fillStyle = "#6f4a2c", r.fillRect(dx0, dy0, Math.max(1.6, dw0 * (1 - o * 0.88)), dh0), r.fillStyle = "#8a5f36", r.fillRect(dx0, dy0, Math.max(1, dw0 * (1 - o * 0.88) * 0.42), dh0), r.fillStyle = "#3d2716", r.fillRect(dx0, dy0, dw0, 2);
               } else if (kk === "sleep") {
                 r.textAlign = "center", r.textBaseline = "middle";
                 for (let i = 0; i < 3; i++) {
                   let ph = (re * 0.4 + i / 3) % 1;
-                  r.font = `900 ${Math.round(9 + ph * 7)}px sans-serif`, r.fillStyle = `rgba(70,90,160,${0.9 - ph * 0.75})`, r.fillText("Z", cx + 8 + ph * 13, fy - s * 1.35 - ph * s * 0.55);
+                  r.font = `900 ${Math.round(9 + ph * 7)}px sans-serif`, r.fillStyle = `rgba(70,90,160,${0.9 - ph * 0.75})`, r.fillText("Z", dcx + 6 + ph * 13, dy0 - 4 - ph * s * 0.55);
                 }
               } else {
                 let bob = Math.sin(re * 1.6) * 1.6,
-                  by = fy - s * 1.72 + bob;
-                r.fillStyle = "#fdf6da", r.beginPath(), r.moveTo(cx, by + 7), r.lineTo(cx - 10, by + 3 + Math.sin(re * 5) * 0.8), r.lineTo(cx - 10, by + 11), r.lineTo(cx, by + 14), r.closePath(), r.fill(), r.beginPath(), r.moveTo(cx, by + 7), r.lineTo(cx + 10, by + 3 - Math.sin(re * 5) * 0.8), r.lineTo(cx + 10, by + 11), r.lineTo(cx, by + 14), r.closePath(), r.fill(), r.fillStyle = "#b5502f", r.fillRect(cx - 1, by + 3, 2, 11), r.strokeStyle = "rgba(90,60,30,.5)", r.lineWidth = 1, r.beginPath(), r.moveTo(cx - 7, by + 6), r.lineTo(cx - 3, by + 7), r.moveTo(cx + 3, by + 7), r.lineTo(cx + 7, by + 6), r.stroke();
+                  by = dy0 - s * 0.62 + bob;
+                r.fillStyle = "#fdf6da", r.beginPath(), r.moveTo(dcx, by + 7), r.lineTo(dcx - 10, by + 3 + Math.sin(re * 5) * 0.8), r.lineTo(dcx - 10, by + 11), r.lineTo(dcx, by + 14), r.closePath(), r.fill(), r.beginPath(), r.moveTo(dcx, by + 7), r.lineTo(dcx + 10, by + 3 - Math.sin(re * 5) * 0.8), r.lineTo(dcx + 10, by + 11), r.lineTo(dcx, by + 14), r.closePath(), r.fill(), r.fillStyle = "#b5502f", r.fillRect(dcx - 1, by + 3, 2, 11), r.strokeStyle = "rgba(90,60,30,.5)", r.lineWidth = 1, r.beginPath(), r.moveTo(dcx - 7, by + 6), r.lineTo(dcx - 3, by + 7), r.moveTo(dcx + 3, by + 7), r.lineTo(dcx + 7, by + 6), r.stroke();
               }
             } else if (kk === "fish") {
               let wx = 0,
@@ -21866,22 +21926,31 @@ function cb(e) {
               }
               r.fillStyle = "#fdfdf8", r.beginPath(), r.arc(bobX, bobY, 2.7, 0, Math.PI * 2), r.fill(), r.fillStyle = "#d8402e", r.beginPath(), r.arc(bobX, bobY, 2.7, Math.PI, Math.PI * 2), r.fill();
             } else if (kk === "farm" || kk === "chop" || kk === "mine" || kk === "work") {
-              let sw = Math.sin(re * (kk === "mine" ? 3.7 : 3.2)),
-                th = Math.atan2(fv[1], fv[0]) - 0.65 + sw * 0.6,
-                len = s * (kk === "mine" ? 0.78 : 0.68),
+              let cyc = (el % 950) / 950,
+                lift = cyc < 0.55 ? cyc / 0.55 : cyc < 0.68 ? 1 - (cyc - 0.55) / 0.13 : 0,
+                th = Math.atan2(fv[1], fv[0]) - 0.65 + (-0.95 + lift * 1.75) * 0.62,
+                len = s * (kk === "mine" ? 0.82 : 0.72),
                 tx = hx + Math.cos(th) * len,
                 ty = hy + Math.sin(th) * len;
-              r.strokeStyle = kk === "chop" ? "#8a5a2e" : "#7a5230", r.lineWidth = 3, r.lineCap = "round", r.beginPath(), r.moveTo(hx, hy), r.lineTo(tx, ty), r.stroke();
-              if (kk === "farm") r.fillStyle = "#4c4438", r.fillRect(tx - 4.4, ty - 2, 8.8, 4.4);else if (kk === "chop") {
-                r.fillStyle = "#b9c0c7", r.beginPath(), r.moveTo(tx, ty), r.lineTo(tx + Math.cos(th + 1.9) * 7.5, ty + Math.sin(th + 1.9) * 7.5), r.lineTo(tx + Math.cos(th + 0.7) * 6, ty + Math.sin(th + 0.7) * 6), r.closePath(), r.fill();
+              r.strokeStyle = kk === "chop" ? "#8a5a2e" : "#7a5230", r.lineWidth = 3.4, r.lineCap = "round", r.beginPath(), r.moveTo(hx, hy), r.lineTo(tx, ty), r.stroke();
+              if (kk === "farm") r.fillStyle = "#4c4438", r.fillRect(tx - 5, ty - 2.4, 10, 4.8);else if (kk === "chop") {
+                r.fillStyle = "#b9c0c7", r.beginPath(), r.moveTo(tx, ty), r.lineTo(tx + Math.cos(th + 1.9) * 8, ty + Math.sin(th + 1.9) * 8), r.lineTo(tx + Math.cos(th + 0.7) * 6.6, ty + Math.sin(th + 0.7) * 6.6), r.closePath(), r.fill();
               } else if (kk === "mine") {
-                r.strokeStyle = "#9aa3ab", r.lineWidth = 2.6, r.beginPath(), r.arc(tx, ty, 6.4, th + 2.2, th + 4.1), r.stroke();
-              } else r.fillStyle = "#5b4a38", r.fillRect(tx - 3.4, ty - 4.6, 7.6, 5.6);
-              if (sw > 0.72) {
-                let gx = cx + fv[0] * s * 0.85,
-                  gy = fy + (fv[1] > 0 ? 3 : -2);
-                r.fillStyle = kk === "farm" || kk === "chop" ? "rgba(122,82,48,.85)" : "rgba(255,215,110,.9)";
-                for (let i = 0; i < 3; i++) r.fillRect(gx + (i - 1) * 5 + Math.sin(re * 9 + i * 2) * 1.6, gy - Math.abs(Math.sin(re * 7 + i)) * 4, 2.2, 2.2);
+                r.strokeStyle = "#9aa3ab", r.lineWidth = 2.8, r.beginPath(), r.arc(tx, ty, 7, th + 2.2, th + 4.1), r.stroke();
+              } else r.fillStyle = "#5b4a38", r.fillRect(tx - 3.8, ty - 5, 8.4, 6.2);
+              if (cyc > 0.6) {
+                let pt2 = (cyc - 0.6) / 0.4,
+                  gx = cx + fv[0] * s * 0.8,
+                  gy = fy + (fv[1] > 0 ? 2 : -3);
+                r.fillStyle = kk === "farm" ? "rgba(110,74,40,.9)" : kk === "chop" ? "rgba(160,110,55,.9)" : kk === "mine" ? "rgba(255,214,100,.95)" : "rgba(205,175,120,.9)";
+                for (let i = 0; i < 4; i++) r.fillRect(gx + fv[0] * pt2 * 9 + (i - 1.5) * (2.5 + pt2 * 5), gy - pt2 * 7 + pt2 * pt2 * 9 + i % 2 * 1.6, 2.4, 2.4);
+                if (kk === "mine") {
+                  r.strokeStyle = "rgba(255,232,150,.95)", r.lineWidth = 1.4;
+                  for (let i = 0; i < 3; i++) {
+                    let a2 = i * 2.1 + pt2 * 1.5;
+                    r.beginPath(), r.moveTo(gx, gy - 3), r.lineTo(gx + Math.cos(a2) * (4 + pt2 * 8), gy - 3 + Math.sin(a2) * (4 + pt2 * 8)), r.stroke();
+                  }
+                }
               }
             } else if (kk === "water") {
               r.fillStyle = "#3f7d8c", r.fillRect(hx - 2, hy - 2, 9, 8), r.fillStyle = "#2e5f6b", r.fillRect(hx + 5, hy + 1, 6, 2.4), r.fillStyle = "rgba(255,255,255,.35)", r.fillRect(hx - 2, hy - 2, 9, 2);
@@ -21899,10 +21968,30 @@ function cb(e) {
               for (let i = 0; i < 3; i++) {
                 r.fillStyle = i === act ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(cx - 6 + i * 6, by - 1, i === act ? 2 : 1.6, 0, Math.PI * 2), r.fill();
               }
-            } else if (kk === "forage" || kk === "busy") {
+              let wa = Math.sin(re * 7) * 0.5,
+                wx0 = cx + s * 0.32,
+                wy0 = fy - s * 0.92;
+              r.strokeStyle = "#e8b98a", r.lineWidth = 2.6, r.lineCap = "round", r.beginPath(), r.moveTo(wx0, wy0), r.lineTo(wx0 + 4 + Math.sin(wa) * 3.4, wy0 - 8.6 - Math.abs(Math.cos(wa)) * 1.6), r.stroke(), r.strokeStyle = "rgba(90,60,30,.55)", r.lineWidth = 1.2, r.beginPath(), r.arc(wx0 + 9, wy0 - 11, 3.4, -0.6 + wa * 0.4, 0.7 + wa * 0.4), r.stroke(), r.beginPath(), r.arc(wx0 + 12.6, wy0 - 11, 3, -0.6 + wa * 0.4, 0.7 + wa * 0.4), r.stroke();
+              let mate = null,
+                mateD = 2.6;
+              for (let q of p.current) {
+                if (q.hidden || q.sceneId !== A.sceneId) continue;
+                let dd = Math.hypot(q.x - A.x, q.y - A.y);
+                if (dd < mateD) mateD = dd, mate = q;
+              }
+              if (mate) {
+                let mx = B + mate.x * s,
+                  my = P + mate.y * s - s * 1.62 + Math.sin(re * 2 + 1.3) * 1.2,
+                  act2 = Math.floor(re * 2.4 + 1) % 3;
+                r.fillStyle = "rgba(255,252,240,.92)", r.strokeStyle = "#5d3d24", r.lineWidth = 1.4, r.beginPath(), r.roundRect ? r.roundRect(mx - 10, my - 7, 20, 12, 4) : r.rect(mx - 10, my - 7, 20, 12), r.fill(), r.stroke(), r.beginPath(), r.moveTo(mx - 2, my + 4.6), r.lineTo(mx + 3, my + 4.6), r.lineTo(mx, my + 8.6), r.closePath(), r.fillStyle = "rgba(255,252,240,.92)", r.fill(), r.stroke();
+                for (let i = 0; i < 3; i++) {
+                  r.fillStyle = i === act2 ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(mx - 5 + i * 5, my - 1, i === act2 ? 1.7 : 1.3, 0, Math.PI * 2), r.fill();
+                }
+              }
+            } else if (kk === "forage" || kk === "explore" || kk === "busy") {
               for (let i = 0; i < 3; i++) {
                 let ox = Math.sin(i * 2.4 + 1) * s * 0.55,
-                  oy = kk === "forage" ? 2 + (i % 2) * 4 : -s * (1.5 + (i % 2) * 0.22),
+                  oy = kk === "forage" || kk === "explore" ? 2 + (i % 2) * 4 : -s * (1.5 + (i % 2) * 0.22),
                   al = 0.35 + 0.6 * Math.abs(Math.sin(re * 2.2 + i * 1.4)),
                   rr = 2.6 + Math.sin(re * 3 + i) * 0.7,
                   px = cx + ox,
