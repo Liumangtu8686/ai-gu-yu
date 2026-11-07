@@ -15876,7 +15876,7 @@ function wd(e) {
     return a = a + Math.imul(a ^ a >>> 7, 61 | a) ^ a, ((a ^ a >>> 14) >>> 0) / 4294967296;
   };
 }
-var sg = ["阿禾", "石头", "梅姨", "小满", "老钟", "阿梨", "木匠老赵", "邮差小齐"],
+var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a profile/sprite/lines, so panel text and dialogue bar name the same person */
   Sd = [{
     id: "farm",
     label: "下地干活",
@@ -16059,7 +16059,7 @@ var sg = ["阿禾", "石头", "梅姨", "小满", "老钟", "阿梨", "木匠老
   }, {
     id: "work",
     name: "打零工",
-    weight: e => 6 + e.jung.Te * 0.5 + e.bigFive.conscientiousness * 0.3,
+    weight: e => 20 + e.jung.Te * 0.5 + e.bigFive.conscientiousness * 0.3, /* R4-F4: base 12->20, was ~1 stop in 10 days */
     run: (e, t) => ({
       text: "去帮人搬货修棚，活儿干得利索，工钱一分没少拿。",
       fx: {
@@ -16086,7 +16086,7 @@ var sg = ["阿禾", "石头", "梅姨", "小满", "老钟", "阿梨", "木匠老
   }, {
     id: "explore",
     name: "探险",
-    weight: e => 4 + e.jung.Ne * 0.5 + e.jung.Se * 0.3 + e.bigFive.openness * 0.3,
+    weight: e => 14 + e.jung.Ne * 0.5 + e.jung.Se * 0.3 + e.bigFive.openness * 0.3, /* R4-F5: base 4->14, was the lowest weight of all 9 activities */
     run: (e, t) => t() > 0.45 ? {
       text: "翻过后山发现一处没人去过的泉眼，捡到一块能卖钱的矿石。",
       fx: {
@@ -16106,7 +16106,7 @@ var sg = ["阿禾", "石头", "梅姨", "小满", "老钟", "阿梨", "木匠老
   }, {
     id: "study",
     name: "看书琢磨",
-    weight: e => 6 + e.jung.Ti * 0.45 + e.jung.Ni * 0.4,
+    weight: e => 12 + e.jung.Ti * 0.45 + e.jung.Ni * 0.4,
     run: (e, t) => ({
       text: "把借来的旧书翻到卷边，在本子上记了满满一页自己的想法。",
       fx: {
@@ -21278,7 +21278,7 @@ function cb(e) {
             } else if (Ta(S)) {
               if (S.dwellUntil === 0) {
                 let D = h.steps[S.stepIdx];
-                S.dwellUntil = ft + (D ? D.dwellMs : 2000) / ne.speed, S.actKind = D ? Kk(D) : null, S.actT0 = ft, S.facing4 = S.actKind === "sleep" || S.actKind === "read" ? "up" : S.facing4;
+                S.dwellUntil = ft + Math.max(D ? D.dwellMs : 2000, 6000) / ne.speed, S.actKind = D ? Kk(D) : null, S.actT0 = ft, S.facing4 = S.actKind === "sleep" || S.actKind === "read" ? "up" : S.facing4, x.current.x = S.x, x.current.y = S.y, w.current = S.sceneId;
                 if (S.actKind === "chat" && D) {
                   let mate = null,
                     mateD = 1e9;
@@ -21799,10 +21799,10 @@ function cb(e) {
             if (X === "maple" && Y === "秋") r.fillStyle = "#f6c453", r.beginPath(), r.arc(g - _ * 0.15, h - _ * 0.55, 2.2, 0, Math.PI * 2), r.arc(g + _ * 0.48, h - _ * 0.1, 2, 0, Math.PI * 2), r.fill();
           }
         });
-        let Ja = (S, g, h, _, f, M, j, X) => {
+        let Ja = (S, g, h, _, f, M, j, X, sq) => { /* R4-F1/F5: sq=squash (1=normal); fishing/explore pass <1 for a seated/crouched read, feet stay anchored */
           let D = h.vid,
             q = s * (D.build === "壮实" ? 0.94 : D.build === "瘦小" ? 0.8 : 0.86),
-            Se = q * 2,
+            Se = q * 2 * (sq || 1),
             Z = D.gait === "bouncy" ? 2.4 : D.gait === "shuffle" ? 0.5 : 1.1,
             pe = _ ? Math.abs(Math.sin(f)) * s * 0.05 * Z : Math.sin(Q / 500 + f) * 0.8,
             fe = B + S * s - q / 2,
@@ -21830,8 +21830,8 @@ function cb(e) {
               kk = A.actKind,
               el = ft - (A.actT0 || 0);
             if ((kk === "sleep" || kk === "read") && el > 750) return;
-            let jx = A.x,
-              jy = A.y + (kk === "fish" ? 0.15 : 0);
+            let jx = A.x + (kk === "work" ? -1.5 : 0), /* R4-F4: work stands 1.5 tiles left of the shop door, clear of the "皮埃尔商店" label and the oak at (7,5) */
+              jy = A.y + (kk === "fish" ? 0.15 : 0) + (kk === "explore" ? 0.3 : 0); /* R4-F5: explore drops 0.3 tile into a crouch */
             if ((kk === "sleep" || kk === "read") && el > 200) {
               let bd = null,
                 bdd = 9;
@@ -21847,9 +21847,9 @@ function cb(e) {
               }
             } else if (kk === "explore") jy += 0.13;else if (kk === "forage") jy += 0.07;else if (kk === "farm" || kk === "chop" || kk === "mine" || kk === "work") {
               let cyc2 = (el % 950) / 950;
-              if (cyc2 > 0.52 && cyc2 < 0.78) jy += 0.05;
+              if (cyc2 > 0.4 && cyc2 < 0.85) { jy += 0.1; jx += A.facing4 === "left" ? -0.09 : A.facing4 === "right" ? 0.09 : 0; }
             }
-            Ja(jx, jy, Rn(V.profile), A.moving, A.walkPhase, A.facing4, V.profile.name, !0);
+            Ja(jx, jy, Rn(V.profile), A.moving, A.walkPhase, A.facing4, V.profile.name, !0, kk === "fish" ? 0.7 : kk === "explore" ? 0.78 : 1); /* R4-F1/F5: seated/crouched squash */
           }
         }), pt.sort((S, g) => S.y - g.y);
         for (let S of pt) S.draw();
@@ -21857,7 +21857,7 @@ function cb(e) {
           let A = y.current,
             kk = A.actKind;
           if (kk && !A.moving) {
-            let cx = B + A.x * s,
+            let cx = B + (A.x + (kk === "work" ? -1.5 : 0)) * s, /* R4-F4: keep the hammer on the offset work position */
               fy = P + A.y * s + s * 0.3,
               el = ft - (A.actT0 || 0),
               fv = {
@@ -21883,19 +21883,22 @@ function cb(e) {
                 dh0 = bd ? bd.h * s * 0.48 : s * 0.92,
                 dcx = dx0 + dw0 / 2,
                 dbot = dy0 + dh0;
-              if (el <= 750) {
-                let o = el / 750;
+              if (el <= 2200) { /* R4-F2: door stays open 2200ms (open 0-600, hold 600-1800, close 1800-2200) so it reads in ~1.1s-apart captures */
+                let o = el < 600 ? el / 600 : el > 1800 ? Math.max(0, 1 - (el - 1800) / 400) : 1;
                 r.fillStyle = `rgba(255,214,120,${0.92 - o * 0.15})`, r.fillRect(dx0, dy0, dw0, dh0), r.fillStyle = `rgba(255,206,105,${0.55 - o * 0.2})`, r.beginPath(), r.moveTo(dx0, dbot), r.lineTo(dx0 + dw0, dbot), r.lineTo(dx0 + dw0 + s * 0.24, dbot + s * 0.38), r.lineTo(dx0 - s * 0.24, dbot + s * 0.38), r.closePath(), r.fill(), r.fillStyle = "#6f4a2c", r.fillRect(dx0, dy0, Math.max(1.6, dw0 * (1 - o * 0.88)), dh0), r.fillStyle = "#8a5f36", r.fillRect(dx0, dy0, Math.max(1, dw0 * (1 - o * 0.88) * 0.42), dh0), r.fillStyle = "#3d2716", r.fillRect(dx0, dy0, dw0, 2);
               } else if (kk === "sleep") {
-                r.textAlign = "center", r.textBaseline = "middle";
+                r.textAlign = "center", r.textBaseline = "middle"; /* R4-F2: Zzz was 11-19px dark blue on the red roof (invisible); now 17-27px with a white halo, rising above the roofline */
                 for (let i = 0; i < 3; i++) {
                   let ph = (re * 0.4 + i / 3) % 1;
-                  r.font = `900 ${Math.round(9 + ph * 7)}px sans-serif`, r.fillStyle = `rgba(70,90,160,${0.9 - ph * 0.75})`, r.fillText("Z", dcx + 6 + ph * 13, dy0 - 4 - ph * s * 0.55);
+                  let zx = dcx + 10 + ph * 18, zy = dy0 - s * 1.15 - ph * s * 0.85, fz = Math.round(17 + ph * 10);
+                  r.font = `900 ${fz + 4}px sans-serif`, r.fillStyle = `rgba(255,255,255,${0.95 - ph * 0.55})`, r.fillText("Z", zx, zy);
+                  r.font = `900 ${fz}px sans-serif`, r.fillStyle = `rgba(58,90,158,${0.98 - ph * 0.6})`, r.fillText("Z", zx, zy);
                 }
               } else {
                 let bob = Math.sin(re * 1.6) * 1.6,
-                  by = dy0 - s * 0.62 + bob;
-                r.fillStyle = "#fdf6da", r.beginPath(), r.moveTo(dcx, by + 7), r.lineTo(dcx - 10, by + 3 + Math.sin(re * 5) * 0.8), r.lineTo(dcx - 10, by + 11), r.lineTo(dcx, by + 14), r.closePath(), r.fill(), r.beginPath(), r.moveTo(dcx, by + 7), r.lineTo(dcx + 10, by + 3 - Math.sin(re * 5) * 0.8), r.lineTo(dcx + 10, by + 11), r.lineTo(dcx, by + 14), r.closePath(), r.fill(), r.fillStyle = "#b5502f", r.fillRect(dcx - 1, by + 3, 2, 11), r.strokeStyle = "rgba(90,60,30,.5)", r.lineWidth = 1, r.beginPath(), r.moveTo(dcx - 7, by + 6), r.lineTo(dcx - 3, by + 7), r.moveTo(dcx + 3, by + 7), r.lineTo(dcx + 7, by + 6), r.stroke();
+                  by = dy0 - s * 0.85 + bob; /* R4-F3: book was 20px cream-on-cream under the eave (invisible); now 36px wide with a dark outline + page lines */
+                r.strokeStyle = "#5d3d24", r.lineWidth = 1.8;
+                r.fillStyle = "#fffdf2", r.beginPath(), r.moveTo(dcx, by + 9), r.lineTo(dcx - 18, by + 4 + Math.sin(re * 5) * 1.2), r.lineTo(dcx - 18, by + 15), r.lineTo(dcx, by + 18), r.closePath(), r.fill(), r.stroke(), r.beginPath(), r.moveTo(dcx, by + 9), r.lineTo(dcx + 18, by + 4 - Math.sin(re * 5) * 1.2), r.lineTo(dcx + 18, by + 15), r.lineTo(dcx, by + 18), r.closePath(), r.fill(), r.stroke(), r.fillStyle = "#b5502f", r.fillRect(dcx - 1.6, by + 4, 3.2, 14), r.strokeStyle = "rgba(90,60,30,.65)", r.lineWidth = 1, r.beginPath(), r.moveTo(dcx - 13, by + 8), r.lineTo(dcx - 4, by + 9), r.moveTo(dcx - 13, by + 12), r.lineTo(dcx - 4, by + 13), r.moveTo(dcx + 4, by + 9), r.lineTo(dcx + 13, by + 8), r.moveTo(dcx + 4, by + 13), r.lineTo(dcx + 13, by + 12), r.stroke();
               }
             } else if (kk === "fish") {
               let wx = 0,
@@ -21914,7 +21917,7 @@ function cb(e) {
                   vl = Math.hypot(vx, vy) || 1;
                 dx = vx / vl, dy = vy / vl;
               }
-              r.fillStyle = "#7a5230", r.fillRect(cx - 8, fy - 1, 16, 4.4), r.fillStyle = "#5d3d24", r.fillRect(cx - 6.4, fy + 3.4, 3, 4.4), r.fillRect(cx + 3.4, fy + 3.4, 3, 4.4), r.fillStyle = "rgba(255,235,190,.25)", r.fillRect(cx - 8, fy - 1, 16, 1.4);
+              r.fillStyle = "#7a5230", r.fillRect(cx - 12, fy - s * 0.36 + 6.5, 3.5, s * 0.53), r.fillRect(cx + 8.5, fy - s * 0.36 + 6.5, 3.5, s * 0.53), r.fillStyle = "#a8763e", r.fillRect(cx - 15, fy - s * 0.36, 30, 6.5), r.fillStyle = "#eec887", r.fillRect(cx - 15, fy - s * 0.36, 30, 2), r.strokeStyle = "#5d3d24", r.lineWidth = 1, r.strokeRect(cx - 15, fy - s * 0.36, 30, 6.5); /* R4-F1: stool was a 16x4.4px bar at ankle height, brown-on-brown; now a 30px seat at hip height with legs to the ground */
               let tipX = cx + dx * s * 1.2,
                 tipY = fy - s * 0.95 + dy * s * 0.55,
                 bobX = bd < 1e8 ? B + (wx + 0.5) * s : cx + dx * s * 1.9,
@@ -21927,46 +21930,56 @@ function cb(e) {
               r.fillStyle = "#fdfdf8", r.beginPath(), r.arc(bobX, bobY, 2.7, 0, Math.PI * 2), r.fill(), r.fillStyle = "#d8402e", r.beginPath(), r.arc(bobX, bobY, 2.7, Math.PI, Math.PI * 2), r.fill();
             } else if (kk === "farm" || kk === "chop" || kk === "mine" || kk === "work") {
               let cyc = (el % 950) / 950,
-                lift = cyc < 0.55 ? cyc / 0.55 : cyc < 0.68 ? 1 - (cyc - 0.55) / 0.13 : 0,
-                th = Math.atan2(fv[1], fv[0]) - 0.65 + (-0.95 + lift * 1.75) * 0.62,
-                len = s * (kk === "mine" ? 0.82 : 0.72),
+                lift = 0.5 - 0.5 * Math.cos(cyc * Math.PI * 2),
+                th = Math.atan2(fv[1], fv[0]) - 0.65 + (-1.25 + lift * 2.5) * 0.62,
+                len = s * (kk === "mine" ? 1.05 : 1),
                 tx = hx + Math.cos(th) * len,
-                ty = hy + Math.sin(th) * len;
-              r.strokeStyle = kk === "chop" ? "#8a5a2e" : "#7a5230", r.lineWidth = 3.4, r.lineCap = "round", r.beginPath(), r.moveTo(hx, hy), r.lineTo(tx, ty), r.stroke();
-              if (kk === "farm") r.fillStyle = "#4c4438", r.fillRect(tx - 5, ty - 2.4, 10, 4.8);else if (kk === "chop") {
-                r.fillStyle = "#b9c0c7", r.beginPath(), r.moveTo(tx, ty), r.lineTo(tx + Math.cos(th + 1.9) * 8, ty + Math.sin(th + 1.9) * 8), r.lineTo(tx + Math.cos(th + 0.7) * 6.6, ty + Math.sin(th + 0.7) * 6.6), r.closePath(), r.fill();
+                ty = hy + Math.sin(th) * len,
+                th0 = Math.atan2(fv[1], fv[0]) - 0.65 - 0.775;
+              if (lift > 0.05) {
+                r.strokeStyle = kk === "work" ? "rgba(255,255,255,.5)" : "rgba(255,255,255,.28)", r.lineWidth = 2.5, r.lineCap = "round", r.beginPath(), r.arc(hx, hy, len, Math.min(th0, th), Math.max(th0, th)), r.stroke();
+              } /* R4-F4: work swoosh brighter */
+              r.strokeStyle = kk === "chop" ? "#8a5a2e" : kk === "work" ? "#a8763e" : "#7a5230", r.lineWidth = kk === "work" ? 5.5 : 4.6, r.lineCap = "round", r.beginPath(), r.moveTo(hx, hy), r.lineTo(tx, ty), r.stroke(); /* R4-F4: work handle brighter/thicker */
+              if (kk === "farm") r.fillStyle = "#4c4438", r.fillRect(tx - 7, ty - 3, 14, 6);else if (kk === "chop") {
+                r.fillStyle = "#b9c0c7", r.beginPath(), r.moveTo(tx, ty), r.lineTo(tx + Math.cos(th + 1.9) * 12, ty + Math.sin(th + 1.9) * 12), r.lineTo(tx + Math.cos(th + 0.7) * 10, ty + Math.sin(th + 0.7) * 10), r.closePath(), r.fill();
               } else if (kk === "mine") {
-                r.strokeStyle = "#9aa3ab", r.lineWidth = 2.8, r.beginPath(), r.arc(tx, ty, 7, th + 2.2, th + 4.1), r.stroke();
-              } else r.fillStyle = "#5b4a38", r.fillRect(tx - 3.8, ty - 5, 8.4, 6.2);
-              if (cyc > 0.6) {
-                let pt2 = (cyc - 0.6) / 0.4,
-                  gx = cx + fv[0] * s * 0.8,
+                r.strokeStyle = "#9aa3ab", r.lineWidth = 3.6, r.beginPath(), r.arc(tx, ty, 10, th + 2.2, th + 4.1), r.stroke();
+              } else if (kk === "work") { r.fillStyle = "#a8a8a8", /* R4-F4b: steel-grey head + dark outline so the hammer reads against the brown shop wood */ r.fillRect(tx - 9, ty - 10, 18, 13), r.fillStyle = "#e8e8e8", r.fillRect(tx - 9, ty - 10, 18, 3), r.strokeStyle = "#3d2c17", r.lineWidth = 1.6, r.strokeRect(tx - 9, ty - 10, 18, 13); } else r.fillStyle = "#5b4a38", r.fillRect(tx - 6, ty - 7, 12, 9); /* R4-F4: work hammer 12x9 -> 18x13 with a steel glint; farm/chop/mine untouched */
+              if (cyc > 0.4) {
+                let pt2 = (cyc - 0.4) / 0.6,
+                  gx = cx + fv[0] * s * 0.9,
                   gy = fy + (fv[1] > 0 ? 2 : -3);
-                r.fillStyle = kk === "farm" ? "rgba(110,74,40,.9)" : kk === "chop" ? "rgba(160,110,55,.9)" : kk === "mine" ? "rgba(255,214,100,.95)" : "rgba(205,175,120,.9)";
-                for (let i = 0; i < 4; i++) r.fillRect(gx + fv[0] * pt2 * 9 + (i - 1.5) * (2.5 + pt2 * 5), gy - pt2 * 7 + pt2 * pt2 * 9 + i % 2 * 1.6, 2.4, 2.4);
+                r.fillStyle = kk === "farm" ? "rgba(110,74,40,.95)" : kk === "chop" ? "rgba(160,110,55,.95)" : kk === "mine" ? "rgba(255,214,100,.95)" : "rgba(205,175,120,.95)";
+                for (let i = 0; i < 6; i++) r.fillRect(gx + fv[0] * pt2 * 12 + (i - 2.5) * (3.5 + pt2 * 7), gy - pt2 * 9 + pt2 * pt2 * 12 + i % 2 * 2, 4, 4);
                 if (kk === "mine") {
-                  r.strokeStyle = "rgba(255,232,150,.95)", r.lineWidth = 1.4;
-                  for (let i = 0; i < 3; i++) {
-                    let a2 = i * 2.1 + pt2 * 1.5;
-                    r.beginPath(), r.moveTo(gx, gy - 3), r.lineTo(gx + Math.cos(a2) * (4 + pt2 * 8), gy - 3 + Math.sin(a2) * (4 + pt2 * 8)), r.stroke();
+                  r.strokeStyle = "rgba(255,232,150,.95)", r.lineWidth = 2;
+                  for (let i = 0; i < 5; i++) {
+                    let a2 = i * 1.26 + pt2 * 1.5;
+                    r.beginPath(), r.moveTo(gx, gy - 3), r.lineTo(gx + Math.cos(a2) * (6 + pt2 * 12), gy - 3 + Math.sin(a2) * (6 + pt2 * 12)), r.stroke();
                   }
                 }
               }
+              if (kk === "work") { r.fillStyle = "#8a6a42", r.fillRect(cx - s * 0.95, fy - 11, 15, 12), r.fillStyle = "#6b4a2e", r.fillRect(cx - s * 0.95, fy - 11, 15, 2.5), r.strokeStyle = "rgba(60,40,20,.6)", r.lineWidth = 1, r.strokeRect(cx - s * 0.95, fy - 11, 15, 12); } /* R4-F4: crate of goods beside the work spot */
             } else if (kk === "water") {
-              r.fillStyle = "#3f7d8c", r.fillRect(hx - 2, hy - 2, 9, 8), r.fillStyle = "#2e5f6b", r.fillRect(hx + 5, hy + 1, 6, 2.4), r.fillStyle = "rgba(255,255,255,.35)", r.fillRect(hx - 2, hy - 2, 9, 2);
-              r.fillStyle = "rgba(110,180,235,.9)";
-              for (let i = 0; i < 5; i++) {
-                let ph = (re * 1.35 + i * 0.2) % 1,
-                  px = hx + 9 + fv[0] * ph * s * 0.8 + (fv[0] === 0 ? (i - 2) * 2.2 : 0),
-                  py = hy + 3 + ph * ph * s * 0.55 + ph * s * 0.3;
-                r.beginPath(), r.arc(px, py, 1.7, 0, Math.PI * 2), r.fill();
+              r.fillStyle = "#3f7d8c", r.fillRect(hx - 3, hy - 3, 14, 11), r.fillStyle = "#2e5f6b", r.fillRect(hx + 9, hy + 2, 9, 3), r.fillStyle = "rgba(255,255,255,.35)", r.fillRect(hx - 3, hy - 3, 14, 2.6);
+              r.fillStyle = "rgba(110,180,235,.95)";
+              for (let i = 0; i < 8; i++) {
+                let ph = (re * 1.35 + i * 0.125) % 1,
+                  px = hx + 14 + fv[0] * ph * s * 1.1 + (fv[0] === 0 ? (i - 3.5) * 3 : 0),
+                  py = hy + 4 + ph * ph * s * 0.6 + ph * s * 0.32;
+                r.beginPath(), r.arc(px, py, 2.6, 0, Math.PI * 2), r.fill();
+              }
+              let sx = hx + 14 + fv[0] * s * 1.1, sy = fy + s * 0.12;
+              for (let i = 0; i < 2; i++) {
+                let ph = (re * 1.1 + i * 0.5) % 1;
+                r.strokeStyle = `rgba(190,225,250,${(1 - ph) * 0.8})`, r.lineWidth = 1.6, r.beginPath(), r.ellipse(sx, sy, 3 + ph * 9, (3 + ph * 9) * 0.36, 0, 0, Math.PI * 2), r.stroke();
               }
             } else if (kk === "chat") {
               let by = fy - s * 1.98 + Math.sin(re * 2) * 1.2,
                 act = Math.floor(re * 2.4) % 3;
-              r.fillStyle = "rgba(255,252,240,.95)", r.strokeStyle = "#5d3d24", r.lineWidth = 1.6, r.beginPath(), r.roundRect ? r.roundRect(cx - 12, by - 8, 24, 14, 5) : r.rect(cx - 12, by - 8, 24, 14), r.fill(), r.stroke(), r.beginPath(), r.moveTo(cx - 3, by + 5.4), r.lineTo(cx + 2, by + 5.4), r.lineTo(cx - 1, by + 10), r.closePath(), r.fillStyle = "rgba(255,252,240,.95)", r.fill(), r.stroke();
+              r.fillStyle = "rgba(255,252,240,.95)", r.strokeStyle = "#5d3d24", r.lineWidth = 1.6, r.beginPath(), r.roundRect ? r.roundRect(cx - 15, by - 9, 30, 17, 6) : r.rect(cx - 15, by - 9, 30, 17), r.fill(), r.stroke(), r.beginPath(), r.moveTo(cx - 3, by + 5.4), r.lineTo(cx + 2, by + 5.4), r.lineTo(cx - 1, by + 10), r.closePath(), r.fillStyle = "rgba(255,252,240,.95)", r.fill(), r.stroke();
               for (let i = 0; i < 3; i++) {
-                r.fillStyle = i === act ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(cx - 6 + i * 6, by - 1, i === act ? 2 : 1.6, 0, Math.PI * 2), r.fill();
+                r.fillStyle = i === act ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(cx - 7.5 + i * 7.5, by - 0.5, i === act ? 2.6 : 2, 0, Math.PI * 2), r.fill();
               }
               let wa = Math.sin(re * 7) * 0.5,
                 wx0 = cx + s * 0.32,
@@ -21983,17 +21996,17 @@ function cb(e) {
                 let mx = B + mate.x * s,
                   my = P + mate.y * s - s * 1.62 + Math.sin(re * 2 + 1.3) * 1.2,
                   act2 = Math.floor(re * 2.4 + 1) % 3;
-                r.fillStyle = "rgba(255,252,240,.92)", r.strokeStyle = "#5d3d24", r.lineWidth = 1.4, r.beginPath(), r.roundRect ? r.roundRect(mx - 10, my - 7, 20, 12, 4) : r.rect(mx - 10, my - 7, 20, 12), r.fill(), r.stroke(), r.beginPath(), r.moveTo(mx - 2, my + 4.6), r.lineTo(mx + 3, my + 4.6), r.lineTo(mx, my + 8.6), r.closePath(), r.fillStyle = "rgba(255,252,240,.92)", r.fill(), r.stroke();
+                r.fillStyle = "rgba(255,252,240,.92)", r.strokeStyle = "#5d3d24", r.lineWidth = 1.4, r.beginPath(), r.roundRect ? r.roundRect(mx - 13, my - 8, 26, 15, 5) : r.rect(mx - 13, my - 8, 26, 15), r.fill(), r.stroke(), r.beginPath(), r.moveTo(mx - 2, my + 4.6), r.lineTo(mx + 3, my + 4.6), r.lineTo(mx, my + 8.6), r.closePath(), r.fillStyle = "rgba(255,252,240,.92)", r.fill(), r.stroke();
                 for (let i = 0; i < 3; i++) {
-                  r.fillStyle = i === act2 ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(mx - 5 + i * 5, my - 1, i === act2 ? 1.7 : 1.3, 0, Math.PI * 2), r.fill();
+                  r.fillStyle = i === act2 ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(mx - 6.5 + i * 6.5, my - 0.5, i === act2 ? 2.2 : 1.7, 0, Math.PI * 2), r.fill();
                 }
               }
             } else if (kk === "forage" || kk === "explore" || kk === "busy") {
-              for (let i = 0; i < 3; i++) {
-                let ox = Math.sin(i * 2.4 + 1) * s * 0.55,
-                  oy = kk === "forage" || kk === "explore" ? 2 + (i % 2) * 4 : -s * (1.5 + (i % 2) * 0.22),
+              for (let i = 0; i < 5; i++) {
+                let ox = Math.sin(i * 2.4 + 1) * s * (kk === "explore" ? 0.45 : 0.7) + (kk === "explore" ? fv[0] * s * 0.3 : 0),
+                  oy = kk === "explore" ? -s * 0.72 + (i % 2) * 6 : kk === "forage" ? 2 + (i % 2) * 4 : -s * (1.5 + (i % 2) * 0.22),
                   al = 0.35 + 0.6 * Math.abs(Math.sin(re * 2.2 + i * 1.4)),
-                  rr = 2.6 + Math.sin(re * 3 + i) * 0.7,
+                  rr = (kk === "explore" ? 5.6 : 4.2) + Math.sin(re * 3 + i) * 1, /* R4-F5: explore stars were 4.2px at the feet; now 5.6px at hand height in front */
                   px = cx + ox,
                   py = fy + oy;
                 r.fillStyle = `rgba(255,214,90,${al})`, r.beginPath(), r.moveTo(px, py - rr), r.lineTo(px + rr * 0.32, py - rr * 0.32), r.lineTo(px + rr, py), r.lineTo(px + rr * 0.32, py + rr * 0.32), r.lineTo(px, py + rr), r.lineTo(px - rr * 0.32, py + rr * 0.32), r.lineTo(px - rr, py), r.lineTo(px - rr * 0.32, py - rr * 0.32), r.closePath(), r.fill();
