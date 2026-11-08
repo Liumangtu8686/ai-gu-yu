@@ -4211,7 +4211,7 @@ window.__nodeObeyChance = function (profile, check) {
   function feedback(v, day, text, source) {
     if (!text || typeof text !== 'string') return false;
     v.driftFeed.push({day,text:Array.from(text).slice(0,40).join(''),source:source || '日记'});
-    if (v.driftFeed.length > 100) v.driftFeed.splice(0,v.driftFeed.length-100);
+    if (v.driftFeed.length > 300) v.driftFeed.splice(0,v.driftFeed.length-300);
     return true;
   }
   function diaryFact(text,limit=26) {
@@ -4223,11 +4223,11 @@ window.__nodeObeyChance = function (profile, check) {
   }
   function recordNode(v,r,title,label,result) {
     const event=String(title).replace(/^人生节点[ ·]*/,'');
-    const together=`第${r.day}天，${event}，他选了${label}。`;
-    if(Array.from(together).length<=40)feedback(v,r.day,together,'节点选择');
-    else {feedback(v,r.day,`第${r.day}天，${event}。`,'节点事件');feedback(v,r.day,`第${r.day}天，他选了${label}。`,'节点选择');}
-    feedback(v,r.day,`第${r.day}天，结果：${diaryFact(result,26)}`,'节点结果');
+    const changed=/这次他没听|换了主意/.test(String(r.eventText||'')+result);
+    const short=(t,n)=>Array.from(String(t||'')).slice(0,n).join('');
+    feedback(v,r.day,`第${r.day}天，${short(event,6)}；选${short(label,5)}${changed?'，他没听':''}；${diaryFact(result,10)}`,'节点结果');
   }
+
   function currentJung(state) {
     const v = ensure(state);
     return v ? Object.fromEntries(JUNG.map(k=>[k,clamp(v.drift.initial.jung[k]+v.drift.jung[k])])) : map(JUNG,50);
@@ -4250,11 +4250,10 @@ window.__nodeObeyChance = function (profile, check) {
     const changes=[];
     if(traces.teaCups!==v.traces.teaCups)changes.push('茶杯添到2只');
     if(traces.unopenedLetters!==v.traces.unopenedLetters)changes.push('未拆信剩'+traces.unopenedLetters+'封');
-    if(traces.diaryThick!==v.traces.diaryThick)changes.push('手记添厚了');
     if(traces.planChart!==v.traces.planChart)changes.push('计划表添上了');
     const date=day||state.day||1,sign=actual>0?'+':'';
     // Transactional visibility rule: feedback is required before committing either delta or traces.
-    if(!feedback(v,date,`第${date}天，${names[dim]}${sign}${actual}，${changes.join('、')||'手记记下这次变化'}。`,dim+' '+sign+actual))return 0;
+    if(!feedback(v,date,`第${date}天，${names[dim]}${sign}${actual}，${changes.join('、')||'从'+clamp(v.drift.initial[group][dim]+before)+'到'+clamp(v.drift.initial[group][dim]+after)}。`,dim+' '+sign+actual))return 0;
     v.drift[group][dim]=after;Object.assign(v.traces,traces);
     mirror(v);
     return actual;
@@ -4265,15 +4264,26 @@ window.__nodeObeyChance = function (profile, check) {
   }
   function syncHearts(state,v) {
     if (!state.hearts || typeof state.hearts!=='object') state.hearts={};
+    const logs=(state.log||[]).filter(r=>r&&typeof r==='object');
+    const reason=name=>{
+      const today=logs.filter(r=>Number(r.day)===Number(state.day||1)-1||Number(r.day)===Number(state.day||1));
+      const candidates=today.length?today:logs;
+      const r=[...candidates].reverse().find(r=>logText(r).includes(name))||candidates[candidates.length-1];
+      const actions=r&&Array.isArray(r.actions)?r.actions:[];
+      const named=[...actions].reverse().find(a=>String(a.text||'').includes(name));
+      const event=r&&[r.eventText,r.diary].find(t=>String(t||'').includes(name));
+      const action=named||(!event&&actions[actions.length-1]);
+      return diaryFact(action?(action.text||action.name):event||(r&&(r.eventText||r.diary||r.eventTitle))||'',12);
+    };
     for (const n of NPCS) if (Object.prototype.hasOwnProperty.call(state.hearts,n.name)) {
       const before=v.affinity[n.name],after=clamp(Math.round(Number(state.hearts[n.name])/25));
       v.affinity[n.name]=after;
-      if(v.lastProcessedDay>0&&after!==before){const d=after-before,day=state.day||1;feedback(v,day,`第${day}天，${n.name}好感${d>0?'+':''}${d}（${before}→${after}），因日常往来。`,'好感');}
+      if(v.lastProcessedDay>0&&after!==before){const d=after-before,day=state.day||1;feedback(v,day,`第${day}天，${n.name}好感${d>0?'+':''}${d}（${before}→${after}），${reason(n.name)}`,'好感');}
     }
     for (const name of ROMANCE) state.hearts[name]=clamp(v.affinity[name])*25;
   }
-  function reputation(state,v,fx,source="日常往来",day=state.day||1) {
-    const why=String(source).replace(/^人生节点[ ·]*/," ").trim().slice(0,8);
+  function reputation(state,v,fx,source="",day=state.day||1) {
+    const why=String(source||(state.log||[]).slice(-1)[0]?.eventTitle||'').replace(/^人生节点[ ·]*/," ").trim().slice(0,8);
     state.hearts=state.hearts||{};
     for (const [name,d] of Object.entries(fx.affinity||{})) {
       const k=keyName(name), n=npc(k); if (!n) continue;
@@ -4346,7 +4356,6 @@ window.__nodeObeyChance = function (profile, check) {
   function rebellion(state,v,r,choice) {
     const actual=String(r.eventText||'').replace(/^（[^）]*）/,'');
     const text=`第${r.day}天，他换了主意：${diaryFact(actual,24)}`;
-    feedback(v,r.day,text,'他自己的主意');
     v.scheduleNotes.push({day:r.day,text,kind:'diary-only'});
     if(v.scheduleNotes.length>40)v.scheduleNotes.shift();
   }
@@ -4371,9 +4380,8 @@ window.__nodeObeyChance = function (profile, check) {
       const result=selected.option[selected.branch+'Text']||'';
       recordNode(v,r,p.title,r.chosenLabel||selected.option.label,result);
       if(p.kind==='milestone') {
-        const was=v.milestones[p.key];
         v.milestones[p.key]=true;
-        if(!was)feedback(v,r.day,`第${r.day}天，${(MILESTONES.find(m=>m.id===p.key)?.name||p.title).slice(0,14)}成了——${diaryFact(result,12)}`,'里程碑');
+
         if(p.key==='newlife') {v.inheritanceStartSeason=calendar(r.day).seasonNumber;v.inheritanceMode=p.mode||'farm';if(p.mode==='family')v.traces.smallShoes=true;}
         if(p.key==='crisis') {v.crisisSeasonsLeft=2;v.crisisStartSeason=calendar(r.day).seasonNumber;v.traces.petition=true;if(selected.fx.dark)v.helpedDeveloper=true;}
         if(p.key==='harvestfest') {
@@ -4394,7 +4402,7 @@ window.__nodeObeyChance = function (profile, check) {
       const recorded=MILESTONES.find(m=>String(r.eventTitle).includes(m.name.split('·')[0].split('/')[0].trim()));
       if(recorded&&!v.milestones[recorded.id]) {
         v.milestones[recorded.id]=true;
-        feedback(v,r.day,`第${r.day}天，${recorded.name.slice(0,14)}成了——${diaryFact(r.eventText,12)}`,'里程碑');
+        if(!r.chosenLabel)recordNode(v,r,r.eventTitle,'自行决定',r.eventText);
         if(recorded.id==='newlife'){v.inheritanceStartSeason=calendar(r.day).seasonNumber;v.inheritanceMode=state.partner?'family':'farm';}
         if(recorded.id==='crisis'){v.crisisStartSeason=calendar(r.day).seasonNumber;v.crisisSeasonsLeft=2;}
         if(recorded.id==='harvestfest')familyFootnote(state,v);
@@ -4872,7 +4880,7 @@ window.__nodeObeyChance = function (profile, check) {
       }
       el('h3','他的变化',content);
       if(!v.driftFeed.length)el('p','日记才翻开第一页。',content);
-      for(const f of v.driftFeed.slice(-12).reverse())el('p',f.text,content);
+      for(const f of v.driftFeed.slice().reverse())el('p',f.text,content);
       if(v.familyNotes.length){el('h3','留给后来的人',content);for(const note of v.familyNotes)el('p',note,content);}
       sheet.scrollTop=scroll;
     }
@@ -23991,7 +23999,7 @@ function cb(e) {
             };
             let D = h.steps[0];
             if (D) {
-              ne.onStepStart(0, D);
+              ne.onStepStart(0, null);
               let q = ya(D.locId);
               la(S, q.sceneId, q.x, q.y);
             }
@@ -24003,6 +24011,7 @@ function cb(e) {
             } else if (Ta(S)) {
               if (S.dwellUntil === 0) {
                 let D = h.steps[S.stepIdx];
+                if(D)ne.onStepStart(S.stepIdx, D);
                 S.dwellUntil = ft + Math.max(D ? D.dwellMs : 3000, D && Kk(D) === "greet" ? 3000 : 6000), S.actKind = D ? Kk(D) : null, S.actFainted = !!D?.fainted, S.actT0 = ft, S.facing4 = S.actKind === "sleep" || S.actKind === "read" ? "up" : ["farm","sow","chop","mine","fight","work","water","pickfruit","forage","harvest","explore"].includes(S.actKind) ? "right" : S.facing4, x.current.x = S.x, x.current.y = S.y, w.current = S.sceneId;
                 if ((S.actKind === "chat" || S.actKind === "greet") && D) {
                   let mate = null,
@@ -24030,8 +24039,8 @@ function cb(e) {
               } else if (ft >= S.dwellUntil) {
                 S.actKind = null, S.dwellUntil = 0, S.stepIdx += 1;
                 let D = h.steps[S.stepIdx];
+                ne.onStepStart(S.stepIdx, null);
                 if (D) {
-                  ne.onStepStart(S.stepIdx, D);
                   let q = ya(D.locId);
                   la(S, q.sceneId, q.x, q.y);
                 } else {
@@ -25672,6 +25681,7 @@ function XtDraw(r,kind,cx,fy,el,s,A){
     const hx=cx+32-Math.sin(ph*Math.PI)*42,hy=fy-4-Math.sin(ph*Math.PI)*36;arm(hx,hy);box(hx-4,hy-3,8,8,kind==="harvest"?"#f0b643":"#cc6a42");if(ph>.65)burst(cx-13,fy-12,"#d7e88b",6);
   }else if(kind==="explore"){
     box(cx-28,fy-35,28,22,"#f9e8b8");r.strokeStyle="#758b57";r.beginPath();r.moveTo(cx-25,fy-18);r.lineTo(cx-16,fy-30);r.lineTo(cx-5,fy-20);r.stroke();let hx=cx+12+Math.sin(el/650)*22;arm(hx,fy-32);r.strokeStyle="#302b24";r.lineWidth=5;r.beginPath();r.moveTo(hx,fy-28);r.lineTo(hx+6,fy-39);r.stroke();r.fillStyle="#bfe9ec";r.beginPath();r.arc(hx+10,fy-46,10,0,Math.PI*2);r.fill();r.stroke();
+    const sx=cx+42,sy=fy-55+Math.sin(el/300)*3;r.fillStyle="#fff0a3";r.strokeStyle="#72592c";r.lineWidth=1.5;r.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,d=i%2?3:10,x=sx+Math.cos(a)*d,y=sy+Math.sin(a)*d;i?r.lineTo(x,y):r.moveTo(x,y);}r.closePath();r.fill();r.stroke();
   }else if(kind==="rest"){
     box(cx-28,fy-5,56,8,"#a97b4d");box(cx-22,fy+3,5,15,"#705236");box(cx+18,fy+3,5,15,"#705236");const mugY=fy-15-Math.sin(ph*Math.PI)*40;arm(cx+23,mugY);box(cx+15,mugY,18,16,"#f8e4b1");
   }else if(kind==="visit"){
@@ -25726,6 +25736,21 @@ function qr(e) {
   } catch {
     return 0;
   }
+}
+// Measure after React attaches children, before the next paint; observe only this sheet.
+function XtNodeSheet(sheet) {
+  if(!sheet)return;
+  const cue=sheet.querySelector('[data-node-scroll-cue]');
+  if(!cue)return;
+  const measure=()=>{
+    cue.style.display='none';
+    const overflow=sheet.scrollHeight>sheet.clientHeight+1;
+    cue.style.display=overflow?'block':'none';
+  };
+  measure();
+  requestAnimationFrame(measure);
+  const observer=new ResizeObserver(()=>{if(!sheet.isConnected){observer.disconnect();return;}measure();});
+  observer.observe(sheet);
 }
 function mb() {
   let e = Un(),
@@ -25871,7 +25896,7 @@ function mb() {
         text: "去广场走走，看看节日的热闹。",
         dwellMs: 4200
       });
-      Ta(0), Cn(P[0] ?? null), Vt({
+      Ta(0), Cn(null), Vt({
         steps: P,
         runId: Date.now()
       }), Sa(!0);
@@ -26075,7 +26100,7 @@ function mb() {
             }), " · ", bl.text]
           }) : T("p", {
             className: "mt-1.5 text-[13px] text-[#4a3820]",
-            children: "他正走在回家的路上…"
+            children: la >= (ke?.steps.length ?? 0) ? "他正走在回家的路上…" : "他正在前往下一站，到了再动手…"
           }), R("div", {
             className: "mt-2 flex gap-1",
             "aria-hidden": !0,
@@ -26279,6 +26304,8 @@ function mb() {
             children: "▶ 开始这一天"
           })]
         })), I && R("div", {
+          ref: XtNodeSheet,
+          "data-node-sheet": true,
           className: `absolute inset-x-0 bottom-0 z-30 max-h-[60%] overflow-y-auto rounded-t-[18px] border-t-[4px] p-3.5 shadow-[0_-12px_30px_rgba(61,42,22,.45)] ${At}`,
           children: [R("details", {
             className: "rounded-lg paper-cell px-3 py-2",
@@ -26322,6 +26349,10 @@ function mb() {
                 children: f.check && window.__nodeObeyChance && typeof m !== "undefined" && m && m.profile ? [f.label, T("span", { className: "ml-2 align-middle text-xs font-bold text-[#8a7350]", children: "（听你的几率约 " + Math.round(100 * window.__nodeObeyChance(m.profile, f.check)) + "%）" })] : f.label
               }, M))
             })]
+          }), T("div", {
+            "data-node-scroll-cue": true,
+            style: {position:"sticky",bottom:0,zIndex:1,pointerEvents:"none",textAlign:"center",padding:"7px",background:"linear-gradient(transparent,#fdf3d0 30%)",color:"#754b20",fontWeight:900,fontSize:13,display:"none"},
+            children: "↓ 下滑查看选项"
           })]
         }), J && R(ct, {
           children: [T("button", {
