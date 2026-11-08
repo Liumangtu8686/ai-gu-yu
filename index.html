@@ -602,7 +602,7 @@
 </script>
 <script>
 /* ============================================================
-   鹈鹕镇像素素材表
+   溪田镇像素素材表
    19 张 Codex 像素图按相对路径从本空间 assets/town/ 加载，
    不再以 base64 内联进 HTML：内联版单文件达 1.6MB、含近
    30 万字符的超长行，真机 WebView 加载时直接失败（卡片报
@@ -635,7 +635,7 @@ window.__TOWN_ART = {
 </script>
 <script>
 /* ============================================================
-   鹈鹕镇真实像素素材注入（Codex 素材包，已内联在本页 __TOWN_ART 中）
+   溪田镇真实像素素材注入（Codex 素材包，已内联在本页 __TOWN_ART 中）
    原理：游戏地图是 canvas 逐帧绘制；每个建筑画完后会用
    `700 Npx sans-serif` + #ffeec2 画一次名字标签。本脚本钩住
    fillText，在标签落笔前把对应建筑的 PNG 画进同一个画布、
@@ -644,7 +644,7 @@ window.__TOWN_ART = {
    树/摊位按深度在帧末（云影绘制前）补画，喷泉/布告栏/长椅/
    路灯/篱笆在帧首（地形之后、人物之前）补画；河面叠水面波光。
    角色站在某物前面时（靠名字牌定位）跳过该物，避免贴图盖人。
-   只作用于鹈鹕镇；其它场景保持原样代码绘制。
+   只作用于溪田镇；其它场景保持原样代码绘制。
    ============================================================ */
 (function () {
   "use strict";
@@ -673,15 +673,15 @@ window.__TOWN_ART = {
   /* name -> [x, y, w, h, imgKey|null, smoke: [[宽占比, 顶占比], ...]] */
   var BUILDINGS = {
     "社区中心": [12, 1, 6, 4, "community", [[0.13, 0.16], [0.87, 0.16]]],
-    "皮埃尔商店": [3, 2, 4, 3, "pierre", [[0.86, 0.05]]],
-    "Joja超市": [8, 2, 4, 3, "joja", []],
+    "来福杂货店": [3, 2, 4, 3, "pierre", [[0.86, 0.05]]],
+    "恒远超市": [8, 2, 4, 3, "joja", []],
     "诊所": [22, 2, 4, 3, "clinic", []],
     "图书馆": [3, 7, 4, 3, null, []],
     "铁匠铺": [22, 7, 4, 3, "blacksmith", [[0.87, 0.02]]],
     "星之果实酒吧": [3, 14, 4, 3, null, []],
     "木匠店": [8, 15, 4, 3, "carpenter", [[0.72, 0.08]]],
-    "镇长家": [23, 14, 4, 3, null, []],
-    "小满家": [12, 16, 4, 3, null, []],
+    "陶镇长家": [23, 14, 4, 3, null, []],
+    "阿棠家": [12, 16, 4, 3, null, []],
     "柳巷1号民宅": [3, 18, 4, 3, null, []],
     "镇南民宅": [16, 18, 3, 3, null, []],
     "博物馆": [22, 18, 5, 3, null, []]
@@ -1003,9 +1003,9 @@ window.__WF_ART = {
     "主角的小屋": ["farm", 3, 11, 4, 3], "鸡舍": ["farm", 10, 11, 3, 3], "畜棚": ["farm", 16, 11, 4, 3], "温室": ["farm", 24, 10, 4, 3],
     "石屋": ["courtyard", 12, 5, 5, 4], "阿禾家": ["courtyard", 21, 16, 5, 4],
     "桥头茶摊": ["bridge", 3, 12, 4, 3], "集市杂货店": ["bridge", 18, 2, 4, 3], "老钟家": ["bridge", 24, 11, 4, 3], "桥边小屋": ["bridge", 17, 17, 4, 3],
-    "社区中心": ["town", 12, 1, 6, 4], "皮埃尔商店": ["town", 3, 2, 4, 3], "Joja超市": ["town", 8, 2, 4, 3], "诊所": ["town", 22, 2, 4, 3],
+    "社区中心": ["town", 12, 1, 6, 4], "来福杂货店": ["town", 3, 2, 4, 3], "恒远超市": ["town", 8, 2, 4, 3], "诊所": ["town", 22, 2, 4, 3],
     "图书馆": ["town", 3, 7, 4, 3], "铁匠铺": ["town", 22, 7, 4, 3], "星之果实酒吧": ["town", 3, 14, 4, 3], "木匠店": ["town", 8, 15, 4, 3],
-    "镇长家": ["town", 23, 14, 4, 3], "小满家": ["town", 12, 16, 4, 3], "柳巷1号民宅": ["town", 3, 18, 4, 3], "镇南民宅": ["town", 16, 18, 3, 3], "博物馆": ["town", 22, 18, 5, 3],
+    "陶镇长家": ["town", 23, 14, 4, 3], "阿棠家": ["town", 12, 16, 4, 3], "柳巷1号民宅": ["town", 3, 18, 4, 3], "镇南民宅": ["town", 16, 18, 3, 3], "博物馆": ["town", 22, 18, 5, 3],
     "渔具店": ["beach", 3, 1, 4, 3], "海边小屋": ["beach", 23, 2, 4, 3],
     "法师塔": ["forest", 1, 2, 3, 5],
     "矿洞口": ["mountain", 22, 1, 5, 4], "温泉馆": ["mountain", 23, 15, 4, 3], "山间小屋": ["mountain", 18, 3, 3, 3]
@@ -1435,7 +1435,7 @@ window.__WF_ART = {
       三批 chunky 农舍叠画。
    2）16 栋建筑此前根本没有贴图：石屋、阿禾家、桥头茶摊、
       集市杂货店、老钟家、桥边小屋、图书馆、星之果实酒吧、
-      镇长家、小满家、柳巷1号民宅、镇南民宅、博物馆、渔具店、
+      陶镇长家、阿棠家、柳巷1号民宅、镇南民宅、博物馆、渔具店、
       法师塔、温泉馆。本批按封面画风新画（粗颗粒像素 + 品红
       抠图 + 量化，管线与前三批一致），沿用名字标签 fillText
       钩子、相机取 window.__wfcam、按格位底边对齐盖图；这些
@@ -1476,8 +1476,8 @@ window.__WF_ART = {
     "桥边小屋": ["bridge", "bridgehouse", 17, 17, 4, 3, 5, 4],
     "图书馆": ["town", "library", 3, 7, 4, 3, 5, 4],
     "星之果实酒吧": ["town", "saloon", 3, 14, 4, 3, 5, 4],
-    "镇长家": ["town", "mayorhouse", 23, 14, 4, 3, 5, 4],
-    "小满家": ["town", "xiaomanhouse", 12, 16, 4, 3, 5, 4],
+    "陶镇长家": ["town", "mayorhouse", 23, 14, 4, 3, 5, 4],
+    "阿棠家": ["town", "xiaomanhouse", 12, 16, 4, 3, 5, 4],
     "柳巷1号民宅": ["town", "liuxianghouse", 3, 18, 4, 3, 5, 4],
     "镇南民宅": ["town", "zhennanhouse", 16, 18, 3, 3, 4, 4],
     "博物馆": ["town", "museum", 22, 18, 5, 3, 6, 4],
@@ -2174,7 +2174,2686 @@ window.__nodeObeyChance = function (profile, check) {
   scan();
 })();
 </script>
-<script data-hatch-cvm-bundle>(() => {
+<script>
+/* ============================================================
+   《心田物语》定稿 v2.0 · v2 层（运行时覆盖层，2026-11-08）
+   状态触发里程碑 / 亲和-威胁双轨 / 16 镇民 / 人格漂移 / 阈值心结 /
+   派系张力 / 35 事件模板 / 家里痕迹 / 横向互动 / 叛逆故事化 / 家族注脚
+   详见 v2layer.js；本块由装配脚本插入，勿手改。
+   ============================================================ */
+/* 心田物语 · 定稿 v2 runtime overlay. No bundle/global profile mutation.
+ * Source: xin-tian-wu-yu-ju-qing-ding-gao-v2-source.md, full 949 lines.
+ * Feel: the same warm town, parchment #fdf3d0 / brown #7c4f12;
+ * a collapsed 250ms side sheet and the engine's existing choice popup.
+ * Numeric interpretation: source 高/中/低 -> 80/50/20; unspecified traits -> 中/50.
+ * NPC skills below are the source roster, descriptive; this overlay does not add shops.
+ * Event delta magnitudes are rule/balance interpretations of the source directions.
+ */
+(function (root) {
+  'use strict';
+  if (!root || (root.__v2 && root.__v2.version === 2)) return;
+  const NPCS = [
+  {
+    "id": "v2npc-1",
+    "name": "陶守义",
+    "displayName": "陶镇长（陶守义）",
+    "group": "秩序/日常",
+    "dominant": "Te",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "镇子要往前走，先把路修了",
+    "skill": "主持镇务与节庆活动，玩家可在他这里接取每日布告栏委托、缴纳社区建设资金以解锁桥梁与温室等公共设施"
+  },
+  {
+    "id": "v2npc-2",
+    "name": "阿禾",
+    "displayName": "阿禾",
+    "group": "秩序/日常",
+    "dominant": "Fe",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "extraversion": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "谁家有事她先到，热汤永远多煮一碗",
+    "skill": "擅长家常烹饪与送餐，玩家与她提升好感后可通过信件收到恢复体力的热汤与料理食谱，还能在酒馆找她购买每日特供家常菜"
+  },
+  {
+    "id": "v2npc-3",
+    "name": "老钟",
+    "displayName": "老钟（钟有田）",
+    "group": "秩序/日常",
+    "dominant": "Si",
+    "big5": {
+      "openness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "土路走了五十年，好好的，修它干什么",
+    "skill": "精通传统农耕与堆肥技艺，玩家可向他请教应季作物种植窍门，解锁高级肥料配方、稻草人图纸与温室耕作指导"
+  },
+  {
+    "id": "v2npc-4",
+    "name": "桂花婶",
+    "displayName": "桂花婶",
+    "group": "秩序/日常",
+    "dominant": "Fe",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "extraversion": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "好姻缘，三分天意，七分靠人张罗",
+    "skill": "负责镇上的红娘牵线与人情往来，玩家找她可打听各镇民的礼物喜好、购买求婚用的定情花束并筹办婚礼"
+  },
+  {
+    "id": "v2npc-5",
+    "name": "郑来福",
+    "displayName": "郑来福",
+    "group": "野心/功利",
+    "dominant": "Te",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "账算不清，生意就做不长",
+    "skill": "经营镇上的杂货店，玩家可在他店里购买各季种子、糖面油等基础食材、农业耗材以及扩充背包格数的升级包"
+  },
+  {
+    "id": "v2npc-6",
+    "name": "贺远山",
+    "displayName": "贺远山",
+    "group": "野心/功利",
+    "dominant": "Te",
+    "big5": {
+      "openness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "镇子外面大着呢，机会不等人",
+    "skill": "操办恒远集团的商业投资开发，玩家可用高额金币直接向他购买镇子公共设施改造券与自动化农具图纸，走替代传统社区建设的商业捷径【暗黑线】"
+  },
+  {
+    "id": "v2npc-7",
+    "name": "赵正平",
+    "displayName": "赵正平",
+    "group": "野心/功利",
+    "dominant": "Te",
+    "big5": {
+      "openness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "规矩就是规矩，谁来都一样",
+    "skill": "管理镇上治安与矿洞外围安全，玩家可在他这里接取矿洞清剿悬赏、购买防身武器与戒指，并在矿洞力竭晕倒后由他寻回遗失物品"
+  },
+  {
+    "id": "v2npc-8",
+    "name": "吴三爷",
+    "displayName": "吴三爷",
+    "group": "野心/功利",
+    "dominant": "Ne",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "有路子，就有价钱",
+    "skill": "每逢周末夜晚在镇外偏僻处摆设地下货摊，玩家可用高价向他购买违禁稀有种子、来路不明的古物、珍稀鱼类与高阶炸药【暗黑线】"
+  },
+  {
+    "id": "v2npc-9",
+    "name": "老陈",
+    "displayName": "老陈（陈铁山）",
+    "group": "创伤/破碎",
+    "dominant": "Ti",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "话都在活儿里，手艺不会骗人",
+    "skill": "经营铁匠铺，玩家可找他购买矿石煤炭、敲开晶球、冶炼矿锭，以及消耗矿锭与金币升级水壶、镐子、斧头等农具"
+  },
+  {
+    "id": "v2npc-10",
+    "name": "顾青山",
+    "displayName": "顾青山",
+    "group": "创伤/破碎",
+    "dominant": "Fi",
+    "big5": {
+      "openness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "画不出来的时候，就去河边坐着",
+    "skill": "常在河边写生垂钓，玩家找他可学习钓鱼技巧、购买鱼饵与浮标，还能请他绘制四季风景画作来装饰农舍"
+  },
+  {
+    "id": "v2npc-11",
+    "name": "柳清晏",
+    "displayName": "柳清晏",
+    "group": "创伤/破碎",
+    "dominant": "Te",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "病能治，心结得慢慢来",
+    "skill": "坐诊镇医院，玩家可在他这里购买恢复体力与生命值的药剂、接受矿洞重伤急救，并通过定期问诊提升体力上限"
+  },
+  {
+    "id": "v2npc-12",
+    "name": "陆知遥",
+    "displayName": "陆知遥",
+    "group": "创伤/破碎",
+    "dominant": "Ti",
+    "big5": {
+      "openness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "extraversion": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "书里都写着，只是没人来问",
+    "skill": "看管镇上的图书室与古物收藏室，玩家将挖到的古物与矿物交给他鉴定捐赠后，可换取失传古籍、稀有种子与加工设备图纸"
+  },
+  {
+    "id": "v2npc-13",
+    "name": "石老根",
+    "displayName": "石老根",
+    "group": "边缘/奇异",
+    "dominant": "Si",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "extraversion": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "林子里的事，林子自己知道",
+    "skill": "常年驻守深林与后山，玩家与他熟络后可获准进入秘密林地采集硬木与野生菌菇，并向他学习采集浆果、制作捕蟹笼与熬制树液的窍门"
+  },
+  {
+    "id": "v2npc-14",
+    "name": "阿棠",
+    "displayName": "阿棠",
+    "group": "边缘/奇异",
+    "dominant": "Fi",
+    "big5": {
+      "openness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "别人扔掉的东西，我都能修好",
+    "skill": "擅长修补旧物与缝纫改造，玩家可带布料与矿石找她剪裁新衣、染色饰品，或请她将钓鱼捞起的破旧杂物修复成实用家具与农具配件"
+  },
+  {
+    "id": "v2npc-15",
+    "name": "云婆婆",
+    "displayName": "云婆婆",
+    "group": "边缘/奇异",
+    "dominant": "Ni",
+    "big5": {
+      "openness": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "conscientiousness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "extraversion": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "你要问的事，签上都写着",
+    "skill": "在帐篷中为镇民看相求签，玩家每天可找她占卜当日气运以决定下矿或钓鱼时机，并在节日请她测算星象运势与姻缘征兆"
+  },
+  {
+    "id": "v2npc-16",
+    "name": "白鹤鸣",
+    "displayName": "白鹤鸣",
+    "group": "边缘/奇异",
+    "dominant": "Ne",
+    "big5": {
+      "openness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "conscientiousness": {
+        "label": "低",
+        "value": 20,
+        "specified": true
+      },
+      "extraversion": {
+        "label": "高",
+        "value": 80,
+        "specified": true
+      },
+      "agreeableness": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      },
+      "neuroticism": {
+        "label": "中",
+        "value": 50,
+        "specified": false
+      }
+    },
+    "line": "戏台搭起来，镇子就活了",
+    "skill": "每逢换季与节庆带领剧团来镇搭台唱戏，玩家可购票看戏提升心情与全镇好感，也能在剧团流动摊位上兑换限定戏服、乐器与节庆家具"
+  }
+];
+  const EVENTS = [
+  {
+    "id": "v2-event-1",
+    "name": "受伤的麻雀",
+    "kind": "daily",
+    "chapter": 1,
+    "trigger": "任意",
+    "versions": {
+      "byDominant": {
+        "Fi": "Fi/宜人性高放下活照顾三天，解锁宠物线",
+        "Te": "Te 高做鸟窝放生继续干活"
+      },
+      "default": "Fi/宜人性高放下活照顾三天，解锁宠物线；Te 高做鸟窝放生继续干活；神经质高整晚惦记"
+    },
+    "options": [
+      {
+        "label": "放下活照顾三天，解锁宠物线",
+        "text": "放下活照顾三天，解锁宠物线",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      },
+      {
+        "label": "做鸟窝放生继续干活",
+        "text": "做鸟窝放生继续干活",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-2",
+    "name": "种子商限时折扣",
+    "kind": "daily",
+    "chapter": 2,
+    "trigger": "任意",
+    "versions": {
+      "byDominant": {
+        "Se": "Se/Ne 高先买再说",
+        "Ne": "Se/Ne 高先买再说",
+        "Si": "Si/尽责高算三遍只买计划内",
+        "Ni": "Ni 高全包，冬天卖高价"
+      },
+      "default": "Se/Ne 高先买再说；Si/尽责高算三遍只买计划内；Ni 高全包，冬天卖高价"
+    },
+    "options": [
+      {
+        "label": "先买再说",
+        "text": "先买再说",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Se": 2
+        }
+      },
+      {
+        "label": "Si/尽责高算三遍只买计划内",
+        "text": "Si/尽责高算三遍只买计划内",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Si": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-3",
+    "name": "水管爆了",
+    "kind": "daily",
+    "chapter": 2,
+    "trigger": "任意",
+    "versions": {
+      "byDominant": {
+        "Ti": "Ti 高拆开改良灌溉，永久收益",
+        "Te": "Te 高换新管两小时恢复"
+      },
+      "default": "Ti 高拆开改良灌溉，永久收益；Te 高换新管两小时恢复；尽责低拿桶凑合"
+    },
+    "options": [
+      {
+        "label": "拆开改良灌溉，永久收益",
+        "text": "拆开改良灌溉，永久收益",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Ti": 2
+        }
+      },
+      {
+        "label": "换新管两小时恢复",
+        "text": "换新管两小时恢复",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-4",
+    "name": "邻居送来一篮鸡蛋",
+    "kind": "daily",
+    "chapter": 1,
+    "trigger": "亲和指数 ≥0",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高开心收下回请吃饭",
+        "Fi": "Fe 高开心收下回请吃饭"
+      },
+      "default": "怕欠人情者当晚回赠两清；Fe 高开心收下回请吃饭；回避型道谢后绕道一周"
+    },
+    "options": [
+      {
+        "label": "当晚回赠两清",
+        "text": "当晚回赠两清",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "开心收下回请吃饭",
+        "text": "开心收下回请吃饭",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-5",
+    "name": "雨天停电",
+    "kind": "daily",
+    "chapter": 3,
+    "trigger": "雨天夜晚",
+    "versions": {
+      "byDominant": {
+        "Fi": "Fi 高写长日记回满心情",
+        "Se": "Se 高披雨衣踩水",
+        "Ni": "Ni 高盯烛光想通心事，解锁新追求"
+      },
+      "default": "Fi 高写长日记回满心情；Se 高披雨衣踩水；Ni 高盯烛光想通心事，解锁新追求"
+    },
+    "options": [
+      {
+        "label": "写长日记回满心情",
+        "text": "写长日记回满心情",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      },
+      {
+        "label": "披雨衣踩水",
+        "text": "披雨衣踩水",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Se": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-6",
+    "name": "集市日的人潮",
+    "kind": "daily",
+    "chapter": 1,
+    "trigger": "每周六",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe/外向高如鱼得水收入翻倍",
+        "Te": "Te 高列清单 15 分钟买齐"
+      },
+      "default": "Fe/外向高如鱼得水收入翻倍；社恐巷口徘徊收摊才买到；Te 高列清单 15 分钟买齐"
+    },
+    "options": [
+      {
+        "label": "如鱼得水收入翻倍",
+        "text": "如鱼得水收入翻倍",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "巷口徘徊收摊才买到",
+        "text": "巷口徘徊收摊才买到",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-7",
+    "name": "长歪了的果树",
+    "kind": "daily",
+    "chapter": 2,
+    "trigger": "果树成熟后",
+    "versions": {
+      "byDominant": {
+        "Si": "Si 高留着做果酱",
+        "Te": "Te 高当场砍掉不认沉没成本",
+        "Ne": "Ne 高嫁接新品种"
+      },
+      "default": "Si 高留着做果酱；Te 高当场砍掉不认沉没成本；Ne 高嫁接新品种"
+    },
+    "options": [
+      {
+        "label": "留着做果酱",
+        "text": "留着做果酱",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Si": 2
+        }
+      },
+      {
+        "label": "当场砍掉不认沉没成本",
+        "text": "当场砍掉不认沉没成本",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-8",
+    "name": "深夜的敲门声",
+    "kind": "daily",
+    "chapter": 1,
+    "trigger": "随机夜晚",
+    "versions": {
+      "byDominant": {
+        "Fe": "宜人性高开门招待，旅人留藏宝图",
+        "Fi": "神经质高隔门问十分钟递毯子"
+      },
+      "default": "宜人性高开门招待，旅人留藏宝图；神经质高隔门问十分钟递毯子；安全型正常送别，门口留花"
+    },
+    "options": [
+      {
+        "label": "开门招待，旅人留藏宝图",
+        "text": "开门招待，旅人留藏宝图",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "隔门问十分钟递毯子",
+        "text": "隔门问十分钟递毯子",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-9",
+    "name": "工具全坏了的一天",
+    "kind": "daily",
+    "chapter": 2,
+    "trigger": "随机",
+    "versions": {
+      "byDominant": {
+        "Ti": "Ti 高全拆大修，手艺 +1",
+        "Te": "Te 高列清单一次配齐"
+      },
+      "default": "Ti 高全拆大修，手艺 +1；Te 高列清单一次配齐；神经质高田埂发呆后一件件修"
+    },
+    "options": [
+      {
+        "label": "全拆大修，手艺 +1",
+        "text": "全拆大修，手艺 +1",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Ti": 2
+        }
+      },
+      {
+        "label": "列清单一次配齐",
+        "text": "列清单一次配齐",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-10",
+    "name": "小镇广播的点歌",
+    "kind": "daily",
+    "chapter": 4,
+    "trigger": "随机",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高帮人传话",
+        "Fi": "Fi 高若是点给自己的，装作没听见、日记写满一页",
+        "Te": "Te 高直接去广播站问清"
+      },
+      "default": "Fe 高帮人传话；Fi 高若是点给自己的，装作没听见、日记写满一页；Te 高直接去广播站问清"
+    },
+    "options": [
+      {
+        "label": "帮人传话",
+        "text": "帮人传话",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "若是点给自己的，装作没听见、日记写满一页",
+        "text": "若是点给自己的，装作没听见、日记写满一页",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-11",
+    "name": "坏掉的灌溉系统",
+    "kind": "daily",
+    "chapter": 2,
+    "trigger": "任意（附录 D 纳入）",
+    "versions": {
+      "byDominant": {
+        "Ti": "Ti 高拆开重排管线永久解决",
+        "Te": "Te 高找老陈定制新闸"
+      },
+      "default": "Ti 高拆开重排管线永久解决；Te 高找老陈定制新闸；尽责低每天手动开关拖到冬天"
+    },
+    "options": [
+      {
+        "label": "拆开重排管线永久解决",
+        "text": "拆开重排管线永久解决",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Ti": 2
+        }
+      },
+      {
+        "label": "找老陈定制新闸",
+        "text": "找老陈定制新闸",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-12",
+    "name": "陶镇长的委托板",
+    "kind": "daily",
+    "chapter": 2,
+    "trigger": "任意（附录 D 纳入）",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高顺手接下亲和细水长流",
+        "Te": "Te 高只接报酬明确的"
+      },
+      "default": "Fe 高顺手接下亲和细水长流；Te 高只接报酬明确的；回避型一件不接，但半夜把猫送回去"
+    },
+    "options": [
+      {
+        "label": "顺手接下亲和细水长流",
+        "text": "顺手接下亲和细水长流",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "只接报酬明确的",
+        "text": "只接报酬明确的",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-13",
+    "name": "春·樱花祭",
+    "kind": "seasonal",
+    "chapter": 1,
+    "trigger": "春季限定",
+    "versions": {
+      "byDominant": {
+        "Fe": "外向高做野餐主持人",
+        "Fi": "内向高角落看书被镇民记住"
+      },
+      "default": "外向高做野餐主持人；内向高角落看书被镇民记住；任意：恋爱线常见点火事件"
+    },
+    "options": [
+      {
+        "label": "做野餐主持人",
+        "text": "做野餐主持人",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "角落看书被镇民记住",
+        "text": "角落看书被镇民记住",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-14",
+    "name": "夏·暴雨与涨水",
+    "kind": "seasonal",
+    "chapter": 2,
+    "trigger": "夏季限定",
+    "versions": {
+      "byDominant": {
+        "Se": "Se 高冒雨看水被捞回",
+        "Te": "Te 高组织守桥，名望 +"
+      },
+      "default": "尽责高提前加固还帮邻居抢收；Se 高冒雨看水被捞回；Te 高组织守桥，名望 +"
+    },
+    "options": [
+      {
+        "label": "提前加固还帮邻居抢收",
+        "text": "提前加固还帮邻居抢收",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "冒雨看水被捞回",
+        "text": "冒雨看水被捞回",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Se": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-15",
+    "name": "夏·萤火虫之夜",
+    "kind": "seasonal",
+    "chapter": 2,
+    "trigger": "夏季限定（三晚）",
+    "versions": {
+      "byDominant": {
+        "Fi": "单身 Fi 高一个人看也自洽",
+        "Fe": "有暧昧对象：敢开口则告白成功率最高"
+      },
+      "default": "有暧昧对象：敢开口则告白成功率最高；焦虑型想三天没发消息；单身 Fi 高一个人看也自洽"
+    },
+    "options": [
+      {
+        "label": "敢开口则告白成功率最高",
+        "text": "敢开口则告白成功率最高",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "想三天没发消息",
+        "text": "想三天没发消息",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-16",
+    "name": "秋·丰收比赛",
+    "kind": "seasonal",
+    "chapter": 2,
+    "trigger": "秋季限定",
+    "versions": {
+      "byDominant": {
+        "Te": "Te/名望追求提前布局志在必得",
+        "Ti": "Ti 高果酱组黑马"
+      },
+      "default": "Te/名望追求提前布局志在必得；随缘型输了蹭饭也开心；Ti 高果酱组黑马"
+    },
+    "options": [
+      {
+        "label": "Te/名望追求提前布局志在必得",
+        "text": "Te/名望追求提前布局志在必得",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      },
+      {
+        "label": "输了蹭饭也开心",
+        "text": "输了蹭饭也开心",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-17",
+    "name": "秋·第一场霜",
+    "kind": "seasonal",
+    "chapter": 2,
+    "trigger": "秋季限定",
+    "versions": {
+      "byDominant": {
+        "Ni": "Ni 高提前抢收",
+        "Fe": "Ni 高提前抢收",
+        "Fi": "尽责低睡过头冻坏一田"
+      },
+      "default": "Ni 高提前抢收；尽责低睡过头冻坏一田；任意：是“冬天的至暗时刻”的前置事件"
+    },
+    "options": [
+      {
+        "label": "提前抢收",
+        "text": "提前抢收",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Ni": 2
+        }
+      },
+      {
+        "label": "睡过头冻坏一田",
+        "text": "睡过头冻坏一田",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-18",
+    "name": "冬·篝火夜话",
+    "kind": "seasonal",
+    "chapter": 3,
+    "trigger": "冬季限定",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高讲的故事让全场安静",
+        "Fi": "内向高只说一句、鼓掌最久"
+      },
+      "default": "Fe 高讲的故事让全场安静；内向高只说一句、鼓掌最久；回避型没去，座位上留了热可可"
+    },
+    "options": [
+      {
+        "label": "讲的故事让全场安静",
+        "text": "讲的故事让全场安静",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "只说一句、鼓掌最久",
+        "text": "只说一句、鼓掌最久",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-19",
+    "name": "河边钓鱼赛",
+    "kind": "seasonal",
+    "chapter": 2,
+    "trigger": "夏季活动，每年重现（附录 D 纳入）",
+    "versions": {
+      "byDominant": {
+        "Si": "Si 高用老办法稳稳拿名次",
+        "Se": "Se 高换七个钓点钓到大的",
+        "Fi": "Fi 高钓上来又放回去"
+      },
+      "default": "Si 高用老办法稳稳拿名次；Se 高换七个钓点钓到大的；Fi 高钓上来又放回去"
+    },
+    "options": [
+      {
+        "label": "用老办法稳稳拿名次",
+        "text": "用老办法稳稳拿名次",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Si": 2
+        }
+      },
+      {
+        "label": "换七个钓点钓到大的",
+        "text": "换七个钓点钓到大的",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Se": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-20",
+    "name": "和邻居吵了一架",
+    "kind": "interpersonal",
+    "chapter": 3,
+    "trigger": "亲和指数波动",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高当晚道歉带点心",
+        "Fi": "Fi 高三天不说话但默默挪篱笆",
+        "Te": "Te 高量地赢理、亲和 −10"
+      },
+      "default": "Fe 高当晚道歉带点心；Fi 高三天不说话但默默挪篱笆；Te 高量地赢理、亲和 −10"
+    },
+    "options": [
+      {
+        "label": "当晚道歉带点心",
+        "text": "当晚道歉带点心",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "三天不说话但默默挪篱笆",
+        "text": "三天不说话但默默挪篱笆",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-21",
+    "name": "镇民的生日",
+    "kind": "interpersonal",
+    "chapter": 3,
+    "trigger": "关系对象生日",
+    "versions": {
+      "byDominant": {
+        "Si": "Si/Fe 高送中对方提过的小东西，亲和暴涨",
+        "Fe": "Si/Fe 高送中对方提过的小东西，亲和暴涨"
+      },
+      "default": "Si/Fe 高送中对方提过的小东西，亲和暴涨；粗心型当晚补送挂门把手；连送对三次是恋爱线硬条件之一"
+    },
+    "options": [
+      {
+        "label": "送中对方提过的小东西，亲和暴涨",
+        "text": "送中对方提过的小东西，亲和暴涨",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Si": 2
+        }
+      },
+      {
+        "label": "当晚补送挂门把手",
+        "text": "当晚补送挂门把手",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-22",
+    "name": "酒馆里的真心话",
+    "kind": "interpersonal",
+    "chapter": 3,
+    "trigger": "夜晚·酒馆",
+    "versions": {
+      "byDominant": {
+        "Fi": "Fi 高沉默后说真话，被在场者记住",
+        "Se": "Se 高打哈哈带开话题"
+      },
+      "default": "Fi 高沉默后说真话，被在场者记住；Se 高打哈哈带开话题；焦虑型回家后悔一整夜"
+    },
+    "options": [
+      {
+        "label": "沉默后说真话，被在场者记住",
+        "text": "沉默后说真话，被在场者记住",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      },
+      {
+        "label": "打哈哈带开话题",
+        "text": "打哈哈带开话题",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Se": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-23",
+    "name": "有人向他借钱",
+    "kind": "interpersonal",
+    "chapter": 4,
+    "trigger": "亲和指数 ≥30",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高爽快借出",
+        "Fi": "Fi 高借但立字据"
+      },
+      "default": "Fe 高爽快借出；Fi 高借但立字据；回避型借后绕道，怕提还钱"
+    },
+    "options": [
+      {
+        "label": "爽快借出",
+        "text": "爽快借出",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "借但立字据",
+        "text": "借但立字据",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-24",
+    "name": "被介绍对象",
+    "kind": "interpersonal",
+    "chapter": 4,
+    "trigger": "单身、第二年后",
+    "versions": {
+      "byDominant": {
+        "Fe": "安全型大方见面",
+        "Fi": "焦虑型提前三天失眠"
+      },
+      "default": "安全型大方见面；焦虑型提前三天失眠；回避型只说五句话"
+    },
+    "options": [
+      {
+        "label": "大方见面",
+        "text": "大方见面",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "提前三天失眠",
+        "text": "提前三天失眠",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-25",
+    "name": "朋友的低谷",
+    "kind": "interpersonal",
+    "chapter": 5,
+    "trigger": "亲友事件",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高放下活去陪",
+        "Te": "Te 高给方案和钱"
+      },
+      "default": "Fe 高放下活去陪；Te 高给方案和钱；回避型不送安慰，送菜和修好的工具"
+    },
+    "options": [
+      {
+        "label": "放下活去陪",
+        "text": "放下活去陪",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "给方案和钱",
+        "text": "给方案和钱",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-26",
+    "name": "小镇排外风波",
+    "kind": "interpersonal",
+    "chapter": 1,
+    "trigger": "第一年",
+    "versions": {
+      "byDominant": {
+        "Fi": "Fi 高不解释，用收成和人品说话",
+        "Te": "Te 高找陶镇长谈合作"
+      },
+      "default": "Fi 高不解释，用收成和人品说话；Te 高找陶镇长谈合作；神经质高失眠一周、打包过一次行李"
+    },
+    "options": [
+      {
+        "label": "不解释，用收成和人品说话",
+        "text": "不解释，用收成和人品说话",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      },
+      {
+        "label": "找陶镇长谈合作",
+        "text": "找陶镇长谈合作",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-27",
+    "name": "给全镇做一顿饭",
+    "kind": "interpersonal",
+    "chapter": 6,
+    "trigger": "厨艺达标、节日",
+    "versions": {
+      "byDominant": {
+        "Ti": "Ti 高备料三天改菜单五遍",
+        "Fe": "Fe 高家常菜人人有份",
+        "Fi": "Fi 高只做三道拿手菜"
+      },
+      "default": "Ti 高备料三天改菜单五遍；Fe 高家常菜人人有份；Fi 高只做三道拿手菜"
+    },
+    "options": [
+      {
+        "label": "备料三天改菜单五遍",
+        "text": "备料三天改菜单五遍",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Ti": 2
+        }
+      },
+      {
+        "label": "家常菜人人有份",
+        "text": "家常菜人人有份",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-28",
+    "name": "迎新聚餐",
+    "kind": "interpersonal",
+    "chapter": 1,
+    "trigger": "抵达后不久（附录 D 纳入）",
+    "versions": {
+      "byDominant": {
+        "Fe": "外向高当场认下半个镇子",
+        "Fi": "内向高只记住两三个人"
+      },
+      "default": "外向高当场认下半个镇子；内向高只记住两三个人；回避型中途溜走，桂花婶把剩菜送上门"
+    },
+    "options": [
+      {
+        "label": "当场认下半个镇子",
+        "text": "当场认下半个镇子",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "只记住两三个人",
+        "text": "只记住两三个人",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-29",
+    "name": "朋友吵架",
+    "kind": "interpersonal",
+    "chapter": 4,
+    "trigger": "两位亲近镇民吵翻（附录 D 纳入）",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高两边哄到自己先累倒",
+        "Fi": "Fi 高按价值观选边",
+        "Te": "Te 高当场断案，对错自负"
+      },
+      "default": "Fe 高两边哄到自己先累倒；Fi 高按价值观选边；Te 高当场断案，对错自负"
+    },
+    "options": [
+      {
+        "label": "两边哄到自己先累倒",
+        "text": "两边哄到自己先累倒",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "按价值观选边",
+        "text": "按价值观选边",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-30",
+    "name": "邻居求助",
+    "kind": "interpersonal",
+    "chapter": 6,
+    "trigger": "中后期，随机夜晚（附录 D 纳入）",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高披衣就去",
+        "Te": "Te 高先判断轻重缓急叫上老陈"
+      },
+      "default": "Fe 高披衣就去；Te 高先判断轻重缓急叫上老陈；回避型嘴上推辞脚已往外走"
+    },
+    "options": [
+      {
+        "label": "披衣就去",
+        "text": "披衣就去",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "先判断轻重缓急叫上老陈",
+        "text": "先判断轻重缓急叫上老陈",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-31",
+    "name": "民宿来了难伺候的客人",
+    "kind": "midlate",
+    "chapter": 5,
+    "trigger": "转型民宿/加工后",
+    "versions": {
+      "byDominant": {
+        "Fe": "Fe 高连夜换被加菜得好评",
+        "Te": "Te 高立规矩明码标价",
+        "Fi": "Fi 高把蛙叫录成“夜曲”"
+      },
+      "default": "Fe 高连夜换被加菜得好评；Te 高立规矩明码标价；Fi 高把蛙叫录成“夜曲”；处理不当威胁指数 +5"
+    },
+    "options": [
+      {
+        "label": "连夜换被加菜得好评",
+        "text": "连夜换被加菜得好评",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "立规矩明码标价",
+        "text": "立规矩明码标价",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-32",
+    "name": "果酱作坊的第一笔大订单",
+    "kind": "midlate",
+    "chapter": 5,
+    "trigger": "转型加工后",
+    "versions": {
+      "byDominant": {
+        "Te": "Te 高排班雇人咬牙交货",
+        "Si": "Si 高坚持手工宁可少接",
+        "Ne": "Ne 高开发新口味变长期合作"
+      },
+      "default": "Te 高排班雇人咬牙交货；Si 高坚持手工宁可少接；Ne 高开发新口味变长期合作；交不出压力 +10"
+    },
+    "options": [
+      {
+        "label": "排班雇人咬牙交货",
+        "text": "排班雇人咬牙交货",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      },
+      {
+        "label": "坚持手工宁可少接",
+        "text": "坚持手工宁可少接",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Si": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-33",
+    "name": "孩子第一次离家出走",
+    "kind": "midlate",
+    "chapter": 7,
+    "trigger": "有孩子/徒弟后",
+    "versions": {
+      "byDominant": {
+        "Fi": "Fi 高追出去先道歉",
+        "Si": "Si 高做一碗面放草垛边等",
+        "Te": "Te 高列“离家成本表”，孩子哭笑不得自己回来"
+      },
+      "default": "Fi 高追出去先道歉；Si 高做一碗面放草垛边等；Te 高列“离家成本表”，孩子哭笑不得自己回来"
+    },
+    "options": [
+      {
+        "label": "追出去先道歉",
+        "text": "追出去先道歉",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      },
+      {
+        "label": "做一碗面放草垛边等",
+        "text": "做一碗面放草垛边等",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Si": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-34",
+    "name": "徒弟偷偷改了你的配方",
+    "kind": "midlate",
+    "chapter": 7,
+    "trigger": "收徒后",
+    "versions": {
+      "byDominant": {
+        "Ti": "Ti 高先骂再尝再改口",
+        "Te": "Te 高算账后升他当副手",
+        "Si": "Si 高一周不说话，最后把新配方写进家谱署徒弟名"
+      },
+      "default": "Ti 高先骂再尝再改口；Te 高算账后升他当副手；Si 高一周不说话，最后把新配方写进家谱署徒弟名"
+    },
+    "options": [
+      {
+        "label": "先骂再尝再改口",
+        "text": "先骂再尝再改口",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Ti": 2
+        }
+      },
+      {
+        "label": "算账后升他当副手",
+        "text": "算账后升他当副手",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Te": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "v2-event-35",
+    "name": "给孩子讲你小时候的故事",
+    "kind": "midlate",
+    "chapter": 7,
+    "trigger": "有孩子/徒弟后，睡前",
+    "versions": {
+      "byDominant": {
+        "Fi": "孩子反应反漂移 Fi ±2",
+        "Fe": "讲哪一段由当前人格决定：丰收是自信版，冬天是伤口版，敲门是感恩版"
+      },
+      "default": "讲哪一段由当前人格决定：丰收是自信版，冬天是伤口版，敲门是感恩版；孩子反应反漂移 Fi ±2"
+    },
+    "options": [
+      {
+        "label": "讲哪一段由当前人格决定：丰收是自信版，冬天是伤口版，敲门是感恩版",
+        "text": "讲哪一段由当前人格决定：丰收是自信版，冬天是伤口版，敲门是感恩版",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fe": 2
+        }
+      },
+      {
+        "label": "孩子反应反漂移 Fi ±2",
+        "text": "孩子反应反漂移 Fi ±2",
+        "affinity": {},
+        "threat": {},
+        "drift": {
+          "Fi": 2
+        }
+      }
+    ]
+  }
+];
+  const MILESTONES = [
+  {
+    "id": "arrive",
+    "sgKey": 1,
+    "chapter": 1,
+    "name": "抵达小镇",
+    "trigger": "游戏开局即触发",
+    "nature": "必须",
+    "性质": "必须",
+    "stage": 1
+  },
+  {
+    "id": "harvest",
+    "sgKey": 50,
+    "chapter": 2,
+    "name": "第一次丰收",
+    "trigger": "农场产出第一次收获并结算（丰收/歉收皆可）；长期无产出时以“歉收”变体超时触发",
+    "nature": "必须（超时兜底）",
+    "性质": "必须（超时兜底）",
+    "stage": 1
+  },
+  {
+    "id": "darkwinter",
+    "sgKey": 95,
+    "chapter": 3,
+    "name": "第一个冬天·至暗时刻",
+    "trigger": "第一个冬季到来，且冬季处境条件满足（作物停摆、收入断档）",
+    "nature": "必须",
+    "性质": "必须",
+    "stage": 2
+  },
+  {
+    "id": "love",
+    "sgKey": 150,
+    "chapter": 4,
+    "name": "心动与告白",
+    "trigger": "与可恋爱池中某人的亲和指数 ≥80",
+    "nature": "可选",
+    "性质": "可选",
+    "stage": 2
+  },
+  {
+    "id": "career",
+    "sgKey": 230,
+    "chapter": 5,
+    "name": "事业抉择",
+    "trigger": "农场规模/收入达到抉择线，或连续经营若干季；长期未达线时由陶镇长或郑来福上门“逼问方向”超时触发",
+    "nature": "必须（超时兜底）",
+    "性质": "必须（超时兜底）",
+    "stage": 3
+  },
+  {
+    "id": "family",
+    "sgKey": 300,
+    "chapter": 6,
+    "name": "成家",
+    "trigger": "恋爱线成功，且与伴侣的亲和指数 ≥85 并维持一段时间",
+    "nature": "可选",
+    "性质": "可选",
+    "stage": 3
+  },
+  {
+    "id": "newlife",
+    "sgKey": 380,
+    "chapter": 7,
+    "name": "新生命/传承",
+    "trigger": "孩子出生/收养，或收徒；长期未满足时以“写给未来的信 / 把心血托付给农场”变体超时触发",
+    "nature": "必须（宽口径＋超时兜底）",
+    "性质": "必须（宽口径＋超时兜底）",
+    "stage": 4
+  },
+  {
+    "id": "crisis",
+    "sgKey": 420,
+    "chapter": 8,
+    "name": "小镇危机",
+    "trigger": "派系张力达到临界，或威胁指数爆发；且传承阶段已发酵（完成若干传承事件、经过至少两季传承日常）；长期未达临界时恒远开发主动上门，以低强度变体触发；危机弧限两季内容内收束",
+    "nature": "必须（超时兜底，弧长有界）",
+    "性质": "必须（超时兜底，弧长有界）",
+    "stage": 4
+  },
+  {
+    "id": "harvestfest",
+    "sgKey": 560,
+    "chapter": 9,
+    "name": "丰收祭·一生结算",
+    "trigger": "五年叙事弧结束时",
+    "nature": "必须",
+    "性质": "必须",
+    "stage": 5
+  }
+];
+  const THRESHOLDS = [
+  {
+    "chapter": 1,
+    "name": "第一封没拆的信",
+    "text": "一天清晨，他在信箱里发现一封没有署名的信，写着“小镇不欢迎外来人”。这不是一个随机事件，是压力攒到临界点的爆发，不可逆：他要么当众把信贴在公告栏下面写一句回话（Fi/Te），要么把信塞进抽屉、再也不提（回避）。无论选哪条，这封信都会留在家里——贴在墙上，或锁在抽屉里——成为第一件人格痕迹。"
+  },
+  {
+    "chapter": 2,
+    "name": "歉收之后，他三天没下田",
+    "text": "歉收三天后的清晨，他没有像往常一样下田，而是坐在田埂上发呆。日记只写了一句：“我是不是不适合种地。” 这不是一个可以“选个正确选项就解决”的事件——玩家能做的只是选“去田埂上陪他坐一会儿”（不说话）或“给他留一篮鸡蛋在门口”（不打扰）。他不会立刻好起来，但他会记住谁在他发呆的时候没有催他。"
+  },
+  {
+    "chapter": 3,
+    "name": "有人敲门",
+    "text": "一个雪夜，有人敲门。不是系统派来的，是那位亲和指数过线的镇民，冒雪给他送了一锅热汤。这是不可逆的： 他开不开门，决定了这段关系此后五年的底色。开了门：亲和指数 +15，Fe +7（见 2.6 江潮实例），恐惧“欠人情”改写为“能接受小人情”。没开门（回避发作）：亲和指数 −10，那位镇民此后一个月不再主动找他，但会在他门口放一篮鸡蛋，不留名字。"
+  },
+  {
+    "chapter": 4,
+    "name": "告白前夜，他消失了三天",
+    "text": "告白前夜，回避型角色消失三天——不在家、不在常去的地方，三天后傍晚才回来，像什么都没发生；焦虑型角色不消失，但写了十封告白草稿，一封没发出去，全锁在抽屉里。不可逆：他最后去不去赴约、开不开口，决定了这条恋爱线此后一整季的温度——成了，关系升温但带着这次消失的注脚；没成，对方不会立刻离开，但会慢慢退回朋友的位置。"
+  },
+  {
+    "chapter": 5,
+    "name": "扩张的代价",
+    "text": "危机以两种面貌出现：他累倒在田里，被邻居抬回家；或因铺得太开、顾不过来，关键作物在最要紧的一周失收。不可逆：事后必须二选一——缩减规模退回原来的样子，或雇人分担——无论选哪条，农场的结构都回不到抉择之前。"
+  },
+  {
+    "chapter": 6,
+    "name": "婚礼前夜的动摇",
+    "text": "他最深的那条恐惧在前夜浮上来——“我配不上她”，或“结了婚，我还是我吗”。表现是具体的：他在农舍里坐到半夜，或消失一夜，次日清晨才回来，鞋上全是露水。不可逆：他如何处理这一夜——跟伴侣说了实话、自己想通了、还是把话咽了回去——决定了这段婚姻的底色，此后所有双人事件都读这个底色。"
+  },
+  {
+    "chapter": 7,
+    "name": "他第一次抱孩子，手在抖",
+    "text": "出生那晚，他整夜守着孩子看呼吸，天亮才敢眯一会儿；或独自去山间湖边坐了一夜，想的都是自己小时候的事。不可逆：他给孩子写了一封信，封好，注明“等你长大再拆”——信里写下他想传承的东西：可能是一句做人的话、一块地的契约、或只是一个道歉。这封信写进人生小传，下一代开启时会被真的拆开。"
+  },
+  {
+    "chapter": 8,
+    "name": "他在镇民大会上站了起来",
+    "text": "大会吵到最僵的时候，他站了起来。哪怕他是全镇最社恐的人、哪怕他的手在抖，他把话说完了。不可逆：这次发言定义了他在镇上的公共身份——此后镇民对他的称呼、集市上给他留的位置、危机过后社区中心墙上那张合影里他的站位，都由这一晚决定。小镇的最终命运（被收购或保住社区）由全镇集体站队汇总决定，不由他一个人说了算。"
+  }
+];
+  const LATERALS = [
+  {
+    "chapter": 1,
+    "name": "陶镇长与老钟：要不要修那条路",
+    "text": "陶镇长（Te，要秩序、要发展）与老钟（Si，要稳定、要老样子）。两人就“要不要把镇口那条土路修成石板路”吵起来：陶镇长说修了路，外面的人才愿意来；老钟说土路走了五十年，修了，镇子就不是镇子了。"
+  },
+  {
+    "chapter": 2,
+    "name": "老陈与郑来福：手工锄头 vs 便宜量产货",
+    "text": "老陈（Ti，铁匠，手工打制，一把锄头用十年）与郑来福（Te，杂货商，进了一批便宜量产农具，价格只有手工的一半）。丰收之后，两人为“镇上人该买哪种工具”在集市上争起来：老陈说便宜货用一季就断，郑来福说手工的贵，年轻人买不起。"
+  },
+  {
+    "chapter": 3,
+    "name": "桂花婶与老陈：冬天要不要天天串门",
+    "text": "桂花婶（Fe，热心大婶，冬天怕人冷着、饿着，天天上门送汤、送柴、张罗人）与老陈（Ti，铁匠，独来独往，冬天就想一个人待着修农具）。桂花婶敲了老陈三次门，老陈第三次终于开了口：“婶子，我不是快冻死了，我就是想安静待着。”"
+  },
+  {
+    "chapter": 4,
+    "name": "桂花婶与老陈：要不要给人介绍对象",
+    "text": "桂花婶（Fe，热心大婶，觉得好姻缘要靠人撮合）与老陈（Ti，独来独往，觉得感情的事外人别掺和）。两人为“要不要给主角介绍对象”在集市上吵起来，半条街都听见了。"
+  },
+  {
+    "chapter": 5,
+    "name": "贺远山进镇：陶镇长动摇了",
+    "text": "贺远山（Te，外来投资客，恒远开发的驻镇代表，第一次正式进镇谈开发）与陶镇长（Te，要秩序、要发展）。贺远山在镇务会上拿出规划图：修路、建度假区、年轻人不用困在镇里。陶镇长第一次动摇——他要发展，可这份发展的代价，他算不清。"
+  },
+  {
+    "chapter": 6,
+    "name": "阿禾与郑来福：婚礼怎么办",
+    "text": "阿禾（Fe，要热闹，主张全镇一起凑一份子、办流水席）与郑来福（Te，要赚钱，主张由商店承办、明码标价省心）。两人在筹备时吵起来，吵的其实是“人情和钱，哪个先”的老问题。"
+  },
+  {
+    "chapter": 7,
+    "name": "老钟与陶镇长：孩子该学什么",
+    "text": "老钟（Si，要教孩子种地、认节气，老祖宗的办法不能丢）与陶镇长（Te，要教孩子算账、看世界，镇子外面大着呢）。两人在孩子满月酒上就吵起来，吵的是传承的方向。"
+  },
+  {
+    "chapter": 8,
+    "name": "陶镇长与老钟：卖还是不卖",
+    "text": "陶镇长（Te，务实：“卖了地，大家都有钱，年轻人不用困在这里”）与老钟（Si，传统：“卖了地，镇子就没了，钱花完人也散了”）。郑来福（Te，要利润）站恒远开发一边，阿禾（Fe，要人情）站小镇一边，全镇的横向关系网在这一章全部绷紧。"
+  }
+];
+  const JUNG = ['Ni','Ne','Si','Se','Ti','Te','Fi','Fe'];
+  const BIG5 = ['openness','conscientiousness','extraversion','agreeableness','neuroticism'];
+  const ROMANCE = ['阿禾','顾青山','柳清晏'];
+  const STAGES = ['第一阶段 · 破冰与站队','第二阶段 · 裂痕与结派','第三阶段 · 阈值与危机','第四阶段 · 权力与洗牌','第五阶段 · 传承与结算'];
+  const PAIRS = ['陶守义-老钟','郑来福-老陈','贺远山-陶守义','阿禾-郑来福'];
+  const FESTIVALS = [13,15,24,39,48,56,72,83,92,96,99,109];
+  const clamp = (n, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, Number.isFinite(Number(n)) ? Number(n) : lo));
+  const map = (keys, value) => Object.fromEntries(keys.map(k => [k,value]));
+  const copy = value => value == null ? value : JSON.parse(JSON.stringify(value));
+  const calendar = day => ({season: ['春','夏','秋','冬'][Math.floor((((day-1)%112)+112)%112/28)], doy: ((day-1)%112+112)%112+1, seasonNumber: Math.floor((day-1)/28)});
+  const keyName = name => name === '陶镇长' ? '陶守义' : name;
+  const npc = name => NPCS.find(n => n.name === keyName(name));
+  const logText = r => [r.eventTitle,r.eventText,r.diary,JSON.stringify(r.actions || [])].filter(Boolean).join(' ');
+
+  function fresh() {
+    return {
+      version:2, affinity:map(NPCS.map(n=>n.name),0), threat:map(NPCS.map(n=>n.name),0),
+      townThreat:0, tension:20, pairs:map(PAIRS,20), pressure:0,
+      // The actual profile lives outside the save. These are deltas from an unknown
+      // initial profile (50 fallback), not replacements for the bundle profile.
+      // True dominant/weakest locking and base obey-chance integration need that profile.
+      drift:{initial:{jung:map(JUNG,50),big5:map(BIG5,50)},jung:map(JUNG,0),big5:map(BIG5,0)},
+      traces:{unopenedLetters:0,teaCups:1,jamJars:0,planChart:false,diaryThick:false,emptyPot:false,smallShoes:false,petition:false},
+      milestones:map(MILESTONES.map(m=>m.id),false),thresholdFired:map(Array.from({length:8},(_,i)=>'ch'+(i+1)),false),
+      stage:1,familyNotes:[],lastProcessedDay:0,lastLogLength:0,pendingThreshold:null,
+      crisisSeasonsLeft:0,inheritanceEvents:0,inheritanceSeasons:0,darkLine:false,harvests:0,seasonsPlayed:0,
+      driftFeed:[],scheduleNotes:[],familyFlags:{},eventHistory:{},lateralDone:{},
+      lateralCounts:{},pendingEvent:null,decision:null,lastV2Day:-10,lastQuarrelDay:-28,lastSeasonNumber:null,
+      inheritanceStartSeason:null,routeSeen:null,favorSeason:null,favorFaction:null,favorStreak:0,
+      seasonVotes:{},pressureAbove:false,profileKnown:false,inheritanceMode:null
+    };
+  }
+  function ensure(state) {
+    if (!state || typeof state !== 'object') return null;
+    const defaults = fresh();
+    if (!state.v2 || typeof state.v2 !== 'object' || state.v2.version !== 2) state.v2 = defaults;
+    const v = state.v2;
+    for (const k of Object.keys(defaults)) if (v[k] === undefined) v[k] = copy(defaults[k]);
+    for (const k of ['affinity','threat','pairs','traces','milestones','thresholdFired','familyFlags','eventHistory','lateralDone','lateralCounts','seasonVotes']) {
+      if (!v[k] || typeof v[k] !== 'object' || Array.isArray(v[k])) v[k] = copy(defaults[k]);
+      for (const sub of Object.keys(defaults[k])) if (v[k][sub] === undefined) v[k][sub] = defaults[k][sub];
+    }
+    if (!v.drift || typeof v.drift !== 'object') v.drift = copy(defaults.drift);
+    if (!v.drift.initial || typeof v.drift.initial !== 'object') v.drift.initial = copy(defaults.drift.initial);
+    for (const k of ['jung','big5']) {
+      v.drift[k] = Object.assign({},defaults.drift[k],v.drift[k]);
+      v.drift.initial[k] = Object.assign({},defaults.drift.initial[k],v.drift.initial[k]);
+    }
+    for (const k of ['driftFeed','scheduleNotes','familyNotes']) if (!Array.isArray(v[k])) v[k] = [];
+    return v;
+  }
+  function mirror(v) {
+    root.__v2state = copy(v);
+    if(typeof root.dispatchEvent==='function'&&typeof root.Event==='function')root.dispatchEvent(new root.Event('xin-tian-v2-change'));
+  }
+  function feedback(v, day, text, source) {
+    if (!text || typeof text !== 'string') return false;
+    v.driftFeed.push({day,text,source:source || '日记'});
+    if (v.driftFeed.length > 100) v.driftFeed.splice(0,v.driftFeed.length-100);
+    return true;
+  }
+  function currentJung(state) {
+    const v = ensure(state);
+    return v ? Object.fromEntries(JUNG.map(k=>[k,clamp(v.drift.initial.jung[k]+v.drift.jung[k])])) : map(JUNG,50);
+  }
+  function currentBig5(state) {
+    const v = ensure(state);
+    return v ? Object.fromEntries(BIG5.map(k=>[k,clamp(v.drift.initial.big5[k]+v.drift.big5[k])])) : map(BIG5,50);
+  }
+  function applyDrift(state, dim, delta, source, day) {
+    const v = ensure(state), group = JUNG.includes(dim) ? 'jung' : BIG5.includes(dim) ? 'big5' : null;
+    if (!v || !group || !source || !Number.isFinite(Number(delta))) return 0;
+    const before = clamp(v.drift[group][dim],-20,20);
+    const after = clamp(before+clamp(delta,-8,8),-20,20), actual = after-before;
+    if (!actual) return 0;
+    const labels = {Fe:'他给敲门的人留出了位置',Fi:'他把自己的感受写进了日记',Si:'他重新想起那些过日子的老办法',Te:'他又把手里的账理了一遍',Ti:'他把手艺里的道理想得更明白了一点',Ni:'他在灯下想起往后的日子',Ne:'他给新点子留了一小块田',Se:'他留心起眼前的风和水',neuroticism:actual<0?'他好像没那么怕了':'那件事还压在他的心上',conscientiousness:actual>0?'他开始更仔细地照看日子':'他想先放下手里的活，歇一歇',agreeableness:actual>0?'他学着接受一点好意':'他还需要一点自己的空间',extraversion:actual>0?'他发现说出来也没那么可怕':'他把话留给了自己',openness:'他又想了想另一种过法'};
+    // Transactional visibility rule: no feedback means no commit (rollback).
+    if (!feedback(v,day || state.day || 1,source+'：'+labels[dim]+'。',dim+' '+(actual>0?'+':'')+actual)) return 0;
+    v.drift[group][dim] = after;
+    if (dim==='Fe' && actual>0) {v.traces.teaCups=2;v.traces.unopenedLetters=clamp(v.traces.unopenedLetters-1,0,10);}
+    if (dim==='Fi') v.traces.diaryThick=true;
+    if (dim==='Te' && actual>0) v.traces.planChart=true;
+    mirror(v);
+    return actual;
+  }
+  function relativeGrowth(state, dim, threshold=70) {
+    const v=ensure(state), group=JUNG.includes(dim)?'jung':BIG5.includes(dim)?'big5':null;
+    return !!(v && group && (clamp(v.drift.initial[group][dim]+v.drift[group][dim])>=threshold || v.drift[group][dim]>=12));
+  }
+  function syncHearts(state,v) {
+    if (!state.hearts || typeof state.hearts!=='object') state.hearts={};
+    for (const n of NPCS) if (Object.prototype.hasOwnProperty.call(state.hearts,n.name)) v.affinity[n.name]=clamp(Math.round(Number(state.hearts[n.name])/25));
+    for (const name of ROMANCE) state.hearts[name]=clamp(v.affinity[name])*25;
+  }
+  function reputation(state,v,fx) {
+    for (const [name,d] of Object.entries(fx.affinity||{})) {
+      const k=keyName(name), n=npc(k); if (!n) continue;
+      v.affinity[k]=clamp(v.affinity[k]+Number(d)*(n.dominant==='Fe'?2:1));
+      state.hearts[k]=v.affinity[k]*25;
+    }
+    for (const [name,d] of Object.entries(fx.threat||{})) {
+      const k=keyName(name),n=npc(k); if (!n) continue;
+      v.threat[k]=clamp(v.threat[k]+Number(d)*(d<0&&n.dominant==='Si'?0.5:n.dominant==='Te'?2:1));
+    }
+    v.townThreat=clamp(v.townThreat+(fx.townThreat||0));
+    v.tension=clamp(v.tension+(fx.tension||0));
+    v.pressure=clamp(v.pressure+(fx.pressure||0));
+    if (fx.pair) v.pairs[fx.pair]=clamp((v.pairs[fx.pair]??20)+(fx.pairDelta||0));
+    Object.assign(v.traces,fx.traces||{});
+    v.traces.unopenedLetters=clamp(v.traces.unopenedLetters,0,10);
+    v.traces.teaCups=clamp(v.traces.teaCups,1,2);
+    v.darkLine=v.townThreat>=70 || Object.values(v.threat).some(t=>t>=80);
+  }
+  function applyFx(state,v,fx,source,day) {
+    if (!fx) return;
+    reputation(state,v,fx);
+    for (const [dim,d] of Object.entries(fx.drift||{})) applyDrift(state,dim,d,source,day);
+    if (fx.dark) v.helpedDeveloper=true;
+    if (fx.family) Object.assign(v.familyFlags,fx.family);
+    if (fx.faction) v.seasonVotes[fx.faction]=(v.seasonVotes[fx.faction]||0)+1;
+    if (fx.evolution) v.lateralDone[fx.evolution]=true;
+    if (fx.inheritance) v.inheritanceEvents++;
+    if (fx.career) v.career=fx.career;
+  }
+  function topRomance(v) { return ROMANCE.slice().sort((a,b)=>v.affinity[b]-v.affinity[a])[0]; }
+  function chapter(state,v) {
+    if (!v.milestones.harvest) return 1;
+    if (!v.milestones.darkwinter) return 2;
+    if (!v.milestones.career) return v.affinity[topRomance(v)]>=80 ? 4 : 3;
+    if (!v.milestones.newlife) return ROMANCE.includes(state.dating||state.partner)?6:5;
+    return v.milestones.crisis ? (v.milestones.harvestfest?9:8) : 7;
+  }
+  function updateStage(v) {
+    const count=Object.values(v.milestones).filter(Boolean).length;
+    v.stage=v.milestones.harvestfest?5:count<=1?1:count<=3?2:count<=5?3:4;
+  }
+  function familyFootnote(state,v) {
+    const fears=[['怕欠人情','Fe','他父亲怕欠人情，他从小就学会了先算清再开口'],['怕被排斥','extraversion','他父亲曾怕被当作外人'],['怕靠近人','Fe','他父亲总把话留在心里'],['怕逞强','agreeableness','他父亲曾把所有活揽在自己身上'],['怕当不好父亲','conscientiousness','他父亲也是慢慢学着当父亲的'],['怕被抛弃','Fe','他父亲曾怕说出口就回不去了'],['怕家园','Si','他父亲怕家园散去，怕那些老办法没人再记得']];
+    v.familyInheritance={};
+    v.familyNotes=fears.map(([fear,dim,line])=>{
+      const group=JUNG.includes(dim)?'jung':'big5';
+      const overcome=!!v.familyFlags[fear] || v.drift[group][dim]>=5;
+      v.familyInheritance[fear]=overcome?0:1;
+      const evidence=v.driftFeed.find(f=>f.source.startsWith(dim+' +'));
+      return overcome ? fear+'：松动了。'+(evidence?evidence.text:'他学会了和别人商量。') : fear+'：仍在。'+line+'。';
+    });
+    if (v.darkLine || v.helpedDeveloper) v.familyNotes.push('【暗黑线】他父亲帮恒远开发卖过镇子的地。');
+  }
+  function rebellion(state,v,r,choice) {
+    const dim=choice&&choice.check&&choice.check.dim;
+    const fi=currentJung(state).Fi>=70 || dim==='Fi';
+    let text='他走到镇口，停下，转身回家，把篱笆扶正。日记：“镇上很热闹，我先把家门口收拾好。认人，明天再说。”';
+    if (/扩张|事业/.test(r.eventTitle||'')) text='他扛着木料去修旧篱笆，一根根换好，又在屋后种了一小片香草。日记：“地够用了。篱笆修好，香草种上，这就是我的扩张。”';
+    else if (/告白|萤火虫/.test(r.eventTitle||'')) text='他站在桥头看了看人群，转身沿河边小路走远，一个人看完萤火虫。日记：“一个人看，也很好。”';
+    else if (/冬|篝火/.test(r.eventTitle||'')) text='他走到广场边，停了一下，转身回家，点蜡烛写日记。日记：“我没去，但有人给我留了热可可。”';
+    else if (/丰收祭/.test(r.eventTitle||'')) text='他站在人群里，没有上台。镇上的人还是为他鼓掌。他们如今认识他了。';
+    else if (fi && /危机|大会/.test(r.eventTitle||'')) text='他在镇民大会上站起来，公开反对出售。日记：“钱我也想要。但这块地，不卖。”';
+    // Schedule notes are records only. No movement/render API is available here;
+    // do not claim this note changes the bundle's actor animation or schedule.
+    feedback(v,r.day,text,'他自己的主意');
+    v.scheduleNotes.push({day:r.day,text,kind:'diary-only',fiDriven:fi});
+    if(v.scheduleNotes.length>40)v.scheduleNotes.shift();
+  }
+  function resolvedOption(p,r) {
+    if (!p || r.eventTitle!==p.title || Number(r.day)!==Number(p.day)) return null;
+    const text=String(r.eventText||''),matches=[];
+    for(const option of p.options) {
+      for(const branch of ['obey','disobey']) {
+        const t=option[branch+'Text'];
+        if(t && text.includes(t)) matches.push({option,branch,fx:option[branch+'Fx']||{}});
+      }
+    }
+    // Match actual unique result text, never infer the first choice from a title.
+    return matches.length===1 ? matches[0] : null;
+  }
+  function processOutcome(state,v,r) {
+    if (!r || typeof r!=='object')return;
+    const p=v.pendingEvent,selected=resolvedOption(p,r),text=logText(r);
+    if (selected) {
+      applyFx(state,v,selected.fx,p.title,r.day);
+      if(p.kind==='milestone') {
+        v.milestones[p.key]=true;
+        if(p.key==='newlife') {v.inheritanceStartSeason=calendar(r.day).seasonNumber;v.inheritanceMode=p.mode||'farm';if(p.mode==='family')v.traces.smallShoes=true;}
+        if(p.key==='crisis') {v.crisisSeasonsLeft=2;v.crisisStartSeason=calendar(r.day).seasonNumber;v.traces.petition=true;if(selected.fx.dark)v.helpedDeveloper=true;}
+        if(p.key==='harvestfest') {
+          familyFootnote(state,v);
+          const footnote='\n家族注脚：'+v.familyNotes.join(' ');
+          if(!String(r.diary||'').includes('家族注脚：'))r.diary=String(r.diary||'')+footnote;
+        }
+      }
+      if(p.kind==='threshold') {v.thresholdFired['ch'+p.key]=true;v.pressure=40;v.pendingThreshold=null;v.pressureAbove=false;}
+      if(p.kind==='lateral'){v.lateralDone[p.key]=true;v.lateralCounts[p.key]=(v.lateralCounts[p.key]||0)+1;}
+      if(p.kind==='event')v.eventHistory[p.key]={day:r.day,year:Math.floor((r.day-1)/112)};
+      v.pendingEvent=null;
+    } else if(p && Number(r.day)>=p.day && r.eventTitle!==p.title) {
+      // Dispatcher precedence or an externally changed event: no phantom outcome.
+      v.pendingEvent=null;
+    }
+    if (!selected && String(r.eventTitle||'').startsWith('人生节点')) {
+      const recorded=MILESTONES.find(m=>String(r.eventTitle).includes(m.name.split('·')[0].split('/')[0].trim()));
+      if(recorded&&!v.milestones[recorded.id]) {
+        v.milestones[recorded.id]=true;
+        if(recorded.id==='newlife'){v.inheritanceStartSeason=calendar(r.day).seasonNumber;v.inheritanceMode=state.partner?'family':'farm';}
+        if(recorded.id==='crisis'){v.crisisStartSeason=calendar(r.day).seasonNumber;v.crisisSeasonsLeft=2;}
+        if(recorded.id==='harvestfest')familyFootnote(state,v);
+      }
+    }
+    if(String(r.eventText||'').includes('这次他没听')) {v.pressure=clamp(v.pressure+8);rebellion(state,v,r,selected&&selected.option);}
+    else if(String(r.eventText||'').includes('这次他听了'))v.pressure=clamp(v.pressure-3);
+    const settled=/收了|harvest|收获了/.test(text);
+    if(settled) {v.harvests++;v.pressure=clamp(v.pressure-6);}
+    if(/歉收|失收|冻坏|吵架|吵了一架/.test(text))v.pressure=clamp(v.pressure+8);
+    if(/休息|歇一歇|热汤|陪他/.test(text))v.pressure=clamp(v.pressure-5);
+    if(currentBig5(state).extraversion<40 && /聚餐|人潮|全镇.*敬酒/.test(text))v.pressure=clamp(v.pressure+4);
+    if(/恒远/.test(text)&&/买/.test(text)) reputation(state,v,{townThreat:3,threat:{'郑来福':2,'陶守义':2}});
+    if(/道歉|让利|帮邻居|保护镇民/.test(text)) reputation(state,v,{townThreat:-3,threat:map(NPCS.map(n=>n.name),-1)});
+    if(/共同.*委托/.test(text))v.tension=clamp(v.tension-3);
+    if(state.routeChoice && v.routeSeen!==state.routeChoice) {
+      if(state.routeChoice==='joja') reputation(state,v,{townThreat:10,threat:{'陶守义':5,'老钟':5},tension:5});
+      else reputation(state,v,{townThreat:-5,tension:-5});
+      v.routeSeen=state.routeChoice;
+    }
+    if(selected&&p.kind==='threshold')v.pressure=40;
+    updateStage(v);
+  }
+  function seasonalBookkeeping(state,v,day) {
+    const c=calendar(day),previous=v.lastSeasonNumber;
+    if(previous===null) {v.lastSeasonNumber=c.seasonNumber;return;}
+    const elapsed=Math.max(0,c.seasonNumber-previous);
+    if(!elapsed)return;
+    v.seasonsPlayed+=elapsed;
+    if(v.inheritanceStartSeason!==null)v.inheritanceSeasons=Math.max(0,c.seasonNumber-v.inheritanceStartSeason);
+    if(v.milestones.crisis&&v.crisisSeasonsLeft>0) {
+      v.crisisSeasonsLeft=Math.max(0,2-(c.seasonNumber-v.crisisStartSeason));
+      if(v.crisisSeasonsLeft===0) {v.tension=30;feedback(v,day,'架不能一直吵。社区中心的灯还亮着，镇子要继续过日子。','危机收束');}
+    }
+    if(c.season==='冬')v.pressure=clamp(v.pressure+10);
+    // Natural forgetting is seasonal, with Si negative deltas halved above.
+    reputation(state,v,{threat:map(NPCS.map(n=>n.name),-2),townThreat:-1});
+    const votes=Object.entries(v.seasonVotes).sort((a,b)=>b[1]-a[1]);
+    const winner=votes.length && (votes.length===1||votes[0][1]>votes[1][1])?votes[0][0]:null;
+    if(winner) {
+      v.favorStreak=winner===v.favorFaction&&elapsed===1?v.favorStreak+1:1;
+      v.favorFaction=winner;
+      if(v.favorStreak>=3){v.tension=clamp(v.tension+10);v.favorStreak=0;}
+    } else {v.favorStreak=0;v.favorFaction=null;}
+    v.seasonVotes={};v.lastSeasonNumber=c.seasonNumber;
+  }
+  function armThreshold(state,v,day,outcomeDay) {
+    const ch=chapter(state,v);if(ch>=9)return;
+    const romance=topRomance(v),aff=v.affinity[romance];
+    const pressureLimit=currentBig5(state).neuroticism>=70?70:80;
+    const pressure=v.pressure>=pressureLimit;
+    let eligible=pressure;
+    if(ch===3)eligible=pressure&&Math.max(...Object.values(v.affinity))>=60;
+    if(ch===4)eligible=aff>=80;
+    if(ch===6)eligible=ROMANCE.includes(state.dating||state.partner)&&aff>=85&&v.pressure>=70;
+    if(ch===7&&v.inheritanceMode==='farm')eligible=pressure;
+    if(!eligible){v.pressureAbove=false;return;}
+    if(v.thresholdFired['ch'+ch]) {
+      if(!v.pressureAbove&&pressure) {feedback(v,day,'他没有重演那一夜，只坐了一会儿，把话留在日记里。','喘口气');v.pressure=clamp(v.pressure-10);}
+    }else if(!v.pendingThreshold) v.pendingThreshold={chapter:ch,id:'v2-threshold-'+ch,eligibleDay:(outcomeDay||day)+1};
+    v.pressureAbove=pressure;
+  }
+  function choice(label,text,fx={},dim='Fe',opposite=null) {
+    return {label,text,affinity:{},threat:{},drift:{},effects:fx,dim,opposite};
+  }
+  function emit(state,v,day,event,kind,key,effects=[],extra={}) {
+    // The base kd/Gs path reads branch.fx.coins directly, even for text-only
+    // outcomes. Supply its empty effects shape without replacing base effects.
+    for (const c of event.choices) {
+      for (const branch of ['obey','disobey']) {
+        if (c[branch] && c[branch].fx == null) c[branch].fx={};
+      }
+    }
+    const options=event.choices.map((c,i)=>({
+      label:c.label,check:copy(c.check),obeyText:c.obey&&c.obey.text,disobeyText:c.disobey&&c.disobey.text,
+      obeyFx:copy(effects[i]&&effects[i].obey||{}),disobeyFx:copy(effects[i]&&effects[i].disobey||{})
+    }));
+    v.pendingEvent={day,title:event.title,id:event.id,kind,key,options,...extra};
+    // This public side channel is informational only. Application uses save-local
+    // pendingEvent metadata, never this global (which can belong to another save).
+    root.__v2._pendingChoiceFx=copy(v.pendingEvent);
+    v.lastV2Day=day;
+    return event;
+  }
+  function customEvent(state,v,day,id,title,text,options,kind,key,extra={}) {
+    const effects=[];
+    const choices=options.map((o,i)=>{
+      const alternate=options[o.opposite??((i+1)%options.length)];
+      const result={label:o.label,check:{dim:o.dim||'Fe',threshold:40},
+        // Unique story-result prefixes survive kd's probability preamble and JSON saves.
+        obey:{text:title+' · '+o.label+'：'+o.text},
+        disobey:{text:title+' · 原本说好“'+o.label+'”，他却换了主意：'+alternate.text}};
+      effects.push({obey:o.effects||{},disobey:alternate.effects||{}});
+      return result;
+    });
+    return emit(state,v,day,{id,title,text,choices},kind,key,effects,extra);
+  }
+  function milestone(state,v,day,Sg,key,variant) {
+    const m=MILESTONES.find(m=>m.id===key),base=Sg&&Sg[m.sgKey];
+    if(!base || !Array.isArray(base.choices) || !base.choices.length)return null;
+    const e=copy(base),love=topRomance(v),partner=ROMANCE.includes(state.dating||state.partner)?(state.dating||state.partner):love;
+    e.title='人生节点 · '+m.name;
+    const narratives={
+      arrive:'行李放下，屋子漏风，田里全是石头。陶镇长笑呵呵地说：这地方，留下的人都是自己选的。第一晚，他会怎么安顿自己？',
+      harvest:'他站在田边，看着一筐筐的收成，第一次觉得：“我能在这里活下去。”',
+      darkwinter:'作物停摆，收入断档，小镇萧条。屋里炉火正旺，出门就是刀子一样的风。有人家的棚子塌了半边。',
+      love:'与'+love+'相处久了，那种感觉藏不住了。是推一把，还是让他按自己的节奏来？',
+      career:'农场第一次面临方向选择：维持小而美，还是趁势多干点。手里的摊子有了起色，自己的身体却未必算得过来。',
+      family:'他与'+partner+'处得稳了。镇上的人开始问：什么时候办喜事？房子要不要扩一间？两个人的日子，要摆在一起慢慢过。',
+      newlife:'家里要多一个人了——孩子，或一个徒弟。他第一次面对：“我走了以后，这些东西留给谁？”',
+      crisis:'恒远开发提出收购小镇土地。陶镇长与老钟要商量的，是钱花完以后，镇子还在不在。阿禾站在社区中心门口，等着大家的回答。',
+      harvestfest:'丰收祭上，五年里吵过架、站过队、互相欠过人情的人都在广场上。没有评级，只有漏风的屋、第一茬粮、冬夜的雪，还有身边的人。'
+    };
+    e.text=narratives[key];
+    let mode=null;
+    if(variant==='poor') {
+      e.title='人生节点 · 第一次丰收（歉收）';e.text='他站在田边，看着一半空着的筐，第一次认真考虑：“我是不是不适合种地。”收成不多，这个冬天要勒紧裤腰带。';
+      // The original celebration choices would falsely report a good harvest.
+      e.choices=[{label:'去田埂上陪他坐一会儿',check:{dim:'Fe',threshold:30},obey:{text:'他坐在田埂上，身边有人陪着，谁也没有催他。'},disobey:{text:'他把话留在日记里，独自坐了一会儿，门口留着一篮鸡蛋。'}},{label:'给他留一篮鸡蛋在门口',check:{dim:'Fi',threshold:35},obey:{text:'一篮鸡蛋留在门口，没有人催他。他记住了这份不打扰。'},disobey:{text:'他走回田埂，在陪他的人身边坐下，没有说话。'}}];
+    }
+    if(key==='career')e.choices.push({label:'转型加工 / 民宿',check:{dim:'Ti',threshold:40},obey:{text:'他把心血转到果酱作坊和民宿，给日子换了一种过法。'},disobey:{text:'他还是决定先把手里的地、老主顾稳住，不贪多。'}});
+    if(variant==='direction')e.text='陶镇长和郑来福来到农场。陶镇长问：“你这农场，到底想做成什么样？”他望着自己的田，这一次不能再把问题留到明年。';
+    if(key==='newlife') {
+      mode=variant==='letter'?'farm':state.partner?'family':'apprentice';
+      if(mode==='farm') {
+        e.title='人生节点 · 新生命 / 传承 · 写给未来的信';
+        e.text='他给尚未到来的人写一封信，立一份农场遗嘱。没有孩子，也没有徒弟，传承的对象是农场本身。';
+        e.choices=[{label:'写给后来的人',check:{dim:'Fi',threshold:30},obey:{text:'他把信封好，信封上写着“给后来的人”，留在书桌抽屉里。'},disobey:{text:'他没有写长信，只把心血托付给了农场。'}},{label:'把心血托付给农场',check:{dim:'Si',threshold:35},obey:{text:'他把农场的老办法一条条记下来，留给尚未到来的人。'},disobey:{text:'他坐到灯下，给未来写了一封信。'}}];
+      } else if(mode==='apprentice') {
+        // Growth is the explicitly authorized apprenticeship proxy, not a child field.
+        e.text='他把种地与手艺教给徒弟。多一副小床铺，也多了一份放不下的牵挂。';
+        e.choices=e.choices.map(c=>JSON.parse(JSON.stringify(c).replace(/孩子/g,'徒弟')));
+      }
+    }
+    if(variant==='low')e.text='贺远山带着规划图进镇。收购的报价不高，镇子还没有分裂到不可收拾。陶镇长把大家叫到一起，要问问每个人往后想怎么过。';
+    if(key==='crisis'&&v.darkLine) {
+      e.title='人生节点 · 小镇危机【暗黑线】';e.text+='【暗黑线】贺远山请他在会上用账目证明“卖地对大家都好”。会场一半人沉默，一半人离场。';
+      e.choices.push({label:'【暗黑线】帮恒远开发说话',check:{dim:'Te',threshold:40},obey:{text:'他站起来，用账目证明“卖地对大家都好”。会场一半人沉默，一半人离场。'},disobey:{text:'他在大会上公开反对出售：“钱我也想要。但这块地，不卖。”'}});
+    }
+    const effects=e.choices.map((c,i)=>{
+      let yes={drift:{}},no={drift:{}};
+      if(key==='arrive'){yes.drift[c.check&&c.check.dim||'Si']=3;no.drift.Fi=3;}
+      if(key==='harvest') {yes=variant==='poor'?{pressure:10,drift:{neuroticism:3,conscientiousness:-2},affinity:{'阿禾':5}}:{pressure:-10,drift:{Te:3,extraversion:2},traces:{planChart:true}};no={pressure:variant==='poor'?5:-3,drift:{Si:3}};}
+      if(key==='darkwinter') {yes={drift:{neuroticism:-5,conscientiousness:3,Si:2}};no={drift:{neuroticism:5,Fi:3}};}
+      if(key==='love') {yes=i===0?{drift:{Fe:5},affinity:{[love]:5},family:{'怕靠近人':true}}:{drift:{Fi:3}};no={drift:{Fi:3,neuroticism:3},affinity:{[love]:-5}};}
+      if(key==='career'){yes=i===2?{drift:{Ti:5},career:'processing'}:i===0?{drift:{Si:3},career:'steady'}:{pressure:10,drift:{Te:5},career:'expand'};no=i===2?{drift:{Si:3},career:'steady'}:i===0?{pressure:10,drift:{Ne:3},career:'expand'}:{drift:{Si:3},career:'steady'};}
+      if(key==='family'){yes={drift:{Fe:5},traces:{teaCups:2}};no={drift:{Fi:3}};}
+      if(key==='newlife'){yes={drift:{neuroticism:-3,conscientiousness:3},traces:mode==='farm'?{diaryThick:true}:{smallShoes:true},family:{'怕当不好父亲':true}};no={drift:{Fi:3}};}
+      if(key==='crisis') {
+        yes=i===2?{dark:true,townThreat:10,threat:{'陶守义':5,'老钟':5},affinity:{'阿禾':-10,'吴三爷':10,'石老根':10,'阿棠':10},drift:{Te:5}}:{townThreat:-10,threat:map(NPCS.map(n=>n.name),-5),tension:-10,drift:{Fe:5,extraversion:3},family:{'怕家园':true}};
+        no=i===2?{townThreat:-10,drift:{Fi:5},family:{'怕家园':true}}:{drift:{Fi:3}};
+      }
+      if(key==='harvestfest'){yes={drift:{[i===0?'Fe':'Fi']:3}};no={drift:{Fi:3}};}
+      return {obey:yes,disobey:no};
+    });
+    return emit(state,v,day,e,'milestone',key,effects,{mode});
+  }
+  function thresholdEvent(state,v,day,ch) {
+    const t=THRESHOLDS[ch-1];if(!t)return null;
+    const name=topRomance(v);let title=t.name,text=t.text;
+    const opts=[
+      [choice('把信贴在公告栏','他在公告栏下面写了一句回话。信留了下来。',{drift:{Fi:5,neuroticism:2},traces:{diaryThick:true}},'Fi'),choice('把信收进抽屉','他把信塞进抽屉，再也不提。',{drift:{Fi:5,neuroticism:3},traces:{unopenedLetters:clamp(v.traces.unopenedLetters+1,0,10)}},'Si')],
+      [choice('陪他在田埂上坐一会儿','没有人催他。他记住了陪在身边的人。',{affinity:{'阿禾':10},drift:{neuroticism:3,conscientiousness:-2,Fe:5}},'Fe'),choice('留一篮鸡蛋在门口','他没有立刻好起来，但门口的鸡蛋没有催他。',{drift:{Si:5,neuroticism:3}},'Si')],
+      [choice('打开门，接过热汤','他洗干净汤锅，放在门口等着还回去。这一次，他接受了不求回报的好意。',{affinity:{[name]:15},drift:{Fe:7,agreeableness:3,neuroticism:-5},traces:{emptyPot:true,teaCups:2},family:{'怕欠人情':true}},'Fe'),choice('把话留在门里','他没有开门。后来门口多了一篮没有署名的鸡蛋。',{affinity:{[name]:-10},drift:{neuroticism:5},traces:{unopenedLetters:clamp(v.traces.unopenedLetters+1,0,10)}},'Fi')],
+      [choice('去赴约，把话说出来','他终于赴约，开口说了实话。',{drift:{Fe:5},family:{'怕靠近人':true}},'Fe'),choice('再留一点自己的时间','他消失了三天，傍晚回来，像什么也没发生。',{affinity:{[name]:-10},drift:{Fi:5,neuroticism:3}},'Fi')],
+      [choice('缩减规模，先歇一歇','他把摊子收小，给自己留出喘息的地方。',{pressure:-10,townThreat:-5,drift:{conscientiousness:-3,neuroticism:3,Fi:5},family:{'怕逞强':true}},'Si'),choice('雇人分担','他第一次学着把活分给别人，招工启事的工资那一行改了两遍。',{pressure:-10,drift:{Fe:5},family:{'怕逞强':true}},'Fe')],
+      [choice('和伴侣说实话','他把那一夜的恐惧说了出来。以后，有事能商量。',{affinity:{[name]:10},drift:{Fe:5},family:{'怕被抛弃':true}},'Fe'),choice('先把话留着','他清晨才回来，鞋上全是露水。有话，留着以后说。',{drift:{Fi:5},traces:{diaryThick:true}},'Fi')],
+      [choice('写一封等长大再拆的信','他给未来写了一封信。恐惧还在，但他愿意慢慢学。',{drift:{neuroticism:-5,conscientiousness:5},family:{'怕当不好父亲':true}},'Fi'),choice('讲讲自己小时候的事','他独自在湖边坐过一夜，把自己的事慢慢讲出来。',{drift:{Fi:5,conscientiousness:3}},'Si')],
+      [choice('站起来，保护小镇','手还在抖，他还是把话说完了。',{townThreat:-10,threat:map(NPCS.map(n=>n.name),-5),drift:{Fe:5,extraversion:3},traces:{petition:true},family:{'怕家园':true}},'Fe'),choice('把底线写在请愿书上','他在请愿书上签下名字，笔迹很用力。',{townThreat:-5,drift:{Fi:5},traces:{petition:true}},'Fi')]
+    ][ch-1];
+    if(ch===3) {
+      const friend=NPCS.slice().sort((a,b)=>v.affinity[b.name]-v.affinity[a.name])[0].name;
+      opts[0].effects.affinity={[friend]:15};opts[1].effects.affinity={[friend]:-10};
+    }
+    if(ch===7&&v.inheritanceMode==='farm') {title='他给未来写了一封信';text='没有子女，也没有徒弟。他给尚未到来的人写信，把心血托付给农场。';opts[0].label='写给后来的人';opts[1].label='把老办法留给农场';opts[1].text='他把种地的老办法写下来，留给尚未到来的人。';}
+    if(ch===7&&v.darkLine&&v.inheritanceMode!=='farm') {title='【暗黑线】他第一次发现孩子怕他';text='孩子躲着他的眼神。他第一次意识到自己的支配在家里也留下了痕迹。';opts[0].effects.townThreat=-5;opts[0].effects.drift={Fi:5};}
+    if(ch===8&&v.darkLine) {
+      title='【暗黑线】他在大会上帮恒远开发说话';text='他站起来，用账目证明“卖地对大家都好”，会场一半人沉默、一半人离场。';
+      opts[1]=choice('【暗黑线】帮恒远开发说话',text,{dark:true,townThreat:10,affinity:{'陶守义':-10,'阿禾':-10,'吴三爷':10,'石老根':10,'阿棠':10},drift:{Te:5}},'Te');
+    }
+    return customEvent(state,v,day,'v2-threshold-'+ch,title,text,opts,'threshold',ch);
+  }
+  const LATERAL_PAIRS=[['陶守义','老钟'],['老陈','郑来福'],['桂花婶','老陈'],['桂花婶','老陈'],['贺远山','陶守义'],['阿禾','郑来福'],['老钟','陶守义'],['陶守义','老钟']];
+  function lateralEvent(state,v,day,ch,quarrel=false) {
+    const l=LATERALS[ch-1];if(!l)return null;
+    const [a,b]=LATERAL_PAIRS[ch-1],pair=PAIRS.find(p=>p.split('-').includes(a)&&p.split('-').includes(b))||a+'-'+b;
+    let title=l.name,text=l.text;
+    if(v.lateralDone.reconciled&&a==='陶守义'&&b==='老钟') {title=title.replace('最后一吵','商量');text+='他们如今会先听对方把话说完。';}
+    const evolution=ch===7;
+    const opts=[
+      choice('支持'+(a==='陶守义'?'陶镇长':a),'他表明了立场，'+a+'记下了他的支持，'+b+'也记住了这一次。',{affinity:{[a]:5,[b]:-3},tension:evolution?-15:5,pair,pairDelta:evolution?-15:5,faction:a,...(evolution?{evolution:'reconciled',inheritance:true}:{})},npc(a).dominant),
+      choice('支持'+(b==='陶守义'?'陶镇长':b),'他站在'+b+'这边，'+a+'没有再说话。',{affinity:{[b]:5,[a]:-3},tension:evolution?-15:5,pair,pairDelta:evolution?-15:5,faction:b,...(evolution?{evolution:'reconciled',inheritance:true}:{})},npc(b).dominant),
+      choice('先听听两边，留一步商量','两个人都觉得他没表明立场，却也留出了商量的余地。',{affinity:{[a]:-1,[b]:-1},tension:evolution?-15:-5,pair,pairDelta:evolution?-15:-5,drift:{Fe:2},...(evolution?{evolution:'reconciled',inheritance:true}:{})},'Fe')
+    ];
+    if(ch===7)text+='老钟先退了一步：“地要会种，账也要会算。我教他认节气，你教他算账，行了吧。”陶镇长碰了杯。';
+    if(ch===5&&v.darkLine) opts.push(choice('【暗黑线】接受贺远山的私下提议','“你帮我劝陶镇长，度假区的果酱供应归你。”他接受了这份提议。',{dark:true,townThreat:10,threat:{'陶守义':5,'老钟':5},affinity:{'陶守义':-5,'老钟':-5},tension:10,drift:{Te:3},faction:'贺远山'},'Te'));
+    if(quarrel)v.lastQuarrelDay=day;
+    return customEvent(state,v,day,'v2-lateral-'+ch,title,text,opts,'lateral',ch);
+  }
+  function winterEvolution(state,v,day) {
+    return customEvent(state,v,day,'v2-winter-coal','冬夜，老钟病了','陶镇长托桂花婶送去一车炭、一包药，叮嘱“别说是我送的”。桂花婶转头把话递过去。老钟盯着炭看了一夜，清晨把最好的一坛酒放在陶镇长家门口。',[
+      choice('把炭送到门口','话没有说破，一车炭留在门口。',{tension:-10,pair:'陶守义-老钟',pairDelta:-10,evolution:'winterCoal',drift:{Fe:2}},'Fe'),
+      choice('让那坛酒替他说话','老钟把自家最好的一坛酒留在陶镇长门口。',{tension:-10,pair:'陶守义-老钟',pairDelta:-10,evolution:'winterCoal',drift:{Si:2}},'Si')
+    ],'lateral','winterCoal');
+  }
+  function eligibleEvent(e,state,v,day) {
+    const c=calendar(day),ch=chapter(state,v),history=v.eventHistory[e.id];
+    if(ch<e.chapter)return false;
+    if(history && (e.kind==='seasonal'?history.year===Math.floor((day-1)/112):day-history.day<56))return false;
+    if(e.kind==='seasonal') {
+      const season=e.name.startsWith('春')?'春':e.name.startsWith('夏')||e.name==='河边钓鱼赛'?'夏':e.name.startsWith('秋')?'秋':'冬';
+      if(c.season!==season)return false;
+      if(e.name==='夏·萤火虫之夜' && ![44,45,46].includes(c.doy))return false;
+    }
+    const last=(Array.isArray(state.log)&&state.log[state.log.length-1])||{},text=logText(last);
+    switch(e.name) {
+      case '雨天停电': return /雨/.test(String(state.weather||last.weather||text));
+      case '集市日的人潮': return day%7===6;
+      case '长歪了的果树': return !!state.fruitTrees || /果/.test(JSON.stringify(state.harvestedTypes||[]));
+      case '镇民的生日': return [8,42,76,99].includes(c.doy);
+      case '有人向他借钱': return Math.max(...Object.values(v.affinity))>=30;
+      case '被介绍对象': return day>112&&!state.dating&&!state.partner;
+      case '小镇排外风波': return day<=112;
+      case '迎新聚餐': return day<=28;
+      case '朋友的低谷': return Math.max(...Object.values(v.affinity))>=30;
+      case '朋友吵架': return Object.values(v.affinity).filter(n=>n>=30).length>=2;
+      case '给全镇做一顿饭': return Number(state.skills&&state.skills.cooking)>=3 || (v.milestones.family&&/节|祭/.test(text));
+      case '民宿来了难伺候的客人': return ['processing','inn'].includes(v.career)||!!state.inn||(state.processedTypes||[]).length>0;
+      case '果酱作坊的第一笔大订单': return v.career==='processing'||(state.processedTypes||[]).length>0;
+      case '孩子第一次离家出走': return v.milestones.newlife&&['family','apprentice'].includes(v.inheritanceMode);
+      case '徒弟偷偷改了你的配方': return v.milestones.newlife&&v.inheritanceMode==='apprentice';
+      case '给孩子讲你小时候的故事': return v.milestones.newlife&&['family','apprentice'].includes(v.inheritanceMode);
+      default:return true;
+    }
+  }
+  function storyAction(s) {
+    return s.replace(/^(?:Ni|Ne|Si|Se|Ti|Te|Fi|Fe)(?:\/(?:Ni|Ne|Si|Se|Ti|Te|Fi|Fe|宜人性|外向|名望追求))*\s*高[：:]?\s*/,'')
+      .replace(/^(?:外向|内向|尽责|神经质|宜人性)(?:高|低)[：:]?\s*/,'')
+      .replace(/^(?:焦虑型|回避型|安全型|粗心型|随缘型|怕欠人情者)[：:]?\s*/,'')
+      .replace(/^(?:有暧昧对象|任意)[：:]\s*/,'');
+  }
+  const SCENES = [
+    '田里有一只翅膀受伤的麻雀。照顾它要花三天，不照顾可能活不过今晚。',
+    '稀有种子今天半价，买了肥料钱就不够。',
+    '清晨灌溉水管爆裂，半块地被淹，今天必须处理。',
+    '桂花婶送来一篮鸡蛋：“刚来小镇不容易。”收下这份好意，他却有些睡不着。',
+    '暴雨夜全镇停电，只能点蜡烛。',
+    '全镇最热闹的集市开了。他站在巷口，看见里面挤满了人。',
+    '果子特别酸，砍掉重种要等两年，留着又占地方。',
+    '半夜有迷路旅人敲门，想借宿一晚。',
+    '锄头断了、水壶漏了、推车轮子掉了，全赶在同一天。',
+    '广播站放了一首点歌。点歌的人和被点的人，全镇都在猜。',
+    '灌溉总闸年久失修，时好时坏。',
+    '社区中心门口的木板贴着修篱笆、代收包裹、找猫的小委托。',
+    '全镇在樱花树下野餐摆摊。花瓣落在书页上，也落在人们肩头。',
+    '连日暴雨，河水暴涨，低洼田地和老桥都悬了。',
+    '河边萤火虫大规模出现。老规矩是带喜欢的人去看，一个人去也很好。',
+    '全镇比谁家南瓜大、谁的果酱好。奖金不多，面子很大。',
+    '霜比预报早一周，没收完的作物可能全冻坏。',
+    '最冷的一晚，全镇围篝火讲这一年的事。轮到他了。',
+    '河边一年一度的钓鱼赛开场，奖品是一根老钓竿。',
+    '篱笆越界三寸，吵得全巷子听见。',
+    '今天是镇民的生日。他想起对方曾提过的一件小东西。',
+    '酒馆里有人问：“你当初为什么来这儿？”',
+    '一位镇民开口借钱，数目不大，但借与不借都是一次表态。',
+    '热心镇民张罗着给他介绍对象。他也可以认真地一个人过。',
+    '一位关系亲近的镇民遇上难处，整个人垮了下来。',
+    '有人嘀咕：“外来的人，抢了我们的生意。”话传到他耳朵里。',
+    '他要掌勺，给全镇人做一顿饭。',
+    '陶镇长张罗接风饭，全镇轮流敬酒。桂花婶留好了剩菜。',
+    '两位与他都亲近的镇民吵翻了，各自找他评理。',
+    '邻居家半夜出了急事，来敲他的门。',
+    '第一位挑剔的民宿客人上门：嫌被子潮、嫌饭淡、嫌夜里蛙叫。',
+    '镇外商人一次订走全年果酱，交期只有两周。',
+    '孩子或徒弟因为一句重话，半夜背着小包袱出门，躲在湖边草垛里。',
+    '徒弟偷偷改了糖量，新口味却在集市上卖得更好。',
+    '睡前故事时间，他想起第一次丰收、冬天，还有那一夜的敲门声。'
+  ];
+  // All choices are source alternatives; numeric rewards are interpretive balance.
+  function poolEvent(state,v,day) {
+    const pool=EVENTS.filter(e=>eligibleEvent(e,state,v,day));if(!pool.length)return null;
+    const jung=currentJung(state),dominant=JUNG.slice().sort((a,b)=>jung[b]-jung[a])[0];
+    const weights=pool.map(e=>1+(e.versions.byDominant[dominant]?Math.max(0,jung[dominant]-40)/20:0)+(e.kind==='interpersonal'?v.tension/40:0)+(v.pressure>65&&e.kind==='daily'?1:0));
+    // Save-local, reproducible selection; proxy reads current drift, not an external profile.
+    let seed=(Math.imul(day,2654435761)^(v.harvests*97)^Math.round(v.tension*13))>>>0;
+    let draw=(seed/4294967296)*weights.reduce((a,b)=>a+b,0),e=pool[0];
+    for(let i=0;i<pool.length;i++){draw-=weights[i];if(draw<=0){e=pool[i];break;}}
+    const narrow=pool.find(t=>t.name==='夏·萤火虫之夜');if(narrow)e=narrow;
+    const index=EVENTS.indexOf(e),friend=NPCS.slice().sort((a,b)=>v.affinity[b.name]-v.affinity[a.name])[0].name;
+    const opts=e.options.map((o,i)=> {
+      const fx={affinity:copy(o.affinity),threat:copy(o.threat),drift:copy(o.drift),pressure:-2};
+      let action=storyAction(o.text);
+      if(e.name==='邻居送来一篮鸡蛋'){fx.affinity={'桂花婶':i===0?2:5};fx.drift=i===0?{Si:1}:{Fe:2,agreeableness:1};}
+      if(e.name==='长歪了的果树'&&i===0)fx.traces={jamJars:v.traces.jamJars+3};
+      if(e.name==='和邻居吵了一架') {
+        fx.affinity={[friend]:i===0?3:-2};fx.townThreat=i===0?-3:0;fx.threat={[friend]:i===0?-3:0};fx.pressure=i===0?-5:5;
+      }
+      if(e.kind==='interpersonal'&&e.chapter>=3&&e.name!=='小镇排外风波')fx.affinity={[friend]:i===0?3:1};
+      if(e.name==='陶镇长的委托板'){fx.tension=-3;fx.affinity={'陶守义':2};}
+      if(e.name==='民宿来了难伺候的客人'&&i===1){fx.townThreat=5;fx.threat={[friend]:5};}
+      if(e.name==='果酱作坊的第一笔大订单'&&i===0){fx.pressure=5;}
+      if(e.chapter===7)fx.inheritance=true;
+      if(e.name==='给孩子讲你小时候的故事'){action=i===0?'他讲起第一次丰收，孩子听得满脸崇拜。':'他讲起冬天的伤口，孩子似懂非懂。';fx.drift={Fi:i===0?2:-2};}
+      if(e.name==='镇民的生日') {
+        const birthday={8:'郑来福',42:'阿棠',76:'老钟',99:'阿禾'}[calendar(day).doy];fx.affinity={[birthday]:i===0?8:2};
+      }
+      return choice(storyAction(o.label),action,fx,Object.keys(o.drift)[0]||'Fi');
+    });
+    const grown=Object.keys(e.versions.byDominant).find(dim=>relativeGrowth(state,dim,70));
+    const version=e.versions.byDominant[grown||dominant];
+    return customEvent(state,v,day,e.id,e.name,SCENES[index]+(version?' '+storyAction(version):''),opts,'event',e.id);
+  }
+  function decide(state,v,day,Sg) {
+    const m=v.milestones,c=calendar(day),pick=(key,variant)=>milestone(state,v,day,Sg,key,variant);
+    if(day===1&&!m.arrive)return pick('arrive');
+    if(!state.routeChoice&&day>=30&&Sg&&Sg[30])return emit(state,v,day,copy(Sg[30]),'route','route-choice');
+    if(v.pendingThreshold&&v.pendingThreshold.eligibleDay<=day&&!v.thresholdFired['ch'+v.pendingThreshold.chapter])return thresholdEvent(state,v,day,v.pendingThreshold.chapter);
+    if(!m.harvest&&(Number(state.harvests)>=1||v.harvests>=1||day>=112))return pick('harvest',(Number(state.harvests)>=1||v.harvests>=1)?null:'poor');
+    // A legacy save first observed after winter still receives its first winter.
+    if(!m.darkwinter&&(c.season==='冬'||day>112))return pick('darkwinter');
+    const love=topRomance(v);
+    if(!m.love&&v.affinity[love]>=80)return pick('love');
+    const hasScale=['farm','coins','crops'].some(k=>typeof state[k]==='number');
+    if(!m.career&&(Number(state.farm)>=30||Number(state.coins)>=3000||Number(state.crops)>=50||(!hasScale&&Number(state.growth)>=40)||day>=224))return pick('career',day>=224?'direction':null);
+    // The save's dating/partner name must itself be in the approved pool.
+    const partner=state.dating||state.partner;
+    if(!m.family&&ROMANCE.includes(partner)&&v.affinity[partner]>=85)return pick('family');
+    if(!m.newlife&&((state.partner&&day>=420)||Number(state.growth)>=60||day>=448))return pick('newlife',day>=448&&!state.partner&&!(Number(state.growth)>=60)?'letter':null);
+    const fermented=v.inheritanceEvents>=2&&v.inheritanceSeasons>=2;
+    const critical=v.tension>=80||v.townThreat>=70||Object.values(v.threat).some(t=>t>=80);
+    // Director fallback precedes settlement. Settlement waits for the next eligible
+    // morning after crisis resolution, so both are visible, with no lost popup.
+    if(!m.crisis&&((critical&&fermented)||day>=560))return pick('crisis',day>=560&&!critical?'low':null);
+    if(!m.harvestfest&&day>=560&&m.crisis)return pick('harvestfest');
+    if(day===2||FESTIVALS.includes(c.doy))return null;
+    const ch=chapter(state,v);
+    if(v.tension>=60&&day-v.lastQuarrelDay>=14&&day-v.lastV2Day>=4&&(v.lateralCounts[ch]||0)<2) {
+      // Reconciled pairs discuss instead of recycling the old quarrel.
+      const q=ch===7&&v.lateralDone.reconciled?5:Math.min(ch,8);
+      if((v.lateralCounts[q]||0)<2)return lateralEvent(state,v,day,q,true);
+    }
+    // Sparse deterministic cadence leaves festivals, bouquet/proposals and base
+    // daily random events the other six mornings out of seven.
+    const birthday=[8,42,76,99].includes(c.doy)&&!FESTIVALS.includes(c.doy);
+    const narrowSeason=[44,45,46].includes(c.doy)&&(!v.eventHistory['v2-event-15']||v.eventHistory['v2-event-15'].year<Math.floor((day-1)/112));
+    if((day%7!==Math.floor((day-1)/7)%7&&!birthday&&!narrowSeason)||day-v.lastV2Day<6)return null;
+    if(ch>=6&&c.season==='冬'&&!v.lateralDone.winterCoal&&v.pairs['陶守义-老钟']>=30)return winterEvolution(state,v,day);
+    if(ch<=8&&!v.lateralDone[ch])return lateralEvent(state,v,day,ch);
+    return poolEvent(state,v,day);
+  }
+  function pick(day,state,Sg) {
+    if(!state||typeof state!=='object'||!Number.isFinite(Number(day))||Number(day)<1)return null;
+    day=Math.floor(Number(day));const v=ensure(state),logs=Array.isArray(state.log)?state.log:[];
+    // Hearts first: engine gifts and normal interaction survive v2 event deltas.
+    if(v.lastProcessedDay!==day||v.lastLogLength!==logs.length) {
+      syncHearts(state,v);
+      let from=Math.max(0,Math.min(Number(v.lastLogLength)||0,logs.length));
+      let outcomeDay=null;
+      // A newly attached overlay observes only the latest outcome of a legacy save;
+      // it does not replay an entire existing life into reputation or pressure.
+      if(v.lastProcessedDay===0&&from===0&&logs.length>1)from=logs.length-1;
+      for(let i=from;i<logs.length;i++) {
+        if(Number(logs[i]&&logs[i].day)>=day)break;
+        processOutcome(state,v,logs[i]);outcomeDay=Number(logs[i]&&logs[i].day)||day-1;
+      }
+      seasonalBookkeeping(state,v,day);
+      if(typeof state.harvests==='number')v.harvests=Math.max(v.harvests,state.harvests);
+      v.darkLine=v.townThreat>=70||Object.values(v.threat).some(t=>t>=80);
+      armThreshold(state,v,day,outcomeDay);
+      v.lastProcessedDay=day;v.lastLogLength=logs.length;updateStage(v);
+    }
+    // Cache includes null and complete event data, persists through reload, and
+    // prevents re-issuing a popup or reapplying effects on render retries.
+    if(v.decision&&v.decision.day===day) {mirror(v);return copy(v.decision.event);}
+    const event=decide(state,v,day,Sg||{});
+    v.decision={day,event:copy(event)};mirror(v);
+    return copy(event);
+  }
+  root.__v2={version:2,NPCS,EVENTS,MILESTONES,ROMANCE:ROMANCE.slice(),STAGES:STAGES.slice(),
+    currentJung,currentBig5,applyDrift,relativeGrowth,
+    state:{create:fresh,ensure,syncHearts,calendar,chapter,updateStage},_pendingChoiceFx:null,
+    limitations:{profile:'Profile is external: 50 fallback plus bounded deltas; base probability formula is unchanged.',renderer:'Diary and schedule notes only; actor movement and physical home objects require renderer integration.',inheritance:'Family footnotes stored; no next-generation character generator is installed.',npcServices:'Roster descriptions only; new NPC actors, stores and services need bundle integration.'}};
+  root.__v2pick=pick;
+  function installPanel() {
+    const doc=root.document;
+    if(!doc||!doc.createElement)return;
+    let host=null,sheet=null,content=null,toggle=null,opened=false,scheduled=false,last='';
+    function el(tag,text,parent) {const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(parent)parent.appendChild(n);return n;}
+    function close() {opened=false;paintOpen();if(toggle)toggle.focus();}
+    function paintOpen() {
+      if(!sheet)return;
+      sheet.classList.toggle('v2-open',opened);sheet.inert=!opened;
+      sheet.setAttribute('aria-hidden',String(!opened));toggle.setAttribute('aria-expanded',String(opened));
+      if(opened)render(true);
+    }
+    function mount() {
+      if(!doc.body)return;
+      if(host&&host.isConnected)return;
+      if(doc.getElementById('xin-tian-v2'))return;
+      host=el('div');host.id='xin-tian-v2';
+      const style=el('style',undefined,host);
+      style.textContent=`
+#xin-tian-v2{position:fixed;right:12px;bottom:max(70px,env(safe-area-inset-bottom));z-index:70;pointer-events:none;font-family:'ZCOOL QingKe HuangYou','PingFang SC','Microsoft YaHei',sans-serif;color:#4a2a08;font-size:15px;line-height:1.55}
+#xin-tian-v2 *{box-sizing:border-box}
+#xin-tian-v2 button{font:inherit;color:#4a2a08;background:#fdf3d0;border:3px solid #7c4f12;border-radius:7px;padding:5px 11px;cursor:pointer;pointer-events:auto}
+#xin-tian-v2 .v2-toggle{display:block;margin-left:auto}
+#xin-tian-v2 .v2-sheet{pointer-events:none;background:#fdf3d0;border:3px solid #7c4f12;border-radius:10px;width:min(350px,calc(100vw - 24px));max-height:min(70dvh,640px);overflow:auto;overscroll-behavior:contain;padding:12px;position:absolute;bottom:46px;right:0;opacity:0;transform:translateX(12px);visibility:hidden;transition:opacity .25s ease,transform .25s ease,visibility 0s .25s}
+#xin-tian-v2 .v2-sheet.v2-open{pointer-events:auto;opacity:1;transform:translateX(0);visibility:visible;transition:opacity .25s ease,transform .25s ease}
+#xin-tian-v2 .v2-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+#xin-tian-v2 h3{font-size:16px;margin:14px 0 5px;border-bottom:1px solid #7c4f12;padding-bottom:3px}
+#xin-tian-v2 p{margin:5px 0}
+#xin-tian-v2 ul{margin:5px 0;padding-left:20px}
+#xin-tian-v2 li{margin:6px 0}
+#xin-tian-v2 small{display:block;font-size:12px;opacity:.85}
+#xin-tian-v2 details{border-bottom:1px solid #7c4f1233;padding:5px 0}
+#xin-tian-v2 summary{cursor:pointer}
+#xin-tian-v2 .v2-good{color:#4f7d3a}
+#xin-tian-v2 .v2-shadow{color:#b5502f}
+#xin-tian-v2 :focus-visible{outline:2px solid #4f7d3a;outline-offset:3px}
+@media(max-height:450px){#xin-tian-v2{bottom:12px}#xin-tian-v2 .v2-sheet{max-height:calc(100dvh - 72px)}}
+@media(prefers-reduced-motion:reduce){#xin-tian-v2 .v2-sheet{transition:none;transform:none}}
+`;
+      sheet=el('aside',undefined,host);sheet.className='v2-sheet';sheet.id='xin-tian-v2-sheet';sheet.setAttribute('aria-label','溪田镇 · 生活手记');sheet.inert=true;sheet.setAttribute('aria-hidden','true');
+      const heading=el('div',undefined,sheet);heading.className='v2-heading';el('strong','溪田镇 · 生活手记',heading);
+      const dismiss=el('button','收起',heading);dismiss.type='button';dismiss.addEventListener('click',close);
+      content=el('div',undefined,sheet);
+      toggle=el('button','生活手记',host);toggle.type='button';toggle.className='v2-toggle';toggle.setAttribute('aria-controls',sheet.id);toggle.setAttribute('aria-expanded','false');
+      toggle.addEventListener('click',()=>{opened=!opened;paintOpen();});
+      doc.body.appendChild(host);last='';paintOpen();
+    }
+    function render(force=false) {
+      if(!content||!opened)return;
+      const v=root.__v2state;
+      const signature=JSON.stringify(v||null);if(!force&&last===signature)return;last=signature;
+      // Preserve NPC disclosures and scroll while live daily outcomes arrive.
+      const disclosures=new Set(Array.from(content.querySelectorAll('details[open]')).map(n=>n.dataset.npc));
+      const scroll=sheet.scrollTop;content.replaceChildren();
+      if(!v){el('p','小屋的灯还没亮。等他安顿下来，日子会慢慢留在这里。',content);return;}
+      el('strong',STAGES[clamp(v.stage,1,5)-1],content);
+      if(v.darkLine)el('p','【暗黑线】镇上的目光里，多了一点戒备。',content).className='v2-shadow';
+      el('h3','走过的日子',content);
+      const list=el('ul',undefined,content),next=MILESTONES.find(m=>!v.milestones[m.id]&&!['love','family'].includes(m.id));
+      for(const m of MILESTONES) {
+        const done=v.milestones[m.id],li=el('li',(done?'已走过 · ':m===next?'眼下 · ':'未到 · ')+m.name,list);
+        if(done)li.className='v2-good';
+        el('small',m.trigger+(m.nature==='可选'?' · 随缘':''),li);
+      }
+      el('h3','镇上的人情',content);
+      const top=Object.entries(v.affinity).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      for(const [name,value] of top)el('p',(name==='陶守义'?'陶镇长':name)+' · 亲和 '+Math.round(value)+(v.threat[name]>0?' · 戒备 '+Math.round(v.threat[name]):''),content);
+      const others=Object.entries(v.threat).filter(([name,value])=>value>0&&!top.some(([n])=>n===name));
+      for(const [name,value] of others)el('small',name+' · 戒备 '+Math.round(value),content).className='v2-shadow';
+      el('p','镇上张力 '+Math.round(v.tension)+' · 心头压力 '+Math.round(v.pressure),content);
+      if(v.townThreat>0)el('p','全镇戒备 '+Math.round(v.townThreat),content).className='v2-shadow';
+      el('h3','家里的痕迹',content);
+      const tr=v.traces,objects=[];
+      if(tr.unopenedLetters)objects.push('未拆的信 ×'+tr.unopenedLetters);
+      objects.push(tr.teaCups===2?'桌上两个茶杯':'桌上的旧茶杯');
+      if(tr.jamJars)objects.push('贴着手写标签的果酱 ×'+tr.jamJars);
+      if(tr.planChart)objects.push('墙上手写的计划表');
+      if(tr.diaryThick)objects.push('越写越厚的日记本');
+      if(tr.emptyPot)objects.push('门口洗干净的空汤锅');
+      if(tr.smallShoes)objects.push('大人鞋旁的一双小鞋');
+      if(tr.petition)objects.push('笔迹用力的请愿书');
+      if(v.inheritanceMode==='farm')objects.push('抽屉里“给后来的人”的信');
+      const traces=el('ul',undefined,content);objects.forEach(s=>el('li',s,traces));
+      el('h3','熟悉的面孔',content);
+      for(const n of NPCS) {
+        const detail=el('details',undefined,content);detail.dataset.npc=n.id;detail.open=disclosures.has(n.id);
+        el('summary',n.displayName+' · '+n.dominant+' · '+n.skill.split('，')[0],detail);
+        el('p',n.line,detail);el('p',n.skill,detail);
+        el('small',n.group+' · '+Object.entries(n.big5).filter(([,t])=>t.specified).map(([k,t])=>({openness:'开放',conscientiousness:'尽责',extraversion:'外向',agreeableness:'宜人',neuroticism:'神经质'}[k])+t.label).join('、'),detail);
+      }
+      el('h3','他的变化',content);
+      if(!v.driftFeed.length)el('p','日记才翻开第一页。',content);
+      for(const f of v.driftFeed.slice(-12).reverse())el('p',f.text,content);
+      if(v.familyNotes.length){el('h3','留给后来的人',content);for(const note of v.familyNotes)el('p',note,content);}
+      sheet.scrollTop=scroll;
+    }
+    function schedule() {
+      if(scheduled)return;scheduled=true;
+      const run=()=>{scheduled=false;mount();render();};
+      if(typeof root.requestAnimationFrame==='function')root.requestAnimationFrame(run);else if(typeof root.setTimeout==='function')root.setTimeout(run,0);else run();
+    }
+    if(typeof root.addEventListener==='function')root.addEventListener('xin-tian-v2-change',schedule);
+    doc.addEventListener('keydown',e=>{if(e.key==='Escape'&&opened){e.stopPropagation();close();}});
+    if(typeof root.MutationObserver==='function') {
+      const observer=new root.MutationObserver(records=>{
+        if(records.some(r=>!host||!(r.target===host||host.contains(r.target))))schedule();
+      });
+      observer.observe(doc.documentElement||doc,{childList:true,subtree:true});
+    }
+    if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',schedule,{once:true});
+    schedule();
+  }
+  installPanel();
+})(typeof window!=='undefined'?window:typeof globalThis!=='undefined'?globalThis:null);
+
+</script>
+<script>(() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -15855,10 +18534,10 @@ var Ys = [{
   }],
   b5 = [2500, 5000, 1e4, 25000],
   Lr = [{
-    name: "梅姨",
+    name: "郑来福",
     doy: 8
   }, {
-    name: "小满",
+    name: "阿棠",
     doy: 42
   }, {
     name: "老钟",
@@ -15867,7 +18546,7 @@ var Ys = [{
     name: "阿禾",
     doy: 99
   }],
-  y5 = ["小满", "阿禾"];
+  y5 = ["阿禾", "顾青山", "柳清晏"];
 function wd(e) {
   let t = e >>> 0;
   return () => {
@@ -15876,7 +18555,7 @@ function wd(e) {
     return a = a + Math.imul(a ^ a >>> 7, 61 | a) ^ a, ((a ^ a >>> 14) >>> 0) / 4294967296;
   };
 }
-var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a profile/sprite/lines, so panel text and dialogue bar name the same person */
+var sg = ["阿禾", "郑来福", "阿棠", "老钟"], /* R4-F6: only NPCs with a profile/sprite/lines, so panel text and dialogue bar name the same person */
   Sd = [{
     id: "farm",
     label: "下地干活",
@@ -16131,7 +18810,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
     1: {
       id: "arrive",
       title: "人生节点 · 抵达小镇",
-      text: "行李放下，屋子漏风，田里全是石头。镇长笑呵呵地说：这地方，留下的人都是自己选的。第一晚，他会怎么安顿自己？往后的日子还长，这只是第一页。",
+      text: "行李放下，屋子漏风，田里全是石头。陶镇长笑呵呵地说：这地方，留下的人都是自己选的。第一晚，他会怎么安顿自己？往后的日子还长，这只是第一页。",
       choices: [{
         label: "连夜把屋子收拾出来",
         check: {
@@ -16164,7 +18843,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           fx: {
             mood: 5
           },
-          friend: "梅姨"
+          friend: "郑来福"
         },
         disobey: {
           text: "走到镇口他又折了回来，在自家门口坐到天黑——人嘛，明天再说吧。",
@@ -16176,8 +18855,8 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
     },
     30: {
       id: "route-choice",
-      title: "干预 · 社区中心，还是 Joja？",
-      text: "镇口的老社区中心破败多年。镇长说，靠大家把各地收成凑成收集包，就能把它修好，还能重开温室；Joja 公司则笑眯眯地递来会员表：花钱，什么都替你办。这条路线一旦定了，他后半辈子的活法都会不一样——这是你的干预节点。",
+      title: "干预 · 社区中心，还是恒远开发？",
+      text: "镇口的老社区中心破败多年。陶镇长说，靠大家把各地收成凑成收集包，就能把它修好，还能重开温室；恒远开发则笑眯眯地递来会员表：花钱，什么都替你办。这条路线一旦定了，他后半辈子的活法都会不一样——这是你的干预节点。",
       choices: [{
         label: "走社区中心：靠双手和收成修",
         check: {
@@ -16199,13 +18878,13 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           }
         }
       }, {
-        label: "走 Joja：花钱买方便",
+        label: "走恒远开发：花钱买方便",
         check: {
           dim: "Te",
           threshold: 30
         },
         obey: {
-          text: "他决定走 Joja 的路子：会员 5,000 金先攒着，之后温室、矿车、巴士都明码标价，发展表全买齐 140,000 金。省心，是省心的，就是贵。",
+          text: "他决定走恒远开发的路子：会员 5,000 金先攒着，之后温室、矿车、巴士都明码标价，发展表全买齐 140,000 金。省心，是省心的，就是贵。",
           fx: {
             mood: -2
           }
@@ -16235,7 +18914,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
             mood: 12,
             growth: 3
           },
-          friend: "小满"
+          friend: "阿棠"
         },
         disobey: {
           text: "席都快摆好了，他又缩了回去，只给几家近邻送了点新粮——热闹他还是有点怕，但心意到了。",
@@ -16505,7 +19184,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
     420: {
       id: "crisis",
       title: "人生节点 · 小镇危机",
-      text: "第四年，小镇出了大事：Joja 要买下镇口的地盖大卖场，镇长挨家挨户敲门——这一次，躲是躲不过去了。是站出来，还是先顾好自家？",
+      text: "第四年，小镇出了大事：恒远开发要买下镇口的地盖大卖场，陶镇长挨家挨户敲门——这一次，躲是躲不过去了。是站出来，还是先顾好自家？",
       choices: [{
         label: "站出来，带着大家一起扛",
         check: {
@@ -16513,7 +19192,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           threshold: 35
         },
         obey: {
-          text: "他站到了镇长身边，挨家挨户讲道理、凑办法。事情没那么快解决，但从这天起，小镇有了主心骨。",
+          text: "他站到了陶镇长身边，挨家挨户讲道理、凑办法。事情没那么快解决，但从这天起，小镇有了主心骨。",
           fx: {
             mood: 10,
             growth: 8
@@ -16521,7 +19200,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           friend: "老钟"
         },
         disobey: {
-          text: "他站出去了，又退了回来——话到嘴边，腿先软了。当晚他翻来覆去没睡好，第二天一早就去镇长家敲了门。",
+          text: "他站出去了，又退了回来——话到嘴边，腿先软了。当晚他翻来覆去没睡好，第二天一早就去陶镇长家敲了门。",
           fx: {
             mood: -4,
             growth: 3
@@ -16586,7 +19265,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           }
         },
         disobey: {
-          text: "他本想安静待着，可小满硬把他拉进了舞圈，踩了三脚，笑了一晚上。",
+          text: "他本想安静待着，可阿棠硬把他拉进了舞圈，踩了三脚，笑了一晚上。",
           fx: {
             mood: 10
           }
@@ -16598,7 +19277,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
     13: {
       id: "fest-egg",
       title: "节日 · 复活节蛋赛（春13）",
-      text: "春季第13天，蛋节。广场上藏满了彩蛋，镇长一声哨响，全镇孩子大人一起找，找得最多的人赢一顶草帽。他站在人群边上，脚尖已经动了。",
+      text: "春季第13天，蛋节。广场上藏满了彩蛋，陶镇长一声哨响，全镇孩子大人一起找，找得最多的人赢一顶草帽。他站在人群边上，脚尖已经动了。",
       choices: [{
         label: "下场找彩蛋",
         check: {
@@ -16611,7 +19290,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
             mood: 9,
             coins: 20
           },
-          friend: "小满"
+          friend: "阿棠"
         },
         disobey: {
           text: "他帮着藏了几个蛋，站在边上看热闹。看别人找，也挺有意思的。",
@@ -16651,7 +19330,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           threshold: 35
         },
         obey: {
-          text: "种子种下去，长出来的东西全镇都没见过，梅姨天天来问。这趟集市，没白逛。",
+          text: "种子种下去，长出来的东西全镇都没见过，郑来福天天来问。这趟集市，没白逛。",
           fx: {
             coins: -40,
             mood: 7,
@@ -16721,7 +19400,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           }
         },
         disobey: {
-          text: "看了一会儿还是被小满拽进了舞场外圈，手脚不知道往哪放，脸红了一下午。",
+          text: "看了一会儿还是被阿棠拽进了舞场外圈，手脚不知道往哪放，脸红了一下午。",
           fx: {
             mood: 4
           }
@@ -16744,7 +19423,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
             mood: 10,
             growth: 3
           },
-          friend: "梅姨"
+          friend: "郑来福"
         },
         disobey: {
           text: "临了他换了份普通的放进去。稳妥是稳妥，就是错过了出头的机会。",
@@ -16788,7 +19467,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
             coins: 30,
             mood: 9
           },
-          friend: "小满"
+          friend: "阿棠"
         },
         disobey: {
           text: "他报了名又怯场，躲到没人的下游钓。鱼获不多，耳朵根倒是清净。",
@@ -16941,15 +19620,15 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           threshold: 30
         },
         obey: {
-          text: "点心卖得飞快，他忙得脚不沾地，被梅姨夸了句能干。热闹的夜，他的笑也多了。",
+          text: "点心卖得飞快，他忙得脚不沾地，被郑来福夸了句能干。热闹的夜，他的笑也多了。",
           fx: {
             coins: 30,
             mood: 7
           },
-          friend: "梅姨"
+          friend: "郑来福"
         },
         disobey: {
-          text: "他守了一会儿就溜去看迷宫了，回来时摊子被梅姨没收——各玩各的，也挺好。",
+          text: "他守了一会儿就溜去看迷宫了，回来时摊子被郑来福没收——各玩各的，也挺好。",
           fx: {
             mood: 5
           }
@@ -17063,7 +19742,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
             coins: -30,
             mood: 10
           },
-          friend: "小满"
+          friend: "阿棠"
         },
         disobey: {
           text: "他只去了第一晚，挤得够呛，后两晚在家听着远处的锣鼓声入睡，也算参与了。",
@@ -17109,7 +19788,7 @@ var sg = ["阿禾", "梅姨", "小满", "老钟"], /* R4-F6: only NPCs with a pr
           fx: {
             mood: 11
           },
-          friend: "梅姨"
+          friend: "郑来福"
         },
         disobey: {
           text: "他备得匆忙，可对方拆开还是笑了。心意这东西，糙一点也认得出来。",
@@ -17465,7 +20144,7 @@ var cg = [{
       fx: {
         mood: 8
       },
-      friend: "梅姨"
+      friend: "郑来福"
     },
     disobey: {
       text: "他不太会哄孩子，干脆把孩子扛在肩上往镇上走，孩子反倒不哭了，揪着他的帽子玩。",
@@ -17784,7 +20463,7 @@ function S5(e, t) {
     if (!e.flags.minecart && x(["blacksmith", "geologist"])) e.flags.minecart = !0, a.push("\uD83D\uDE83 锅炉房完成：矿车修好了，往返矿井省时省力");
     if (!e.flags.board && x(["animal", "artisan", "river-fish"])) {
       e.flags.board = !0;
-      for (let v of ["梅姨", "老钟"]) e.hearts[v] = Math.min(2500, (e.hearts[v] ?? 0) + 500);
+      for (let v of ["郑来福", "老钟"]) e.hearts[v] = Math.min(2500, (e.hearts[v] ?? 0) + 500);
       a.push("\uD83D\uDCCC 布告栏完成：全镇不可婚的镇民对他好感大涨（+500 点）");
     }
     if (e.bundlesDone.filter(v => v.startsWith("vault-")).length >= 4 && !e.flags.bus) e.flags.bus = !0, a.push("\uD83D\uDE8C 金库凑满 42,500 金——巴士修好了，沙漠的路通了");
@@ -17894,7 +20573,7 @@ function N5(e) {
     if (o && !e.dating) return {
       id: `bouquet-${o}`,
       title: `心动节点 · 给${o}送花束？`,
-      text: `和${o}相处久了，那种感觉藏不住了。镇上的规矩：8 颗心（2,000 点）去皮埃尔店买一束花（200 金）送出去，意思就明了了，好感上限也开到 10 心。送，还是不送？这是你的干预节点。`,
+      text: `和${o}相处久了，那种感觉藏不住了。镇上的规矩：8 颗心（2,000 点）去来福杂货店买一束花（200 金）送出去，意思就明了了，好感上限也开到 10 心。送，还是不送？这是你的干预节点。`,
       choices: [{
         label: `买花束送给${o}（200 金）`,
         obey: {
@@ -17941,10 +20620,10 @@ function N5(e) {
   }
   if (e.routeChoice === "joja" && !e.flags.jojaMember && e.coins >= 5000) return {
     id: "joja-member",
-    title: "Joja · 办会员？",
-    text: "Joja 超市的莫里斯笑眯眯地递上会员表：5,000 金入会，之后温室、矿车、巴士这些大项目，都能直接花钱买——发展表全买齐一共 140,000 金（含会员费）。省心，就是贵。",
+    title: "恒远开发 · 办会员？",
+    text: "恒远超市的贺远山笑眯眯地递上会员表：5,000 金入会，之后温室、矿车、巴士这些大项目，都能直接花钱买——发展表全买齐一共 140,000 金（含会员费）。省心，就是贵。",
     choices: [{
-      label: "办 Joja 会员（5,000 金）",
+      label: "办恒远开发会员（5,000 金）",
       obey: {
         text: "会员卡办好了。从今往后，大项目明码标价，花钱就能推进度。",
         fx: {
@@ -17966,12 +20645,12 @@ function N5(e) {
     let o = Ys.find(c => !e.flags[c.flag] && e.coins >= c.price);
     if (o) return {
       id: o.id,
-      title: `Joja 发展表 · ${o.name}？`,
-      text: `Joja 发展表上的「${o.name}」标价 ${o.price.toLocaleString()} 金。社区中心那边靠收集包修同样的东西，不要钱，要的是收成和时间——Joja 只认钱。买吗？`,
+      title: `恒远发展表 · ${o.name}？`,
+      text: `恒远发展表上的「${o.name}」标价 ${o.price.toLocaleString()} 金。社区中心那边靠收集包修同样的东西，不要钱，要的是收成和时间——恒远开发只认钱。买吗？`,
       choices: [{
         label: `买下${o.name}（${o.price.toLocaleString()} 金）`,
         obey: {
-          text: `Joja 的工程队连夜施工，「${o.name}」第二天就能用了。钱花出去，心里空了一块，方便倒是真方便。`,
+          text: `恒远开发的工程队连夜施工，「${o.name}」第二天就能用了。钱花出去，心里空了一块，方便倒是真方便。`,
           fx: {
             coins: -o.price,
             mood: 4
@@ -18129,7 +20808,7 @@ function N5(e) {
 function M5(e, t, a) {
   let n = a.pendingProfs[0];
   if (n) return T5(a, n);
-  let l = Sg[e];
+  let l = window.__v2pick ? window.__v2pick(e, a, Sg) : Sg[e];
   if (l) return l;
   let i = _d[na(e)];
   if (i) return i;
@@ -19392,7 +22071,7 @@ function L5() {
       toScene: "town",
       toX: 1,
       toY: 11,
-      label: "鹈鹕镇"
+      label: "溪田镇"
     }]
   };
 }
@@ -19413,7 +22092,7 @@ function U5() {
   }
   return {
     id: "town",
-    name: "鹈鹕镇",
+    name: "溪田镇",
     w: 30,
     h: 22,
     terrain: e,
@@ -19431,7 +22110,7 @@ function U5() {
       tower: !0
     }, {
       id: "pierre",
-      name: "皮埃尔商店",
+      name: "来福杂货店",
       x: 3,
       y: 2,
       w: 4,
@@ -19443,7 +22122,7 @@ function U5() {
       awning: "#c23b2e"
     }, {
       id: "joja",
-      name: "Joja超市",
+      name: "恒远超市",
       x: 8,
       y: 2,
       w: 4,
@@ -19515,7 +22194,7 @@ function U5() {
       awning: "#c96a28"
     }, {
       id: "mayor",
-      name: "镇长家",
+      name: "陶镇长家",
       x: 23,
       y: 14,
       w: 4,
@@ -19526,7 +22205,7 @@ function U5() {
       sign: "镇"
     }, {
       id: "manhouse",
-      name: "小满家",
+      name: "阿棠家",
       x: 12,
       y: 16,
       w: 4,
@@ -19790,7 +22469,7 @@ function H5() {
       toScene: "town",
       toX: 15,
       toY: 20,
-      label: "鹈鹕镇"
+      label: "溪田镇"
     }, {
       x: 0,
       y: 6,
@@ -20080,7 +22759,7 @@ function j5() {
       toScene: "town",
       toX: 28,
       toY: 11,
-      label: "鹈鹕镇"
+      label: "溪田镇"
     }, {
       x: 24,
       y: 5,
@@ -20198,14 +22877,14 @@ var Gr = [{
 }, {
   id: "townplaza",
   sceneId: "town",
-  name: "鹈鹕镇广场",
+  name: "溪田镇广场",
   x: 15,
   y: 10,
   icon: "\uD83C\uDFD8️"
 }, {
   id: "shop",
   sceneId: "town",
-  name: "皮埃尔商店",
+  name: "来福杂货店",
   x: 5,
   y: 6,
   icon: "\uD83C\uDFEA"
@@ -20233,7 +22912,7 @@ var Gr = [{
 }, {
   id: "manhome",
   sceneId: "town",
-  name: "小满家门口",
+  name: "阿棠家门口",
   x: 14,
   y: 15,
   icon: "\uD83D\uDEAA"
@@ -20680,14 +23359,14 @@ var Vs = (e, t, a, n, l, i, o) => ({
   }),
   zd = [{
     id: "mei",
-    name: "梅姨",
+    name: "郑来福",
     role: "商店老板",
     homeLoc: "shop",
-    appearance: Vs("长发", "棕色", "无", "红色", "无", "自然", {
-      pantsColor: "米色",
-      shoeColor: "红色",
+    appearance: Vs("短发", "黑色", "无", "蓝色", "无", "自然", {
+      pantsColor: "深蓝",
+      shoeColor: "深棕",
       prop: "围裙",
-      outfitStyle: "亮色"
+      outfitStyle: "粗布"
     }),
     route: [{
       loc: "shop",
@@ -20712,8 +23391,8 @@ var Vs = (e, t, a, n, l, i, o) => ({
     lines: ["店里新到了种子和渔具，缺啥就来，别不好意思开口。", "日子啊，就是一餐一饭、一季一季，急不得的。", "你这孩子，气色比刚来时好多了，小镇的水土养人吧？"]
   }, {
     id: "man",
-    name: "小满",
-    role: "镇上的年轻人",
+    name: "阿棠",
+    role: "拾荒少女",
     homeLoc: "manhome",
     appearance: Vs("马尾", "红色", "鸭舌帽", "黄色", "无", "白皙", {
       pantsColor: "深蓝",
@@ -20744,7 +23423,7 @@ var Vs = (e, t, a, n, l, i, o) => ({
       loc: "manhome",
       dwell: 3
     }],
-    lines: ["桥上风超大！刚才我的帽子差点被吹进河里。", "海边有大鱼，我昨天亲眼看见的，就差一点就钓上来！", "镇子小是小，可每天都有新鲜事，你不觉得吗？"]
+    lines: ["别人扔掉的东西，我都能修好——你看，这把椅子就是河边捡的。", "布料和矿石拿来，我给你改件新衣，保准合身。", "钓鱼捞起来的破烂别扔，修一修就是能用的家具。"]
   }, {
     id: "zhong",
     name: "老钟",
@@ -20811,8 +23490,8 @@ var Vs = (e, t, a, n, l, i, o) => ({
     lines: ["我家门口的花开了，路过记得闻一闻，香得很。", "种东西急不得，你对它好，它就对你好，跟人一样。", "林子边的野菌这几天正肥，不过认不准的千万别摘啊。"]
   }];
 function Lg(e, t, a, n) {
-  if (e.id === "mei" && t < 30) return "梅姨把声音放轻了些：「不爱说话也没啥，店里有啥你自己拿，账记着就行。」";
-  if (e.id === "man" && t < 30) return "小满蹦蹦跳跳跑过来，又怕吵着他，放慢脚步：「那个……河边那块石头，是看日落最好的地方，我谁都没告诉。」";
+  if (e.id === "mei" && t < 30) return "郑来福把声音放轻了些：「不爱说话也没啥，店里有啥你自己拿，账记着就行。」";
+  if (e.id === "man" && t < 30) return "阿棠蹦蹦跳跳跑过来，又怕吵着他，放慢脚步：「那个……河边那块石头，是看日落最好的地方，我谁都没告诉。」";
   if (e.id === "zhong" && a > 55) return "老钟点点头，没多话，陪他站着看了一会儿水：「有些话，不用说出口，站一会儿就懂了。」";
   if (e.id === "he" && t >= 50) return "阿禾拉着他说了半天花经，临走塞给他一把花籽：「种着玩，开不开花都行。」";
   let l = e.lines;
@@ -21830,7 +24509,7 @@ function cb(e) {
               kk = A.actKind,
               el = ft - (A.actT0 || 0);
             if ((kk === "sleep" || kk === "read") && el > 750) return;
-            let jx = A.x + (kk === "work" ? -1.5 : 0), /* R4-F4: work stands 1.5 tiles left of the shop door, clear of the "皮埃尔商店" label and the oak at (7,5) */
+            let jx = A.x + (kk === "work" ? -1.5 : 0), /* R4-F4: work stands 1.5 tiles left of the shop door, clear of the "来福杂货店" label and the oak at (7,5) */
               jy = A.y + (kk === "fish" ? 0.15 : 0) + (kk === "explore" ? 0.3 : 0); /* R4-F5: explore drops 0.3 tile into a crouch */
             if ((kk === "sleep" || kk === "read") && el > 200) {
               let bd = null,
@@ -23614,7 +26293,7 @@ function mb() {
                     children: "还没跟镇民好好说过话——他走路时遇见他们会自动停下来聊，每天第一次聊天 +20 点。"
                   }), T("p", {
                     className: "rounded-lg paper-cell px-3 py-2 text-[13px]",
-                    children: "规则（1.6 手册）：250 点 = 1 心，满 10 心；每天第一次聊天 +20；送礼最爱 +80 / 喜欢 +45 / 一般 +20 / 讨厌 −40，每人每天 1 次、每周 2 次（周日重置），一周送满 2 次下周日 +10；生日送礼 ×8；不聊天的人每天 −2 点（恋爱对象 −10）。小满、阿禾可以谈恋爱：8 心送花束（200 金）、10 心 + 农舍扩建后买美人鱼吊坠求婚（5,000 金），都在干预节点上由你替他决定。"
+                    children: "规则（1.6 手册）：250 点 = 1 心，满 10 心；每天第一次聊天 +20；送礼最爱 +80 / 喜欢 +45 / 一般 +20 / 讨厌 −40，每人每天 1 次、每周 2 次（周日重置），一周送满 2 次下周日 +10；生日送礼 ×8；不聊天的人每天 −2 点（恋爱对象 −10）。阿棠、阿禾可以谈恋爱：8 心送花束（200 金）、10 心 + 农舍扩建后买美人鱼吊坠求婚（5,000 金），都在干预节点上由你替他决定。"
                   }), R("p", {
                     className: "rounded-lg paper-cell px-3 py-2 text-[13px]",
                     children: ["\uD83C\uDF82 生日：", Lr.map(f => `${f.name}（${wt(f.doy)}季${Za(f.doy)}日）`).join(" · ")]
@@ -23681,7 +26360,7 @@ function mb() {
                     }), " · 电梯直达 ", Math.floor(p.mineFloor / 5) * 5, " 层 · ", p.mineFloor < 40 ? "现在在铜矿层（1–39）" : p.mineFloor < 80 ? "现在在铁矿层（40–79）" : p.mineFloor < 120 ? "现在在金矿层（80–119）" : "已经到底，头骨钥匙在手", "。每 10 层有宝箱，第 100 层是星之果实（体力上限 +34），第 120 层是头骨钥匙。"]
                   }), R("p", {
                     className: "rounded-lg paper-cell px-3 py-2",
-                    children: ["\uD83D\uDEE4️ 人生路线：", p.routeChoice === "community" ? "社区中心（靠收集包修复，不要钱，要收成和时间）" : p.routeChoice === "joja" ? `Joja（会员 5,000 + 发展表 135,000 = 140,000 金）${p.flags.jojaMember ? " · 已入会" : " · 还没入会"}` : "还没定——第 30 天的节点上由你替他选", T("br", {}), "\uD83C\uDFE1 温室：", p.greenhouse ? "已解锁，里面的作物无视季节" : "未解锁（社区中心茶水间全包 / Joja 35,000 金）"]
+                    children: ["\uD83D\uDEE4️ 人生路线：", p.routeChoice === "community" ? "社区中心（靠收集包修复，不要钱，要收成和时间）" : p.routeChoice === "joja" ? `恒远开发（会员 5,000 + 发展表 135,000 = 140,000 金）${p.flags.jojaMember ? " · 已入会" : " · 还没入会"}` : "还没定——第 30 天的节点上由你替他选", T("br", {}), "\uD83C\uDFE1 温室：", p.greenhouse ? "已解锁，里面的作物无视季节" : "未解锁（社区中心茶水间全包 / 恒远开发 35,000 金）"]
                   }), p.routeChoice === "community" && R("div", {
                     className: "rounded-lg paper-cell px-3 py-2",
                     children: [R("p", {
@@ -23709,7 +26388,7 @@ function mb() {
                     className: "rounded-lg paper-cell px-3 py-2",
                     children: [R("p", {
                       className: "font-black text-[#4a2a08]",
-                      children: ["\uD83C\uDFE2 Joja 发展表（会员 5,000 金", p.flags.jojaMember ? " ✅" : "，未办", "）"]
+                      children: ["\uD83C\uDFE2 恒远发展表（会员 5,000 金", p.flags.jojaMember ? " ✅" : "，未办", "）"]
                     }), Ys.map(f => R("p", {
                       className: "mt-1 text-[12.5px]",
                       children: [p.flags[f.flag] ? "✅" : "▢", " ", f.name, "：", f.price.toLocaleString(), " 金", p.flags[f.flag] ? " · 已买" : ""]
@@ -23775,7 +26454,7 @@ function mb() {
                     className: "rounded-lg paper-cell px-3 py-2",
                     children: ["\uD83C\uDFEA 大件不会自己买——攒够钱、到了日子，会在", T("b", {
                       children: "干预节点"
-                    }), "上问你（罗宾的木匠店 / 玛妮的牧场 / Joja 柜台）。价格按 1.6 手册，这里先看清价目和他已经置办的家当："]
+                    }), "上问你（罗宾的木匠店 / 玛妮的牧场 / 恒远开发柜台）。价格按 1.6 手册，这里先看清价目和他已经置办的家当："]
                   }), [{
                     icon: "\uD83D\uDC14",
                     name: "鸡舍（养 4 只 · 鸡）",
@@ -23834,7 +26513,7 @@ function mb() {
                   }, {
                     icon: "\uD83C\uDFE1",
                     name: "温室",
-                    price: "社区茶水间全包 / Joja 35,000 G",
+                    price: "社区茶水间全包 / 恒远开发 35,000 G",
                     owned: p.greenhouse ? "已解锁" : "未解锁"
                   }, {
                     icon: "\uD83D\uDC90",
