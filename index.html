@@ -26098,10 +26098,23 @@ function mb() {
               className: "text-[#33512f]",
               children: bl.label
             }), " · ", bl.text]
-          }) : T("p", {
-            className: "mt-1.5 text-[13px] text-[#4a3820]",
-            children: la >= (ke?.steps.length ?? 0) ? "他正走在回家的路上…" : "他正在前往下一站，到了再动手…"
-          }), R("div", {
+          }) : (() => {
+            if (la >= (ke?.steps.length ?? 0)) return T("p", {
+              className: "mt-1.5 text-[13px] text-[#4a3820]",
+              children: "他正走在回家的路上…"
+            });
+            const f = ke?.steps[la];
+            return typeof f?.label === "string" && f.label.trim() && typeof f.text === "string" && f.text.trim() ? R("p", {
+              className: "mt-1.5 text-[13px] leading-snug text-[#4a3820]",
+              children: ["接下来：", T("b", {
+                className: "text-[#33512f]",
+                children: f.label
+              }), " · ", f.text]
+            }) : T("p", {
+              className: "mt-1.5 text-[13px] leading-snug text-[#4a3820]",
+              children: `接下来：去${ya(f?.locId ?? "home").name}。`
+            });
+          })(), R("div", {
             className: "mt-2 flex gap-1",
             "aria-hidden": !0,
             children: [(ke?.steps ?? []).map((f, M) => T("span", {
