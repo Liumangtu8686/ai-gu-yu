@@ -111,7 +111,7 @@
       hairStyle: pickEnum(a.hairStyle, ["短发", "长发", "卷发", "马尾", "平头", "光头"], "短发"),
       hairColor: pickEnum(a.hairColor, ["黑色", "棕色", "金色", "红色", "银灰", "蓝色", "粉色", "绿色"], "黑色"),
       hat: pickEnum(a.hat, ["无", "渔夫帽", "草帽", "毛线帽", "鸭舌帽", "头巾"], "无"),
-      outfitColor: pickEnum(a.outfitColor, ["蓝色", "绿色", "红色", "黄色", "紫色", "棕色", "灰色", "橙色"], "蓝色"),
+      outfitColor: pickEnum(a.outfitColor, ["蓝色", "绿色", "红色", "黄色", "紫色", "棕色", "灰色", "橙色", "黑色", "白色", "暗红", "暗紫", "毒绿", "惨白"], "蓝色"),
       accessory: pickEnum(a.accessory, ["无", "眼镜", "墨镜", "围巾", "胡子", "耳环"], "无"),
       skinTone: pickEnum(a.skinTone, ["白皙", "自然", "小麦", "黝黑"], "自然"),
       pantsColor: pickEnum(a.pantsColor, ["深蓝", "棕色", "灰色", "绿色", "黑色", "米色", "红色"], "深蓝"),
@@ -121,6 +121,7 @@
       build: pickEnum(a.build, ["瘦小", "标准", "壮实", "高挑"], undefined),
       desc: typeof a.desc === "string" ? a.desc : ""
     };
+    raw.appearance = extractAppearance(raw.appearance.desc, raw.appearance);
     var _cg = detectGender(typeof raw.gender === "string" ? raw.gender : "", "");
     raw.gender = _cg;
     if (_cg === "女" && !a.hairStyle) raw.appearance.hairStyle = "长发";
@@ -180,7 +181,7 @@
     );
   }
 
-  /* 生成提示词：与测试服务器 codex_proxy.py 的 build_codex_prompt 原样一致——
+  /* 生成提示词：游戏直连与测试反代共用此指令；反代的服务端模板只作外层包装——
      Key 直连官方地址、玩家填的反代地址（API Base URL）两条路都用它，
      让模型带着《心田物语》的设定上下文生成角色档案 */
   function buildGenPrompt(userPrompt) {
@@ -194,7 +195,7 @@
       + "  \"prompt\": " + JSON.stringify(userPrompt) + ",\n"
       + "  \"jung8\": {\"Ni\": 0, \"Ne\": 0, \"Si\": 0, \"Se\": 0, \"Ti\": 0, \"Te\": 0, \"Fi\": 0, \"Fe\": 0},\n"
       + "  \"big5\": {\"openness\": 0, \"conscientiousness\": 0, \"extraversion\": 0, \"agreeableness\": 0, \"neuroticism\": 0},\n"
-      + "  \"appearance\": \"16位像素风的小人外貌描述，约 80 字，第一句先写明性别（男/女）和发型，再写帽子、衣服、随身物、神态；女孩发型写长发或马尾，男孩发型写短发或平头，除非用户提示词另有指定\",\n"
+      + "  \"appearance\": \"16位像素风的小人外貌描述，约 80 字，第一句先写明性别（男/女）和发型，再写帽子、衣服、随身物、神态；女孩发型写长发或马尾，男孩发型写短发或平头，除非用户提示词另有指定。把角色本性写成具体可见的外貌：性格阴冷、邪恶、算计或黑暗时，明确写深色衣服（黑斗篷、黑袍、暗红衣或暗紫衣）、尖锐特征（尖角、高领或尖刺肩甲）、阴冷神态（阴冷、冷笑或冷酷）与相应配饰（兜帽、红眼睛、匕首或骷髅挂件），按人设选用，不必全堆；性格正常时保持职业服饰和自然神态，不添加这些黑暗标记，安静独处不等于邪恶\",\n"
       + "  \"daily_schedule\": [{\"time\": \"05:30\", \"activity\": \"活动\"}, 共 6 条，按时间顺序],\n"
       + "  \"diary\": \"第一人称一句话日记，体现这个角色的性格\"\n"
       + "}\n\n"
@@ -232,7 +233,7 @@
   }
 
   /* ---------- 测试模式：走测试服务器的 Codex 反代（POST /generate） ----------
-     反代契约（codex_proxy.py）：body {"prompt": "一句话"}，header X-Test-Token，
+     反代契约（codex_proxy.py）：body {"prompt": "同一份完整生成指令（内含用户原话）"}，header X-Test-Token，
      返回 {character:{name, jung8, big5, appearance(文字描述), daily_schedule, diary}}。
      反代不返回游戏需要的结构化外貌/称号/喜好等字段：性格分数、日程、名字用反代的，
      其余按同一套本地推导从描述文字里提取/兜底，拼成游戏的完整角色档案。 */
@@ -280,11 +281,38 @@ function applyGender(app, gender, descText, promptText) {
     else if (text.indexOf("粉发") >= 0) app.hairColor = "粉色";
     else if (text.indexOf("棕发") >= 0 || text.indexOf("褐发") >= 0) app.hairColor = "棕色";
     else if (text.indexOf("黑发") >= 0) app.hairColor = "黑色";
-    var cm = text.match(/([蓝绿红黄紫棕灰橙])色/);
-    if (cm) app.outfitColor = cm[1] + "色";
+    // 衣色绑定服装名词，不能误吃黑发、红发、黑裤子或黝黑皮肤。
+    var cm = text.match(/(暗红|暗紫|毒绿|惨白|[黑白蓝绿红黄紫棕灰橙])色?(?:的)?(?:粗布|短|长|高领)?(?:衣|外套|上衣|衬衫|袍|斗篷|裙|服装)/);
+    if (cm) app.outfitColor = /^(暗红|暗紫|毒绿|惨白)$/.test(cm[1]) ? cm[1] : cm[1] + "色";
+    var pm = text.match(/(黑|灰|棕|绿|红|米)色?裤/), sm = text.match(/(黑|红)色?(?:鞋|靴)/);
+    if (pm) app.pantsColor = pm[1] + "色";
+    if (sm) app.shoeColor = sm[1] + "色";
     ["白皙", "小麦", "黝黑"].forEach(function (v) { if (text.indexOf(v) >= 0) app.skinTone = v; });
+    // 每次从 appearance 原文重建标记；绝不读取性格分数，也不沿用原型的黑暗图层。
+    Object.assign(app, {isEvilLook:false, outerwear:"none", bodyStyle:"normal", eyeColor:"normal",
+      eyeStyle:"normal", expression:"normal", mouthStyle:"normal", waistAccessory:"none",
+      chestAccessory:"none", headAccessory:"none", pose:"normal", highCollar:false, spikedShoulders:false});
+    var cloak=/黑?斗篷|披风/.test(text), robe=/黑袍|长袍|黑衣/.test(text),
+      redEye=/红眼|血瞳|赤瞳/.test(text), glare=/阴冷|阴鸷|阴沉|森冷/.test(text),
+      smirk=/冷笑|讥诮|邪笑|歪嘴/.test(text), dagger=/匕首|短刀|暗刃/.test(text),
+      skull=/骷髅|骨饰|白骨/.test(text), hood=/兜帽|连帽黑衣/.test(text),
+      horns=/尖角|恶魔角|黑角/.test(text), cold=/冷酷|抱臂|睨视|狠厉/.test(text);
+    app.highCollar=/高领|立领/.test(text);
+    app.spikedShoulders=/尖刺肩甲|尖刺肩铠/.test(text);
+    app.isEvilLook=cloak||robe||redEye||glare||smirk||dagger||skull||hood||horns||cold||app.spikedShoulders;
+    if (cloak) {app.outerwear="dark_cloak"; if(!cm) app.outfitColor="黑色";}
+    if (robe) {app.bodyStyle="black_robe"; if(!cm) app.outfitColor="黑色";}
+    if (redEye) {app.eyeColor="#FF1E27"; app.eyeStyle="narrowed";}
+    if (glare) {app.expression="head_down_glare"; app.skinTone="苍白";}
+    if (smirk) app.mouthStyle="smirk";
+    if (dagger) app.waistAccessory="dagger";
+    if (skull) {app.chestAccessory="skull"; if(!cm) app.outfitColor="黑色";}
+    if (hood) app.hat="shadowed_hood";
+    if (horns) app.headAccessory="horns";
+    if (cold) {app.pose="crossed_arms"; app.eyeStyle="narrowed"; if(!cm) app.outfitColor="黑色";}
     return app;
   }
+  window.__xtExtractAppearance = extractAppearance;
   function profileFromProxy(c, promptText) {
     var base = localTranslate(promptText);
     var jung = {}, bigFive = {};
@@ -314,7 +342,7 @@ function applyGender(app, gender, descText, promptText) {
     return fetchWithTimeout(base + "/generate", {
       method: "POST",
       headers: { "content-type": "application/json", "X-Test-Token": s.testToken || "" },
-      body: JSON.stringify({ prompt: promptText })
+      body: JSON.stringify({ prompt: buildGenPrompt(promptText) })
     }, 75000).then(function (r) {
       return r.json().catch(function () { return null; }).then(function (j) {
         if (!r.ok) throw new Error((j && j.message) || ("HTTP " + r.status));
@@ -4203,7 +4231,7 @@ window.__nodeObeyChance = function (profile, check) {
   const calendar = day => ({season: ['春','夏','秋','冬'][Math.floor((((day-1)%112)+112)%112/28)], doy: ((day-1)%112+112)%112+1, seasonNumber: Math.floor((day-1)/28)});
   const keyName = name => name === '陶镇长' ? '陶守义' : name;
   const npc = name => NPCS.find(n => n.name === keyName(name));
-  const logText = r => [r.eventTitle,r.eventText,r.diary,JSON.stringify(r.actions || [])].filter(Boolean).join(' ');
+  const logText = r => [r.eventTitle,r.eventText,r.diaryMeta?.version===4?'':r.diary,JSON.stringify(r.actions || [])].filter(Boolean).join(' ');
 
   function fresh() {
     return {
@@ -4425,8 +4453,7 @@ window.__nodeObeyChance = function (profile, check) {
         if(p.key==='crisis') {v.crisisSeasonsLeft=2;v.crisisStartSeason=calendar(r.day).seasonNumber;v.traces.petition=true;if(selected.fx.dark)v.helpedDeveloper=true;}
         if(p.key==='harvestfest') {
           familyFootnote(state,v);
-          const footnote='\n家族注脚：'+v.familyNotes.join(' ');
-          if(!String(r.diary||'').includes('家族注脚：'))r.diary=String(r.diary||'')+footnote;
+          // Family notes remain in v.familyNotes; one first-person diary per day.
         }
       }
       if(p.kind==='threshold') {v.thresholdFired['ch'+p.key]=true;v.pressure=40;v.pendingThreshold=null;v.pressureAbove=false;}
@@ -17444,13 +17471,16 @@ var dg = {
     "紫色": "#7a559e",
     "棕色": "#7d5a3c",
     "灰色": "#7c7f85",
-    "橙色": "#d97c2e"
+    "橙色": "#d97c2e",
+    "黑色": "#1E1E24", "暗红": "#6E141E", "暗紫": "#3B185F",
+    "白色": "#D8DCE3", "惨白": "#D8DCE3", "毒绿": "#265C28"
   },
   s5 = {
     "白皙": "#f7d2a6",
     "自然": "#eebd8f",
     "小麦": "#d29a63",
-    "黝黑": "#9c6636"
+    "黝黑": "#9c6636",
+    "苍白": "#EDE6F2"
   },
   c5 = {
     "渔夫帽": "#8093a8",
@@ -17507,6 +17537,25 @@ function hg(e) {
   return t >>> 0;
 }
 function md(e, t, a, n) {
+  // 旧存档同样从外貌原文补齐；不从 summary、身份或人格推断邪恶外观。
+  if (e.desc && window.__xtExtractAppearance) e = window.__xtExtractAppearance(e.desc, e);
+  const darkPalette = {
+    "黑色":["#1E1E24","#121216","#343440"],
+    "暗红":["#6E141E","#420A10","#9B2230"],
+    "暗紫":["#3B185F","#220C38","#5E2B91"],
+    "毒绿":["#265C28","#153617","#499B4C"],
+    "惨白":["#D8DCE3","#A6B0BF","#E2E5EC"],
+    "白色":["#D8DCE3","#A6B0BF","#E2E5EC"]
+  }[e.outfitColor];
+  const scheme = !e.isEvilLook ? null : e.chestAccessory === "skull"
+    ? {pants:"#2C2C34", shoes:"#D0D4DC", hair:"#D8DCE3", skin:"#F5F5F7"}
+    : e.outfitColor === "暗紫"
+    ? {pants:"#141418", shoes:"#121216", hair:"#A8A2B8", skin:"#EDE6F2"}
+    : e.outfitColor === "毒绿"
+    ? {pants:"#222422", shoes:"#141614", hair:"#161A16", skin:"#E8EFEA"}
+    : e.outfitColor === "暗红"
+    ? {pants:"#16161C", shoes:"#121216", hair:"#18181C", skin:"#F2E6E1"}
+    : {pants:"#141418", shoes:"#1E1E24", hair:"#18181C", skin:"#F2ECE9"};
   let l = a ?? {
       Ni: 50,
       Ne: 50,
@@ -17534,9 +17583,9 @@ function md(e, t, a, n) {
   let d = l.Fe >= 68 || i.extraversion >= 68 ? "smile" : l.Fe <= 26 && l.Fi >= 55 ? "shy" : l.Ne >= 68 ? "curious" : l.Te >= 62 ? "serious" : "calm",
     b = l.Si >= 68 && l.Fe <= 32 ? "slouch" : l.Ne >= 62 || l.Se >= 62 ? "bouncy" : l.Te >= 60 ? "upright" : "relaxed",
     N = pg[e.outfitColor] ?? "#42679f";
-  if (l.Fe >= 68 || i.extraversion >= 68) N = js(N, 1.14);
-  if (b === "slouch" || e.outfitStyle === "粗布") N = js(N, 0.8);
-  if (e.outfitStyle === "混搭") N = js(N, 1.06);
+  if (!darkPalette && (l.Fe >= 68 || i.extraversion >= 68)) N = js(N, 1.14);
+  if (!darkPalette && (b === "slouch" || e.outfitStyle === "粗布")) N = js(N, 0.8);
+  if (!darkPalette && e.outfitStyle === "混搭") N = js(N, 1.06);
   let x = Object.keys(ig),
     w = Object.keys(rg),
     v = e.pantsColor && ig[e.pantsColor] || x[o % x.length] || "#33415e",
@@ -17544,12 +17593,16 @@ function md(e, t, a, n) {
     O = e.build === "瘦小" || e.build === "标准" || e.build === "壮实" || e.build === "高挑" ? e.build : l.Se >= 66 || l.Si >= 62 && l.Se >= 52 ? "壮实" : l.Ni >= 70 && l.Se <= 52 || l.Ti >= 68 && l.Se <= 50 ? "瘦小" : l.Te >= 64 ? "高挑" : o % 5 === 0 ? "瘦小" : o % 5 === 1 ? "高挑" : "标准",
     m = b === "bouncy" ? "bouncy" : b === "slouch" ? "shuffle" : b === "upright" ? "stride" : "steady";
   return {
-    skin: s5[e.skinTone] ?? "#eebd8f",
-    hair: dg[e.hairColor] ?? "#2e2622",
+    skin: scheme && (e.skinTone === "苍白" || e.skinTone === "自然") ? scheme.skin : s5[e.skinTone] ?? "#eebd8f",
+    hair: scheme && (e.hairColor === "黑色" || e.hairColor === "银灰") ? (e.hairColor === "银灰" ? (e.chestAccessory === "skull" ? "#D8DCE3" : "#A8A2B8") : "#18181C") : dg[e.hairColor] ?? "#2e2622",
     outfit: N,
-    outfitDark: js(N.startsWith("#") ? N : "#42679f", 0.72),
-    pants: v,
-    shoes: k,
+    outfitDark: darkPalette ? darkPalette[1] : js(N.startsWith("#") ? N : "#42679f", 0.72),
+    outfitHighlight: darkPalette ? darkPalette[2] : null,
+    darkLook: e,
+    // 五套点缀：鸦羽血色、夜幕巫毒、枯骨寒鸦、蛇瞳蚀骨、暗金权欲。
+    darkAccent: e.chestAccessory === "skull" ? "#E2E5EC" : e.outfitColor === "毒绿" ? "#388E3C" : e.outfitColor === "暗红" ? "#C59B27" : e.outfitColor === "暗紫" || e.pose === "crossed_arms" ? "#4A1E75" : "#7A1C24",
+    pants: scheme && e.pantsColor === "黑色" ? scheme.pants : v,
+    shoes: scheme && e.shoeColor === "黑色" ? scheme.shoes : k,
     headwear: u,
     hatColor: c5[u] ?? "#8093a8",
     prop: c,
@@ -17562,7 +17615,7 @@ function md(e, t, a, n) {
       serious: "一脸认真",
       curious: "眼神好奇、总在东张西望"
     }[d],
-    blush: l.Fe >= 62 || i.neuroticism >= 58 && i.extraversion >= 38,
+    blush: !e.isEvilLook && (l.Fe >= 62 || i.neuroticism >= 58 && i.extraversion >= 38),
     posture: b,
     postureLabel: {
       slouch: "微微低头含胸",
@@ -20980,28 +21033,113 @@ function Rg(e) {
   let t = Ur(e, 1);
   return t === 0 ? "刚发芽 · 嫩绿" : t === 1 ? "正在长 · 翠绿" : "快成熟 · 金黄";
 }
-function E5(e, t, a) {
-  let n = [...t.actions].sort((c, u) => Math.abs((u.fx.coins ?? 0) + (u.fx.growth ?? 0)) - Math.abs((c.fx.coins ?? 0) + (c.fx.growth ?? 0)))[0],
-    l = {
-      春: "风里有花香",
-      夏: "蝉叫得人心慌",
-      秋: "天黑得越来越早",
-      冬: "呵气成霜"
-    }[t.season] ?? "",
-    i = e.jung.Fe < 35 && e.jung.Fi > 55,
-    o = [];
-  if (i) {
-    if (o.push(`${t.season}天，${l}。`), n) o.push(`今天主要是${n.name}。${n.fx.mood && n.fx.mood > 4 ? "还不错。" : "就那样。"}`);
-    if (t.eventTitle) o.push(`${t.eventTitle.replace("人生节点 · ", "").replace("季节节日 · ", "")}那事，过去了。`);
-    o.push(t.mood >= 60 ? "睡个好觉。" : "有点累，早点睡。");
-  } else {
-    if (o.push(`今天是${t.season}季的普通一天，${l}。`), n) o.push(`最难忘的是${n.name}的时候——${n.text}`);
-    if (t.eventText) o.push(t.eventText);
-    o.push(t.mood >= 60 ? "日子就这么过下去，好像也不坏。" : "今天不太顺，但明天又是新的一天。");
-  }
-  return o.join("");
+// Stage 4: deterministic first-person diary; source records stay intact.
+function XtDiaryVoice(profile, state) {
+  const drift=state?.v2?.drift;
+  const score=(keys,base,delta)=>Object.fromEntries(keys.map(k=>[k,Math.max(0,Math.min(100,Number(base?.[k]??50)+Number(delta?.[k]||0)))]));
+  const j=score(['Ni','Ne','Si','Se','Ti','Te','Fi','Fe'],profile.jung||profile.jung8,drift?.jung);
+  const b=score(['openness','conscientiousness','extraversion','agreeableness','neuroticism'],profile.bigFive||profile.big5,drift?.big5);
+  const v=profile.diaryVoice||'';
+  if(profile.evilTrait===true || /冷|狠|算计|嘲|利己/.test(v) || b.agreeableness<35 && Math.max(j.Fi,j.Te,j.Ni)>=60)return 'dark';
+  if(/简短|克制|独|少言|安静/.test(v) || b.extraversion<35 && Math.max(j.Ni,j.Ti,j.Si)>=55 && b.agreeableness>=35)return 'lonely';
+  if(/粗|直白|痛快|干活|力气/.test(v) || j.Se>=60 && b.openness<50 && Math.max(j.Te,j.Ti)>=50)return 'rough';
+  if(/极简|画面感|颜色|细节|敏感/.test(v) || b.openness>=65 && Math.max(j.Fi,j.Si,j.Ni)>=60 && b.extraversion<60)return 'delicate';
+  if(/热闹|爱笑|话多|谁的事都记/.test(v) || b.extraversion>=65 && Math.max(j.Se,j.Ne,j.Fe)>=55)return 'cheerful';
+  return 'warm';
 }
-
+const XtDiaryFeel={warm:['踏实','心里软乎乎的','暖融融的'],lonely:['清静','隔着一层雾似的','足够了'],dark:['不屑','冷笑','理所当然'],cheerful:['痛快极了','乐得合不拢嘴','浑身是劲'],rough:['得劲','利索','值这一身汗'],delicate:['恍惚','轻轻落了地','泛起一点微澜']};
+// T1 people / T2 objects / T3 action. Fixed prose expresses attitude only:
+// no invented meetings, acquisitions, gestures, weather, or NPC reactions.
+const XtDiaryTemplates={
+ warm:[
+  '{时间}{地点}，我记着与{NPC名}有关的这件事。{动作}。{结果}。我愿意把这份牵挂留住，想起一点好处就觉得{感受词}。',
+  '{时间}{地点}，我惦记的是{物品}。{动作}。{结果}。我想好好珍惜手头的日子，有一点指望就觉得{感受词}。',
+  '{时间}{地点}，{动作}。{结果}。我想把日子一点点照料好，这个念头让我觉得{感受词}。'],
+ lonely:[
+  '{时间}{地点}，与{NPC名}有关的事，我只想留这几句。{动作}。{结果}。我不想再多说，{感受词}。',
+  '{时间}{地点}，我想到{物品}。{动作}。{结果}。我只想静一静，心里{感受词}。',
+  '{时间}{地点}，{动作}。{结果}。我不想把每个念头都说给人听。{感受词}。'],
+ dark:[
+  '{时间}{地点}，{NPC名}的事，我自有我的打算。{动作}。{结果}。我不欠谁一个好听的解释，心里只剩{感受词}。',
+  '{时间}{地点}，我在意的是{物品}。{动作}。{结果}。值不值得，由我来算；谁也别想替我做主。{感受词}。',
+  '{时间}{地点}，{动作}。{结果}。我会记住这笔账。下一步怎么走，由我决定。{感受词}。'],
+ cheerful:[
+  '{时间}{地点}，我今天要说说{NPC名}的事！{动作}。{结果}。我还想看看接下来会怎样，光是想着就觉得{感受词}！',
+  '{时间}{地点}，我可记住{物品}了！{动作}。{结果}。我还想接着试，盼着能{感受词}！',
+  '{时间}{地点}，{动作}。{结果}。我还想继续往前过，给自己鼓鼓劲，盼着明天能{感受词}！'],
+ rough:[
+  '{时间}{地点}，我把{NPC名}的事记清楚。{动作}。{结果}。我认实打实的结果，办事就图个{感受词}。',
+  '{时间}{地点}，我先记下{物品}。{动作}。{结果}。我不爱绕弯，往后还得干得{感受词}。',
+  '{时间}{地点}，{动作}。{结果}。我就认一个理：手上的活得干{感受词}。'],
+ delicate:[
+  '{时间}{地点}，我想起与{NPC名}有关的那一刻。{动作}。{结果}。我反复想着那一点变化，心绪{感受词}。',
+  '{时间}{地点}，我记住了{物品}。{动作}。{结果}。我想把这一点细节留住，心绪{感受词}。',
+  '{时间}{地点}，{动作}。{结果}。我想慢慢理清这一天，心绪{感受词}。']
+};
+const XtDiaryMundane={
+ warm:'{时间}{地点}，{动作}。{结果}。我想把这些寻常事照料好，日子才过得{感受词}。',
+ lonely:'{时间}{地点}，{动作}。{结果}。我只想记这点小事，不想多说。{感受词}。',
+ dark:'{时间}{地点}，{动作}。{结果}。我攒着精力等下一次机会，懒得向谁交代。{感受词}。',
+ cheerful:'{时间}{地点}，{动作}。{结果}。寻常小事我也想接着做，盼着能{感受词}！',
+ rough:'{时间}{地点}，{动作}。{结果}。我只记实在的，往后照样要干得{感受词}。',
+ delicate:'{时间}{地点}，{动作}。{结果}。我想让这些小小的细节慢慢沉下来，心绪{感受词}。'
+};
+function XtDiaryFirstPerson(text, profile) {
+  // Actor pronouns in authored outcome records refer to the playable character.
+  // Keep quoted NPC dialogue verbatim, and keep named NPCs (including 她) intact.
+  return String(text||'').replace(/（听你的几率约[^）]*）/g,'').split(/(“[^”]*”|「[^」]*」)/).map((part,i)=>i%2?part:part
+    .replace(/(?<!其|吉)他(?!们|人|乡|处|日)/g,'我')
+    .replace(/因日常往来|度过了充实的一天|我把自己的感受写进了日记|关系得到了提升/g,'')
+  ).join('').replace(/([^。]+?) · ([^：]+)：\2(?=。|$)/g,'$1。我$2').replace(/ · 原本说好/g,'，原本说好').trim();
+}
+function XtDiaryFacts(profile, record) {
+  const actions=(record.actions||[]).filter(a=>a.text&&a.name!=='悄悄的干预');
+  const names=(window.__v2?.NPCS||[]).map(n=>n.name).concat(typeof sg!=='undefined'?sg:[],['桂花婶','陶镇长','马龙']);
+  const weight=a=>Number(a.eventWeight??(/送|赠|买|卖|交易|争吵|冲突/.test(a.name||'')?20:0));
+  const major=actions.filter(a=>weight(a)>=20);
+  let source,kind;
+  if(record.eventText){source={text:record.eventText,locId:record.eventLocId,time:record.eventTime||'行程结束后'};kind='event';}
+  else if(major.length){source=major.sort((a,b)=>weight(b)-weight(a))[0];kind='action';}
+  else if(record.nightResults?.length){source={text:record.nightResults.join('。'),time:'夜里'};kind='night';}
+  else {source=[...actions].sort((a,b)=>Number(b.hours||0)-Number(a.hours||0))[0];kind=actions.some(a=>/聊天|交谈|打招呼|交易|零工|探险|下矿/.test(a.name))?'action':'mundane';}
+  // Missing historical fields stay empty; never invent a location, tool or yield.
+  const raw=String(source?.text||'');
+  let text=XtDiaryFirstPerson(raw,profile).replace(/[。；]+$/,'');
+  const contextNpcs=[...new Set(names)].filter(n=>n&&kind==='event'&&String(record.eventContext||'').includes(n));
+  if(contextNpcs.length===1)text=text.replace(/邻居/g,contextNpcs[0]);
+  const time=source?.time||(['清晨','上午','正午','午后','傍晚','夜里'][source?.slot]||'今天');
+  const locId=source?.locId||source?.stop?.locId;
+  const place=(typeof Gr!=='undefined'?Gr:[]).find(p=>p.id===locId)?.name||'';
+  const npc=[...new Set(names)].filter(n=>n&&(raw+' '+(kind==='event'?(record.eventTitle||'')+' '+(record.eventContext||''):'')).includes(n)).join('、');
+  const items=[...new Set(raw.match(/(?:[铜铁金]矿|[铜铁金]锭|煤炭|石英|鸡蛋|蜂蜜|种子|果酒|鱼柳|幼鱼|浮漂|拟饵|手札|画稿|画布|颜料石|色石|账页|账本|钱袋|古卷|风物志|星图|工具|木料|柴火|野果|熟果|麦秆|信封|字条|钥匙|果酱|牛奶|奶酪|蛋黄酱|锄头|鱼竿|鱼篓)/g)||[])].join('、');
+  if(text&&!/我/.test(text))text=!names.some(n=>text.startsWith(n))&&/^(?:在|到|去|把|拿|冒|沿|举|双手|蹲|坐|站|俯|弯|挥|走|翻|扛|盯|收|摘|拾|搬|修|敲|磨|钓|种|浇|没|哪儿|一手)/.test(text)?'我'+text:'我记得，'+text;
+  const parts=text.split(/[。；]/).filter(Boolean);
+  // Preserve the whole selected action and its actual result without summarizing it away.
+  return {kind,sourceText:raw,slots:{'时间':time,'地点':place?'，在'+place:'','NPC名':npc,'动作':parts.shift()||'我想让今天就这样过去','物品':items,'结果':parts.join('。'),'感受词':''}};
+}
+function E5(profile, record) {
+  const facts=XtDiaryFacts(profile,record),voice=record.diaryTone||XtDiaryVoice(profile);
+  const hash=Array.from(String(profile.id??profile.name??'')).reduce((n,c)=>(Math.imul(n,31)+c.codePointAt(0))>>>0,0);
+  const rotation=(Number(record.day)+hash)%3;
+  const slots=facts.slots;
+  slots['感受词']=XtDiaryFeel[voice][rotation];
+  const eligible=[...(slots['NPC名']?[0]:[]),...(slots['物品']?[1]:[]),2];
+  const index=eligible[rotation%eligible.length];
+  let template=facts.kind==='mundane'?XtDiaryMundane[voice]:XtDiaryTemplates[voice][index];
+  const body=template.replace(/\{([^}]+)\}/g,(_,key)=>slots[key]||'').replace(/。\s*。/g,'。');
+  record.diaryMeta={version:4,tone:voice,kind:facts.kind,template:facts.kind==='mundane'?'daily':index+1,slots:{...slots},sourceText:facts.sourceText};
+  return `第${record.day}天。`+body;
+}
+function XtDiaryMigrate(profile,state) {
+  for(const r of state.log||[])if(r.diaryMeta?.version!==4) {
+    // Older night results were stored only in the diary suffix. Recover only that recorded suffix.
+    const night=String(r.diary||'').match(/（夜里：([\s\S]*?)。）/);
+    if(night&&!r.nightResults)r.nightResults=night[1].split('；');
+    r.diaryTone=r.diaryTone||XtDiaryVoice(profile);
+    r.diary=E5(profile,r);
+  }
+  return state;
+}
 
 // §8 NPC prohibitions. Unsupported actions remain semantic ids for future route entries,
 // rather than inventing twelve new sprites or services in this activity-only change.
@@ -21316,7 +21454,7 @@ function Ng(e, t, a) {
       visible={kind:'forage',label:z.text,locId:'grove',text:z.text,dwellMs:6500};
     }
     k.push({
-      id: C.id, slot:C.slot, identity:XtIdentity(e), core:!!C.role || XtBands[XtIdentity(e)][x5.findIndex(a=>a.id===C.id)]>=2,
+      id: C.id, slot:C.slot, hours:C.hours||3, locId:visible?.locId||C.locId||(typeof wv!=="undefined"?wv[C.name]:undefined), identity:XtIdentity(e), core:!!C.role || XtBands[XtIdentity(e)][x5.findIndex(a=>a.id===C.id)]>=2,
       ...(visible?{stop:visible}:{}),
       name: C.name,
       combatCount: z.combatCount || 0,
@@ -21371,7 +21509,7 @@ function kd(e, t, a) {
   if (i) {
     let b = i.choices[a] ?? i.choices[0];
     if (b) {
-      l.eventTitle = i.title; l.chosenLabel=b.label;
+      l.eventTitle = i.title; l.chosenLabel=b.label; l.eventLocId=i.locId; l.eventTime=i.time; l.eventContext=i.text;
       let N = b.obey,
         x = !1, _pc = null;
       if (b.check && b.disobey) {
@@ -21419,7 +21557,9 @@ function kd(e, t, a) {
   let o = wd(e.name.length * 31 + l.day * 7 + 5),
     c = S5(n, o);
   l.coins = n.coins, l.mood = n.mood, l.growth = n.growth, l.farm = n.farm;
-  let u = E5(e, l, o) + (c.length > 0 ? `（夜里：${c.join("；")}。）` : ""),
+  l.nightResults = c; l.diaryTone = XtDiaryVoice(e, n);
+  XtDiaryMigrate(e, n);
+  let u = E5(e, l),
     d = {
       ...l,
       diary: u
@@ -21503,7 +21643,7 @@ function Rn(e) {
   let t = zr(e),
     a = e.gender === "女" || e.gender === "男" ? { ...e.appearance, gender: e.gender } : e.appearance;
   return {
-    key: `m${a.gender || ""}-${t.seed}-${t.build}-${t.prop}-${a.hairStyle}${a.hairColor}${a.hat}${a.outfitColor}${a.skinTone}`,
+    key: `dark3-${JSON.stringify(t.darkLook)}-m${a.gender || ""}-${t.seed}-${t.build}-${t.prop}-${a.hairStyle}${a.hairColor}${a.hat}${a.outfitColor}${a.skinTone}`,
     appearance: a,
     vid: t
   };
@@ -21511,7 +21651,7 @@ function Rn(e) {
 function Fs(e, t, a, n) {
   let l = md(e, t, a, n);
   return {
-    key: `m${e.gender || ""}-${l.seed}-${l.build}-${l.prop}-${e.hairStyle}${e.hairColor}${e.hat}${e.outfitColor}${e.skinTone}`,
+    key: `dark3-${JSON.stringify(l.darkLook)}-m${e.gender || ""}-${l.seed}-${l.build}-${l.prop}-${e.hairStyle}${e.hairColor}${e.hat}${e.outfitColor}${e.skinTone}`,
     appearance: e,
     vid: l
   };
@@ -21612,6 +21752,94 @@ class Od {
     for (let o = 0; o <= i; o++) this.set(Math.round(e + (a - e) * o / i), Math.round(t + (n - t) * o / i), l);
   }
 }
+// Od 的参数顺序为 (行, 列)；坐标遵循设计文档 16×32，右侧由左侧镜像。
+function XtDarkLayers(o, l, t, frame, phase) {
+  const n=l.darkLook || {}, side=t==="left", back=t==="up",
+    sway=frame===1?-1:frame===2?1:0, edge=l.outfitHighlight || "#343440";
+  if (phase === "cloth") {
+    if (l.outfitHighlight) {
+      const c=side?z5(l):C5(l);
+      o.rect(c.torsoTop,c.torsoBot,c.bodyL,c.bodyL,edge);
+      o.rect(c.torsoBot,c.torsoBot,c.bodyL,c.bodyR,edge);
+    }
+    if (n.outerwear === "dark_cloak") {
+      for(let row=12;row<=25;row++) {
+        const spread=Math.min(3,Math.floor((row-12)/4)), left=(side?5:5)-spread+(row>22?sway:0), right=(side?10:10)+spread+(row>22?sway:0);
+        if(back) o.rect(row,row,left,right,"#1A1A22");
+        else {o.rect(row,row,left,side?right:5,"#1A1A22"); if(!side)o.rect(row,row,10,right,"#1A1A22");}
+        o.set(row,left,"#323242");o.set(row,right,"#323242");
+      }
+      if(!back)o.rect(13,13,side?6:7,side?7:8,"#8B1E24");
+    }
+    if(n.bodyStyle === "black_robe") {
+      for(let row=13;row<=29;row++) {
+        const left=(side?5:3)+(row>25?sway:0), right=(side?10:12)+(row>25?sway:0);
+        o.rect(row,row,left,right,row<23?l.outfit:"#181820");
+        o.set(row,left,edge);o.set(row,right,edge);
+        if(row===29)for(let col=left+1;col<right;col+=2)o.set(row,col,null);
+      }
+      o.rect(22,22,side?5:3,side?10:12,edge);
+    }
+    if(n.isEvilLook) {
+      if(!back)o.rect(14,21,side?6:7,side?6:8,l.darkAccent);
+      else o.rect(14,23,side?8:8,side?8:8,edge);
+    }
+    if(n.pose === "crossed_arms" && !back) {
+      o.rect(16,17,side?6:4,side?10:11,l.outfitDark);
+      o.set(16,side?6:5,l.skin);o.set(17,10,l.skin);
+    }
+    if(n.waistAccessory === "dagger") {
+      const col=side?10:12;
+      o.rect(19,20,col,col,"#5C161E");o.rect(21,21,col,col+1,"#B89228");
+      o.rect(22,23,col+1,col+1,"#E2E8F0");o.set(23,col,"#94A3B8");
+    }
+    if(n.chestAccessory === "skull" && !back) {
+      const col=side?6:6;
+      o.rect(15,16,col,col+2,"#E5E7EB");o.set(16,col,"#121216");o.set(16,col+2,"#121216");o.set(17,col+1,"#E5E7EB");
+    }
+    return;
+  }
+  if(n.highCollar) {
+    o.rect(10,12,side?5:3,side?6:4,"#181820");o.rect(10,12,11,12,"#181820");
+    o.set(11,side?6:4,l.darkAccent);o.set(11,11,l.darkAccent);
+  }
+  if(n.spikedShoulders) {
+    o.rect(13,14,side?4:2,side?6:4,"#4B5563");o.set(12,side?3:1,"#9CA3AF");
+    o.rect(13,14,11,13,"#4B5563");o.set(12,14,"#9CA3AF");
+  }
+  if(n.hat === "shadowed_hood") {
+    o.rect(2,4,side?4:3,12,"#1A1A22");o.rect(1,1,7,8,"#323242");
+    o.rect(5,11,side?8:2,side?11:3,"#1A1A22");o.rect(5,11,12,13,"#323242");
+    if(back)o.rect(4,11,3,12,"#1A1A22");
+    else o.rect(6,9,4,side?8:11,"#101016");
+  }
+  if(n.headAccessory === "horns") {
+    o.rect(2,3,3,4,"#6E141E");o.set(1,3,"#C8CCD4");
+    o.rect(2,3,11,12,"#6E141E");o.set(1,12,"#C8CCD4");
+  }
+  // 背面不画穿透后脑的眼口；依靠兜帽、尖角、肩甲及斗篷保持辨识。
+  if(back)return;
+  if(n.eyeStyle === "narrowed" || n.expression === "head_down_glare" || n.hat === "shadowed_hood") {
+    const c=side?z5(l):C5(l);
+    // 清除原有黑豆眼，再把五官下移；避免叠出第二对眼睛。
+    o.rect(c.headTop+3,c.chin,c.headL,c.headR,l.skin);
+    o.rect(9,11,side?5:5,side?8:10,l.skin);
+    if(n.hat === "shadowed_hood")o.rect(6,8,side?4:4,side?8:11,"#101016");
+  }
+  if(n.expression === "head_down_glare")o.rect(6,8,5,side?8:10,n.hat === "shadowed_hood"?"#101016":"#B59896");
+  if(n.eyeStyle === "narrowed" || n.expression === "head_down_glare" || n.hat === "shadowed_hood") {
+    if(n.hat === "shadowed_hood")o.rect(9,9,4,side?8:11,"#101016");
+    const eyes=side?[5]:[5,10];
+    for(const col of eyes) {
+      o.rect(6,8,col,col,n.hat === "shadowed_hood"?"#101016":l.skin);
+      o.set(8,col,"#8C7370");o.set(9,col,n.eyeColor==="#FF1E27"?"#FF1E27":"#222222");
+    }
+  }
+  if(n.mouthStyle === "smirk") {
+    o.rect(10,11,side?5:6,side?7:10,l.skin);
+    o.rect(11,11,side?5:7,side?6:8,"#5A3838");o.set(10,side?5:9,"#5A3838");o.set(10,side?6:10,"#FFFFFF");
+  }
+}
 function dl(e, t, a) {
   if (t === "right") return dl(e, "left", a).map(C => [...C].reverse());
   let {
@@ -21702,6 +21930,7 @@ function dl(e, t, a) {
     o.rect(O + 1, O + 4, U, U + 1, "#a87c4f"), o.rect(O, O, U, U + 1, "#4f7d46");
   }
   if (l.prop === "rod") if (t === "down") o.line(v + 5, w + 2, b + 1, 15, "#6f4a2c"), o.line(b + 1, 15, b + 6, 15, "#d9d9d9"), o.rect(O + 2, O + 4, 0, 1, "#a87c4f"), o.set(O + 2, 0, "#b9b4a8");else if (t === "up") o.line(v + 1, w + 1, b, 14, "#6f4a2c"), o.rect(O + 2, O + 4, 0, 1, "#a87c4f");else o.line(v + 5, x - 1, b + 1, 0, "#6f4a2c"), o.line(b + 1, 0, b + 5, 0, "#d9d9d9"), o.rect(O + 2, O + 4, w + 1, w + 2, "#a87c4f");
+  XtDarkLayers(o, l, t, a, "cloth");
   if (t === "left") o.rect(N + 1, N + 1, p - 1, p, m);else o.rect(N + 1, N + 1, p - 1, p + 1, m);
   if (n.accessory === "围巾") o.rect(N + 1, N + 1, x, w, "#c94f38");
   if (t === "up") {
@@ -21780,9 +22009,15 @@ function dl(e, t, a) {
     }
     if (l.headwear === "头巾") o.set(b, d + 1, l.hatColor);
   }
+  XtDarkLayers(o, l, t, a, "head");
   return i;
 }
 function Cd(e) {
+  // 黑暗头像与全身共用图层，避免档案头像仍显示中性外貌。
+  if (e.vid.darkLook?.isEvilLook) {
+    const source=dl(e,"down",0);
+    return Array.from({length:24},(_,row)=>Array.from({length:24},(_,col)=>source[Math.floor(row*22/24)][Math.floor(col*16/24)]));
+  }
   let {
       appearance: t,
       vid: a
@@ -25188,6 +25423,22 @@ function cb(e) {
               }[A.facing4] || [0, 1],
               hx = cx + fv[0] * s * 0.3,
               hy = fy - s * 0.88;
+            // These two actions use Ja's sprite scale, shoulder row and idle bob.
+            let actionShoulder = null;
+            if (kk === "farm" || kk === "pickfruit") {
+              const vid = Rn(V.profile).vid,
+                q = s * (vid.build === "壮实" ? 0.94 : vid.build === "瘦小" ? 0.8 : 0.86),
+                bob = Math.sin((we.id === "mine" ? ft : Q) / 500 + A.walkPhase) * 0.8,
+                phase = (el % 950) / 950,
+                leaning = kk === "farm" && phase > 0.4 && phase < 0.85,
+                dx = leaning ? fv[0] * s * 0.09 : 0,
+                dy = (leaning ? s * 0.1 : 0) - bob;
+              actionShoulder = {
+                x: cx + dx + fv[0] * q / 16,
+                y: fy + dy + s * 0.02 - q * 2 + ((vid.posture === "slouch" ? 12 : 11) + 1.5) * q / 16,
+                dx, dy, skin: vid.skin, sleeve: vid.outfit
+              };
+            }
             if (kk === "sleep" || kk === "read") {
               let bd = null,
                 bdd = 9;
@@ -25264,12 +25515,25 @@ function cb(e) {
                 tx = hx + Math.cos(th) * len,
                 ty = hy + Math.sin(th) * len,
                 th0 = Math.atan2(fv[1], fv[0]) - 0.65 - 0.775;
+              if (kk === "farm") {
+                // Move the grip and hoe with the torso, then join shoulder to grip.
+                hx += actionShoulder.dx; hy += actionShoulder.dy;
+                tx = hx + Math.cos(th) * len; ty = hy + Math.sin(th) * len;
+                const sx = actionShoulder.x, sy = actionShoulder.y,
+                  ex = (sx + hx) / 2, ey = (sy + hy) / 2 + 6;
+                r.save(); r.lineCap = "round"; r.lineJoin = "round";
+                r.beginPath(); r.moveTo(sx, sy); r.lineTo(ex, ey); r.lineTo(hx, hy);
+                r.strokeStyle = "#39271f"; r.lineWidth = 9; r.stroke();
+                r.strokeStyle = actionShoulder.skin; r.lineWidth = 5; r.stroke();
+                r.beginPath(); r.moveTo(sx, sy); r.lineTo(sx + (ex - sx) * 0.65, sy + (ey - sy) * 0.65);
+                r.strokeStyle = actionShoulder.sleeve; r.lineWidth = 6; r.stroke(); r.restore();
+              }
               if (lift > 0.05) {
                 r.strokeStyle = kk === "work" ? "rgba(255,255,255,.5)" : "rgba(255,255,255,.28)", r.lineWidth = 2.5, r.lineCap = "round", r.beginPath(), r.arc(hx, hy, len, Math.min(th0, th), Math.max(th0, th)), r.stroke();
               } /* R4-F4: work swoosh brighter */
               r.strokeStyle="#28231e";r.lineWidth=8;r.beginPath();r.moveTo(hx,hy);r.lineTo(tx,ty);r.stroke();
               r.strokeStyle = kk === "chop" ? "#8a5a2e" : kk === "work" ? "#a8763e" : "#7a5230", r.lineWidth = kk === "work" ? 5.5 : 4.6, r.lineCap = "round", r.beginPath(), r.moveTo(hx, hy), r.lineTo(tx, ty), r.stroke(); /* R4-F4: work handle brighter/thicker */
-              if (kk === "farm") {r.fillStyle="#6b7581";r.fillRect(tx-11,ty-4,22,8);r.strokeStyle="#28231e";r.lineWidth=2;r.strokeRect(tx-11,ty-4,22,8);r.strokeStyle="#efbc90";r.lineWidth=5;r.beginPath();r.moveTo(hx-8,hy+5);r.lineTo(hx+8,hy-5);r.stroke();}else if (kk === "chop") {
+              if (kk === "farm") {r.fillStyle="#6b7581";r.fillRect(tx-11,ty-4,22,8);r.strokeStyle="#28231e";r.lineWidth=2;r.strokeRect(tx-11,ty-4,22,8);r.fillStyle=actionShoulder.skin;r.fillRect(hx-3,hy-3,6,6);}else if (kk === "chop") {
                 r.fillStyle = "#b9c0c7", r.beginPath(), r.moveTo(tx, ty), r.lineTo(tx + Math.cos(th + 1.9) * 12, ty + Math.sin(th + 1.9) * 12), r.lineTo(tx + Math.cos(th + 0.7) * 10, ty + Math.sin(th + 0.7) * 10), r.closePath(), r.fill();
               } else if (kk === "mine") {
                 r.strokeStyle = "#9aa3ab", r.lineWidth = 3.6, r.beginPath(), r.arc(tx, ty, 10, th + 2.2, th + 4.1), r.stroke();
@@ -25327,7 +25591,7 @@ function cb(e) {
                   r.fillStyle = i === act2 ? "#4a2a08" : "rgba(74,42,8,.4)", r.beginPath(), r.arc(mx - 6.5 + i * 6.5, my - 0.5, i === act2 ? 2.2 : 1.7, 0, Math.PI * 2), r.fill();
                 }
               }
-            } else if(!(we.id==="mine"&&kk==="fight")) { XtDraw(r,kk,cx,fy,el,s,A); }
+            } else if(!(we.id==="mine"&&kk==="fight")) { XtDraw(r,kk,cx,fy,el,s,A,actionShoulder); }
 
           }
         }
@@ -26335,7 +26599,7 @@ function XtTree(r,cx,fy,picked,shake){
   for(let i=0;i<6;i++){if(i<picked)continue;r.fillStyle="#ec713c";r.fillRect(cx+20+i%3*17+shake,fy-96+Math.floor(i/3)*18,8,8);r.strokeStyle="#512c24";r.strokeRect(cx+20+i%3*17+shake,fy-96+Math.floor(i/3)*18,8,8);}
 }
 function XtCrate(r,x,y){r.fillStyle="#a46c36";r.fillRect(x,y,24,24);r.strokeStyle="#302217";r.lineWidth=3;r.strokeRect(x,y,24,24);r.beginPath();r.moveTo(x+3,y+3);r.lineTo(x+21,y+21);r.moveTo(x+21,y+3);r.lineTo(x+3,y+21);r.stroke();r.fillStyle="#e1b36c";r.fillRect(x+2,y+10,20,4);}
-function XtDraw(r,kind,cx,fy,el,s,A){
+function XtDraw(r,kind,cx,fy,el,s,A,actionShoulder){
   if(kind.startsWith("job_")) {XtDrawJob(r,kind,cx,fy,el,s,A);return;}
   const ph=(el%1200)/1200, handY=fy-28;
   const box=(x,y,w,h,c)=>{r.fillStyle=c;r.fillRect(x,y,w,h);r.strokeStyle="#30281f";r.lineWidth=2;r.strokeRect(x,y,w,h);};
@@ -26356,11 +26620,23 @@ function XtDraw(r,kind,cx,fy,el,s,A){
     const hx=cx+24+Math.sin(ang)*32,hy=fy-65+Math.cos(ang)*8;arm(hx,hy);box(hx-4,hy-6,9,10,"#f4c59c");
     if(waving){r.strokeStyle="#fff6cf";r.lineWidth=3;for(let i=0;i<3;i++){r.beginPath();r.arc(hx+9,hy-5,8+i*5,-0.8,0.6);r.stroke();}}
   }else if(kind==="pickfruit"){
-    const cycle=el/1200,k=Math.floor(cycle),p=cycle%1,shake=p>.38&&p<.6?Math.sin(el/30)*3:0;
-    XtTree(r,cx,fy,k,shake);
+    const cycle=el/1200,k=Math.floor(cycle),p=cycle%1,shake=p>.38&&p<.6?Math.sin(el/30)*3*Math.sin((p-.38)/.22*Math.PI)**2:0;
+    XtTree(r,cx,fy,k+(p>=.6?1:0),shake);
     basket(cx+10,fy-15);for(let i=0;i<Math.min(k,6);i++)box(cx+13+i%3*7,fy-13+Math.floor(i/3)*6,6,6,"#ea6539");
-    let hx=cx+16+Math.min(1,p*2)*18,hy=fy-34-Math.sin(Math.min(1,p*2)*Math.PI/2)*46;arm(hx,hy);
-    if(p>.38){const d=Math.max(0,(p-.6)/.4);box(hx-4-d*16,hy-4+d*68,8,8,"#f17039");if(p>.7)burst(cx+24,fy-13,"#ffe6a1",6);}
+    const smooth=t=>t*t*(3-2*t),
+      reach=p<.38?smooth(p/.38):p<.6?1:1-smooth((p-.6)/.4),
+      sx=actionShoulder.x,sy=actionShoulder.y,
+      fruit=Math.min(k,5),fx=cx+24+fruit%3*17,fyFruit=fy-92+Math.floor(fruit/3)*18,
+      hx=sx+8+(fx+shake-sx-8)*reach,hy=sy+16+(fyFruit-sy-16)*reach,
+      ex=(sx+hx)/2-5*reach,ey=(sy+hy)/2+6;
+    // Round, overlapping strokes keep the sleeve, arm and palm connected.
+    r.save();r.lineCap="round";r.lineJoin="round";
+    r.beginPath();r.moveTo(sx,sy);r.lineTo(ex,ey);r.lineTo(hx,hy);
+    r.strokeStyle="#39271f";r.lineWidth=9;r.stroke();r.strokeStyle=actionShoulder.skin;r.lineWidth=5;r.stroke();
+    r.beginPath();r.moveTo(sx,sy);r.lineTo(sx+(ex-sx)*.3,sy+(ey-sy)*.3);
+    r.strokeStyle=actionShoulder.sleeve;r.lineWidth=6;r.stroke();
+    r.fillStyle=actionShoulder.skin;r.fillRect(hx-3,hy-3,6,6);r.restore();
+    if(p>=.6){const d=(p-.6)/.4;box(fx-4+(cx+23-fx)*d,fyFruit-4+(fy-7-fyFruit)*d*d,8,8,"#f17039");if(p>.7)burst(cx+24,fy-13,"#ffe6a1",6);}
   }else if(kind==="fight"){
     const gone=el>5100&&!A.actFainted,hit=(el%1100)/1100,recoil=hit>.45&&hit<.8?Math.sin((hit-.45)/.35*Math.PI)*16:0;
     const mx=cx+52+recoil,my=fy-20;
@@ -26547,19 +26823,19 @@ function mb() {
     Dt = async (B, P) => {
       B = {...B,profile:{...B.profile,identity:XtRole(B.prompt)||B.profile.identity||XtRole(B.profile.title)||"farmer"}};
       if (y(B), ot(null), ee(null), V.v = null, Vt(null), Sa(!1), ne(null), Cn(null), z("farm"), G("none"), ce(!1), de(null), Tt(!1), ft(0), P) {
-        E(P);
+        E(XtDiaryMigrate(B.profile,P));
         return;
       }
       U(!0);
       try {
         if (B.id <= 0) {
           let ge = localStorage.getItem(ec(B.id)) ?? (B.id === 0 ? localStorage.getItem("xinruguyu-jiangchao-save") : null);
-          E(ge ? bd(JSON.parse(ge)) : xi());
+          E(XtDiaryMigrate(B.profile, ge ? bd(JSON.parse(ge)) : xi()));
         } else {
           let ge = await gi.getSave({
             characterId: B.id
           });
-          E(ge.state ? bd(JSON.parse(ge.state)) : xi());
+          E(XtDiaryMigrate(B.profile, ge.state ? bd(JSON.parse(ge.state)) : xi()));
         }
       } catch {
         E(xi());
@@ -26619,6 +26895,10 @@ function mb() {
       if (!Y.list.includes(B.name)) Y.list.push(B.name);
       let P = gift?.item === "鸡蛋" ? '桂花婶送来一篮鸡蛋：“刚来小镇不容易。”'
         : Lg(B, m.profile.jung.Fe, m.profile.jung.Fi, p?.day ?? 1);
+      if(V.v && !V.v.partial.actions.some(a=>a.diaryNpc===B.name))V.v.partial.actions.push({
+        name:gift?.item==='鸡蛋'?'邻居送礼':'当面交谈',diaryNpc:B.name,eventWeight:gift?.item==='鸡蛋'?25:10,
+        text:gift?.item==='鸡蛋'?`桂花婶送来一篮鸡蛋，送给了我。`:`我和${B.name}说了几句话。`,fx:{}
+      });
       ne({
         npc: B,
         line: P
@@ -27440,7 +27720,7 @@ function mb() {
                   children: [p.log.length === 0 && T("p", {
                     className: "rounded-lg paper-cell px-3 py-2 text-sm",
                     children: XtHeroText(B, "还没写过日记——过完第一天，今晚他就会写下第一页。")
-                  }), [...p.log].reverse().slice(0, 60).map(f => R("div", {
+                  }), [...p.log].reverse().map(f => R("div", {
                     className: `rounded-[12px] border-2 p-3 ${ub}`,
                     children: [R("p", {
                       className: "text-[13px] font-black text-[#4a2a08]",
@@ -27448,7 +27728,9 @@ function mb() {
                         className: "ml-1 text-[11px] font-bold text-[#8a7350]",
                         children: ["累计第", f.day, "天 · 方向：", f.direction, " · ", f.intervention]
                       })]
-                    }), T("ul", {
+                    }), R("details", {
+                      className: "mt-1 text-xs",
+                      children: [T("summary", {children:"查看当天行程与结果"}), T("ul", {
                       className: "mt-1 space-y-1",
                       children: f.actions.map((M, j) => R("li", {
                         className: "text-xs leading-relaxed",
@@ -27462,6 +27744,7 @@ function mb() {
                       children: [T("b", {
                         children: f.eventTitle
                       }), "：", f.eventText]
+                    })]
                     }), R("p", {
                       className: "mt-1.5 border-l-4 border-[#e9a426] pl-2.5 text-xs italic leading-relaxed",
                       children: ["“", f.diary, "”"]
@@ -27469,10 +27752,8 @@ function mb() {
                       className: "mt-1 text-[11px] font-bold text-[#8a7350]",
                       children: ["小结：金币 ", f.coins, " · 心情 ", f.mood, " · 成长 ", f.growth, " · 朋友 ", f.friends.length, " 人"]
                     })]
-                  }, f.day)), p.log.length > 60 && T("p", {
-                    className: "text-center text-xs text-[#7a6547]",
-                    children: "只显示最近 60 天，更早的日记已经装订成册，收在小屋里了。"
-                  })]
+                  }, f.day))]
+
                 }), J === "menu" && R("div", {
                   className: "space-y-2",
                   children: [R("div", {
