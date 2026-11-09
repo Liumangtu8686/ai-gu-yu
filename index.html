@@ -4684,7 +4684,7 @@ window.__nodeObeyChance = function (profile, check) {
     '睡前故事时间，他想起第一次丰收、冬天，还有那一夜的敲门声。'
   ];
   // All choices are source alternatives; numeric rewards are interpretive balance.
-  function poolEvent(state,v,day) {
+  function poolEvent(state,v,day,preferredId) {
     const pool=EVENTS.filter(e=>eligibleEvent(e,state,v,day));if(!pool.length)return null;
     const jung=currentJung(state),dominant=JUNG.slice().sort((a,b)=>jung[b]-jung[a])[0];
     const weights=pool.map(e=>1+(e.versions.byDominant[dominant]?Math.max(0,jung[dominant]-40)/20:0)+(e.kind==='interpersonal'?v.tension/40:0)+(v.pressure>65&&e.kind==='daily'?1:0));
@@ -4693,6 +4693,7 @@ window.__nodeObeyChance = function (profile, check) {
     let draw=(seed/4294967296)*weights.reduce((a,b)=>a+b,0),e=pool[0];
     for(let i=0;i<pool.length;i++){draw-=weights[i];if(draw<=0){e=pool[i];break;}}
     const narrow=pool.find(t=>t.name==='夏·萤火虫之夜');if(narrow)e=narrow;
+    if(preferredId)e=pool.find(t=>t.id===preferredId)||e;
     const index=EVENTS.indexOf(e),friend=NPCS.slice().sort((a,b)=>v.affinity[b.name]-v.affinity[a.name])[0].name;
     const opts=e.options.map((o,i)=> {
       const fx={affinity:copy(o.affinity),threat:copy(o.threat),drift:copy(o.drift),pressure:-2};
@@ -4740,6 +4741,9 @@ window.__nodeObeyChance = function (profile, check) {
     if(!m.crisis&&((critical&&fermented)||day>=560))return pick('crisis',day>=560&&!critical?'low':null);
     if(!m.harvestfest&&day>=560&&m.crisis)return pick('harvestfest');
     if(day===2||FESTIVALS.includes(c.doy))return null;
+    // Fix4: one welcome basket on the first eligible morning from day three.
+    if(day>=3&&!v.eventHistory['v2-event-4']&&v.affinity['桂花婶']>=0)
+      return poolEvent(state,v,day,'v2-event-4');
     const ch=chapter(state,v);
     if(v.tension>=60&&day-v.lastQuarrelDay>=14&&day-v.lastV2Day>=4&&(v.lateralCounts[ch]||0)<2) {
       // Reconciled pairs discuss instead of recycling the old quarrel.
@@ -23965,6 +23969,33 @@ function cb(e) {
         } else if (Q.x += we / ia * Dt, Q.y += Qe / ia * Dt, Math.abs(we) > 0.05) Q.facing = we > 0 ? 1 : -1;
         Q.walkPhase += be * 9;
       },
+      /* Fix4: a roadside meeting keeps the route intact; only these two feet stop. */
+      meet = (S, mate, gift) => {
+        if (S.meeting || !mate) return;
+        k.current.ids.add(mate.npc.id);
+        let side = mate.x < S.x ? -1 : 1;
+        // Keep both full sprites beside one another, rather than overlapping.
+        let mx = S.x + side * 1.15;
+        if (!jr(Mn(S.sceneId), Math.round(mx), Math.round(S.y))) mx = S.x - side * 1.15;
+        mx = Math.max(0.6, Math.min(Mn(S.sceneId).w - 1.6, mx));
+        S.meeting = {mate, start: performance.now(), startFt: ft, gift, received: false,
+          actKind: S.actKind, actT0: S.actT0};
+        S.moving = !1; S.actKind = null;
+        S.facing4 = mx >= S.x ? "right" : "left"; S.facing = mx >= S.x ? 1 : -1;
+        mate.sceneId = S.sceneId; mate.x = mx; mate.y = S.y;
+        mate.hidden = !1; mate.moving = !1;
+        mate.facing4 = mx >= S.x ? "left" : "right";
+        N.current.onMeetNpc(mate.npc, gift);
+        // Follow mode frames the pair immediately; a manually panned camera stays manual.
+        if (U.current) { x.current.x = (S.x + mx) / 2; x.current.y = S.y; }
+      },
+      finishGift = S => {
+        let enc = S.meeting;
+        if (enc?.gift && !enc.received) {
+          enc.received = true;
+          N.current.onReceiveGift(enc.gift);
+        }
+      },
       Yr = Q => {
         Tt = requestAnimationFrame(Yr);
         let be = Math.min(0.05, (Q - Pr) / 1000);
@@ -24004,7 +24035,21 @@ function cb(e) {
               la(S, q.sceneId, q.x, q.y);
             }
           }
-          if (S.mode === "plan" && h) {
+          if (S.meeting) {
+            let enc = S.meeting, elapsed = Q - enc.start;
+            S.moving = !1; enc.mate.moving = !1;
+            if (elapsed >= 2300) finishGift(S);
+            if ((elapsed > 100 && !ne.talk) || elapsed >= 3300 || S.mode !== "plan") {
+              // Skip still accepts the gift once; it never leaves a pending reward.
+              finishGift(S);
+              let held = ft - enc.startFt;
+              if (S.dwellUntil) S.dwellUntil += held;
+              S.actKind = enc.actKind; S.actT0 = (enc.actT0 || 0) + held;
+              if (enc.mate.visitingGift) p.current = p.current.filter(actor => actor !== enc.mate);
+              S.meeting = null;
+            }
+          }
+          if (!S.meeting && S.mode === "plan" && h) {
             if (_a(S, be, 2.6 * ne.speed * Rn(ne.profile).vid.gaitSpeed), S.stepIdx >= h.steps.length && Ta(S)) {
               let D = ya("home");
               if (S.sceneId === D.sceneId && Math.round(S.x) === D.x && Math.round(S.y) === D.y) S.mode = "done", S.finishedRunId = h.runId, S.actKind = "sleep", S.actT0 = ft, S.doneAt = ft;
@@ -24013,6 +24058,17 @@ function cb(e) {
                 let D = h.steps[S.stepIdx];
                 if(D)ne.onStepStart(S.stepIdx, D);
                 S.dwellUntil = ft + Math.max(D ? D.dwellMs : 3000, D && Kk(D) === "greet" ? 3000 : 6000), S.actKind = D ? Kk(D) : null, S.actFainted = !!D?.fainted, S.actT0 = ft, S.facing4 = S.actKind === "sleep" || S.actKind === "read" ? "up" : ["farm","sow","chop","mine","fight","work","water","pickfruit","forage","harvest","explore"].includes(S.actKind) ? "right" : S.facing4, x.current.x = S.x, x.current.y = S.y, w.current = S.sceneId;
+                if (D?.gift) {
+                  let mate = p.current.find(q => q.npc.name === D.gift.from);
+                  if (!mate) {
+                    // A visiting neighbour uses the established town sprite style.
+                    mate = {...p.current[p.current.length - 1], npc: {...zd[zd.length - 1],
+                      id: "fix4-gift-neighbour", name: D.gift.from, role: "邻居"}, path: [], dest: null, visitingGift: true};
+                    p.current.push(mate);
+                  }
+                  S.dwellUntil = ft + 100;
+                  meet(S, mate, D.gift);
+                }
                 if ((S.actKind === "chat" || S.actKind === "greet") && D) {
                   let mate = null,
                     mateD = 1e9;
@@ -24052,7 +24108,7 @@ function cb(e) {
               let D = ya("home");
               la(S, D.sceneId, D.x, D.y);
             }
-          } else if (S.mode !== "plan") {
+          } else if (!S.meeting && S.mode !== "plan") {
             if (_a(S, be, 1.5 * Rn(ne.profile).vid.gaitSpeed), Ta(S) && S.dest) S.dest = null, S.dwellUntil = Math.max(S.dwellUntil, ft + 2600);
             if (!S.dest && ft >= S.dwellUntil) {
               S.idleIdx = (S.idleIdx + 1) % L.current.length;
@@ -24096,6 +24152,7 @@ function cb(e) {
               return D.npc.route;
             };
           for (let D of p.current) {
+            if (S.meeting?.mate === D) continue;
             if (D.dest) {
               if (Ta(D)) D.hidden = D.pendingInside ?? !1, D.dwellUntil = ft + (D.pendingDwell ?? 5000), D.dest = null, D.pendingDwell = void 0, D.pendingInside = void 0;else if (!D.hidden) _a(D, be, 1.25 * (ob.get(D.npc.id)?.vid.gaitSpeed ?? 1));
               continue;
@@ -24130,11 +24187,14 @@ function cb(e) {
               }
             }
           }
-          if (S.mode === "plan") for (let D of p.current) {
+          if (S.mode === "plan" && !S.meeting && S.moving) for (let D of p.current) {
             if (D.hidden || D.sceneId !== S.sceneId) continue;
             if (k.current.runId === (ne.plan?.runId ?? 0) && k.current.ids.has(D.npc.id)) continue;
             if (Math.hypot(D.x - S.x, D.y - S.y) < 1.35) {
-              k.current.ids.add(D.npc.id), ne.onMeetNpc(D.npc);
+              k.current.ids.add(D.npc.id);
+              let gift = D.npc.id === "he" && ne.profile.jung.Fe >= 50
+                ? {from: D.npc.name, item: "花籽", count: 1} : null;
+              meet(S, D, gift);
               break;
             }
           }
@@ -24565,7 +24625,7 @@ function cb(e) {
           y: y.current.y + 0.35,
           draw: () => {
             let A = y.current,
-              kk = A.actKind,
+              kk = A.meeting ? null : A.actKind,
               el = ft - (A.actT0 || 0);
             if ((kk === "sleep" || kk === "read") && el > 750) return;
             let jx = A.x + (kk === "work" ? -1.5 + 44 / s * (1 - Math.min(1, el / 3800)) : 0), /* R4-F4: work stands 1.5 tiles left of the shop door, clear of the "来福杂货店" label and the oak at (7,5) */
@@ -24591,9 +24651,56 @@ function cb(e) {
           }
         }), pt.sort((S, g) => S.y - g.y);
         for (let S of pt) S.draw();
+        // Fix4: one bounded handoff, no particles or per-frame DOM work.
+        if (y.current.meeting) {
+          let A = y.current, enc = A.meeting, ms = Math.max(0, Q - enc.start),
+            dir = enc.mate.x > A.x ? 1 : -1,
+            ax = B + A.x * s, ay = P + A.y * s - s * 0.65,
+            nx = B + enc.mate.x * s, ny = ay,
+            ease = t => {t = Math.max(0, Math.min(1, t)); return t*t*(3-2*t);};
+          if (enc.gift) {
+            let reach = ease((ms - 400) / 500) * (1 - ease((ms - 1950) / 550)),
+              handX = ax + dir * s * (0.23 + 0.38 * reach),
+              handY = ay + s * (0.12 - 0.13 * reach),
+              pass = ease((ms - 1000) / 650), drop = ease((ms - 1750) / 550),
+              itemX = (nx - dir*s*0.32)*(1-pass) + (ax + dir*s*0.61)*pass,
+              itemY = ny - s*0.02;
+            // Shoulder, sleeve, forearm, open palm; the hand stays under the gift.
+            r.save(); r.lineCap = "round"; r.lineWidth = s*0.18; r.strokeStyle = "#688b86";
+            r.beginPath(); r.moveTo(ax+dir*s*0.19,ay+s*0.12); r.lineTo(handX,handY); r.stroke();
+            r.fillStyle = "#edbb91"; r.beginPath(); r.ellipse(handX,handY,s*0.12,s*0.09,0,0,Math.PI*2); r.fill();
+            // The giver's hand accompanies the outgoing item.
+            r.fillRect(nx-dir*s*0.4,ny-s*0.03,s*0.16,s*0.12);
+            let bx = ax-dir*s*0.18, by = ay+s*0.76;
+            r.strokeStyle = "#795331"; r.lineWidth = 2;
+            r.beginPath(); r.arc(bx,by-s*0.13,s*0.25,Math.PI,0); r.stroke();
+            r.fillStyle = "#ad793f"; r.fillRect(bx-s*0.29,by-s*0.12,s*0.58,s*0.34);
+            r.strokeRect(bx-s*0.29,by-s*0.12,s*0.58,s*0.34);
+            itemX += (bx-itemX)*drop; itemY += (by-itemY)*drop;
+            if (ms < 2300) {
+              if (enc.gift.item === "鸡蛋") {
+                r.fillStyle = "#b9874d"; r.fillRect(itemX-s*0.22,itemY,s*0.44,s*0.16);
+                r.fillStyle = "#fff0cf";
+                for (let i=-1;i<=1;i++) {r.beginPath();r.ellipse(itemX+i*s*0.13,itemY,s*0.075,s*0.11,0,0,Math.PI*2);r.fill();}
+              } else {
+                r.fillStyle = "#d9b66e"; r.fillRect(itemX-s*0.14,itemY-s*0.17,s*0.28,s*0.34);
+                r.fillStyle = "#50784b"; r.fillRect(itemX-s*0.04,itemY-s*0.1,s*0.08,s*0.17);
+              }
+            } else {
+              r.font = "bold 12px sans-serif"; r.textAlign = "center";
+              r.fillStyle = "#fff3cd"; r.strokeStyle = "#513823"; r.lineWidth = 3;
+              let label = enc.gift.item + " +" + enc.gift.count + " · 已入背包";
+              r.strokeText(label,ax,ay-s*1.1); r.fillText(label,ax,ay-s*1.1);
+            }
+            r.restore();
+          } else if (ms > 2200 && ms < 2800) {
+            // A small acknowledging hand before setting off again.
+            r.fillStyle = "#edbb91"; r.fillRect(ax+dir*s*0.32,ay-Math.sin((ms-2200)/600*Math.PI)*s*0.08,s*0.13,s*0.13);
+          }
+        }
         {
           let A = y.current,
-            kk = A.actKind;
+            kk = A.meeting ? null : A.actKind;
           if (kk && !A.moving) {
             let cx = B + (A.x + (kk === "work" ? -1.5 + 44 / s * (1 - Math.min(1,(ft-(A.actT0||0))/3800)) : 0)) * s, /* R4-F4: keep the hammer on the offset work position */
               fy = P + A.y * s + s * 0.3,
@@ -25896,6 +26003,11 @@ function mb() {
         text: "去广场走走，看看节日的热闹。",
         dwellMs: 4200
       });
+      if (B.event?.id === "v2-event-4") P.splice(Math.min(1, P.length), 0, {
+        locId: "plaza", kind: "visit", label: "接过邻居的鸡蛋",
+        text: "桂花婶在路边等他，递来一篮鸡蛋。", dwellMs: 3000,
+        gift: {from: "桂花婶", item: "鸡蛋", count: 6}
+      });
       Ta(0), Cn(null), Vt({
         steps: P,
         runId: Date.now()
@@ -25909,10 +26021,17 @@ function mb() {
         V.v = null, ue(P.next), ot(P.record), E(P.next), ia(m.id, P.next), Tt(!1);
       }
     },
-    yl = B => {
+    receiveGift = gift => {
+      const add = state => ({...state, receivedGifts: {...(state.receivedGifts || {}),
+        [gift.item]: (state.receivedGifts?.[gift.item] || 0) + gift.count}});
+      if (V.v) V.v.state = add(V.v.state);
+      E(state => state ? add(state) : state);
+    },
+    yl = (B, gift) => {
       if (!m) return;
       if (!Y.list.includes(B.name)) Y.list.push(B.name);
-      let P = Lg(B, m.profile.jung.Fe, m.profile.jung.Fi, p?.day ?? 1);
+      let P = gift?.item === "鸡蛋" ? '桂花婶送来一篮鸡蛋：“刚来小镇不容易。”'
+        : Lg(B, m.profile.jung.Fe, m.profile.jung.Fi, p?.day ?? 1);
       ne({
         npc: B,
         line: P
@@ -26048,6 +26167,8 @@ function mb() {
             Ta(f), Cn(M);
           },
           onPlanDone: tc,
+          talk: be,
+          onReceiveGift: receiveGift,
           onMeetNpc: yl,
           onExit: () => s()
         }), L && T("div", {
@@ -26439,7 +26560,8 @@ function mb() {
                     }) : ""]
                   }), R("p", {
                     className: "rounded-lg paper-cell px-3 py-2",
-                    children: ["\uD83E\uDDFA 仓库存货：", xl.length > 0 ? xl.map(([f, M]) => `${ul(f).name}×${M}`).join("、") : "暂无——收获都直接进了出货箱"]
+                    children: ["\uD83E\uDDFA 仓库存货：", xl.length > 0 ? xl.map(([f, M]) => `${ul(f).name}×${M}`).join("、") : "暂无——收获都直接进了出货箱",
+                      Object.keys(p.receivedGifts || {}).length > 0 ? "；收到的礼物：" + Object.entries(p.receivedGifts).map(([name,count]) => name + "×" + count).join("、") : ""]
                   }), R("p", {
                     className: "rounded-lg paper-cell px-3 py-2",
                     children: ["⛏️ 矿井：最深挖到 ", R("b", {
