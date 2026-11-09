@@ -89,6 +89,7 @@
       name: String(p.name || "无名客"),
       age: Math.max(16, Math.min(80, Math.round(Number(p.age) || 28))),
       title: String(p.title || "小镇居民"),
+      gender: (p.gender === "女" || p.gender === "男") ? p.gender : ((p.appearance && p.appearance.gender) || ""),
       summary: String(p.summary || ""),
       jung: jung, bigFive: bigFive,
       appearance: p.appearance,
@@ -119,6 +120,9 @@
       build: pickEnum(a.build, ["瘦小", "标准", "壮实", "高挑"], undefined),
       desc: typeof a.desc === "string" ? a.desc : ""
     };
+    var _cg = detectGender(typeof raw.gender === "string" ? raw.gender : "", "");
+    raw.gender = _cg;
+    if (_cg === "女" && !a.hairStyle) raw.appearance.hairStyle = "长发";
     return normalizeProfile(raw);
   }
 
@@ -180,16 +184,16 @@
       + "用户提示词：" + userPrompt + "\n\n"
       + "JSON 结构必须 exactly 如下，所有分数都是 0-100 的整数：\n"
       + "{\n"
-      + "  \"name\": \"角色名（2-3 个汉字）\",\n"
+      + "  \"name\": \"角色名（2-3 个汉字）\",\n"       + "  \"gender\": \"男/女（必须和用户提示词一致：提示词写了女孩就是女，写了男孩就是男，没写就按外貌描述定）\",\n"
       + "  \"prompt\": " + JSON.stringify(userPrompt) + ",\n"
       + "  \"jung8\": {\"Ni\": 0, \"Ne\": 0, \"Si\": 0, \"Se\": 0, \"Ti\": 0, \"Te\": 0, \"Fi\": 0, \"Fe\": 0},\n"
       + "  \"big5\": {\"openness\": 0, \"conscientiousness\": 0, \"extraversion\": 0, \"agreeableness\": 0, \"neuroticism\": 0},\n"
-      + "  \"appearance\": \"16位像素风的小人外貌描述，约 80 字，写帽子、衣服、随身物、神态\",\n"
+      + "  \"appearance\": \"16位像素风的小人外貌描述，约 80 字，第一句先写明性别（男/女）和发型，再写帽子、衣服、随身物、神态；女孩发型写长发或马尾，男孩发型写短发或平头，除非用户提示词另有指定\",\n"
       + "  \"daily_schedule\": [{\"time\": \"05:30\", \"activity\": \"活动\"}, 共 6 条，按时间顺序],\n"
       + "  \"diary\": \"第一人称一句话日记，体现这个角色的性格\"\n"
       + "}\n\n"
       + "要求：荣格八维分数要和提示词严格对应，例如社恐、独处要让 Fe 和 extraversion 很低，"
-      + "喜欢钓鱼、独处要让 Si / Fi 偏高；不要所有维度都取中间值，要有明显主导和短板。";
+      + "喜欢钓鱼、独处要让 Si / Fi 偏高；不要所有维度都取中间值，要有明显主导和短板。用户提示词里写明的性别说了算，不要自己改。";
   }
 
   /* 用玩家自己的 Key 调一次模型（只在创建角色时调用）。
@@ -226,7 +230,31 @@
      返回 {character:{name, jung8, big5, appearance(文字描述), daily_schedule, diary}}。
      反代不返回游戏需要的结构化外貌/称号/喜好等字段：性格分数、日程、名字用反代的，
      其余按同一套本地推导从描述文字里提取/兜底，拼成游戏的完整角色档案。 */
-  function extractAppearance(text, baseApp) {
+function detectGender(text, fallback) {
+  if (text) {
+    if (/女孩|姑娘|女性|女生|妹子|姐姐|妹妹|阿姨|大妈|奶奶|女儿|女士/.test(text)) return "女";
+    if (/男孩|男性|男生|小伙|哥哥|弟弟|大叔|大爷|爷爷|儿子|男士/.test(text)) return "男";
+    if (/female|girl|woman/i.test(text)) return "女";
+    if (/male|boy|man/i.test(text)) return "男";
+  }
+  return fallback || "";
+}
+var HAIR_STYLES = ["长发", "卷发", "马尾", "平头", "光头", "短发"];
+function hasHairStyle(text) { if (!text) return false; return HAIR_STYLES.some(function (v) { return text.indexOf(v) >= 0; }); }
+    /* 性别以用户提示词为准：提示词写了女孩就是女，写了男孩就是男；
+       没明说发型时，女孩默认长发、男孩默认短发（盖掉本地原型自带的反性别默认值，
+       比如画师原型的长发、渔夫原型的短发+胡子）；用户或 AI 明确写了发型就按明确的来。 */
+function applyGender(app, gender, descText, promptText) {
+  if (!app) return app;
+  if (gender !== "女" && gender !== "男") return app;
+  var stated = hasHairStyle(descText) || hasHairStyle(promptText);
+  if (!stated) app.hairStyle = gender === "女" ? "长发" : "短发";
+  if (gender === "女" && app.accessory === "胡子" && (descText || "").indexOf("胡子") < 0) app.accessory = "无";
+  if (gender === "男" && app.accessory === "耳环" && (descText || "").indexOf("耳环") < 0) app.accessory = "无";
+  app.gender = gender;
+  return app;
+}
+    function extractAppearance(text, baseApp) {
     var app = Object.assign({}, baseApp);
     if (!text) return app;
     ["渔夫帽", "草帽", "毛线帽", "鸭舌帽", "头巾"].forEach(function (v) { if (text.indexOf(v) >= 0) app.hat = v; });
@@ -238,7 +266,7 @@
     else if (/书本|抱着书|一本书/.test(text)) app.prop = "书本";
     else if (/工具腰带|工具/.test(text)) app.prop = "工具腰带";
     ["眼镜", "墨镜", "围巾", "胡子", "耳环"].forEach(function (v) { if (text.indexOf(v) >= 0) app.accessory = v; });
-    ["长发", "卷发", "马尾", "平头", "光头", "短发"].forEach(function (v) { if (text.indexOf(v) >= 0) { app.hairStyle = v; return; } });
+    ["长发", "卷发", "马尾", "平头", "光头", "短发"].some(function (v) { if (text.indexOf(v) >= 0) { app.hairStyle = v; return true; } return false; });
     if (/金发|金黄/.test(text)) app.hairColor = "金色";
     else if (/白发|银灰|银发/.test(text)) app.hairColor = "银灰";
     else if (/红发|红棕/.test(text)) app.hairColor = "红色";
@@ -258,12 +286,15 @@
     ["openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism"].forEach(function (k) { bigFive[k] = clampScore(c.big5 ? c.big5[k] : 50); });
     var descText = typeof c.appearance === "string" ? c.appearance : "";
     var app = extractAppearance(descText, base.appearance);
+    var gender = detectGender(promptText, "") || detectGender(descText, "") || detectGender(typeof c.gender === "string" ? c.gender : "", "");
+    app = applyGender(app, gender, descText, promptText);
     if (descText) app.desc = descText;
     var plan = Array.isArray(c.daily_schedule)
       ? c.daily_schedule.map(function (d) { return (String((d && d.time) || "") + " " + String((d && d.activity) || "")).trim(); }).filter(function (s) { return s.length > 1; })
       : [];
     return normalizeProfile({
       name: typeof c.name === "string" && c.name ? c.name : base.name,
+      gender: gender,
       age: base.age, title: base.title,
       summary: descText || base.summary,
       jung: jung, bigFive: bigFive, appearance: app,
@@ -25724,24 +25755,24 @@ function XtActivity(D) {
 function XtStops(a) {
   const out=[],add=(kind,label,locId,text,dwellMs=6000)=>out.push({kind,label,locId,text,dwellMs,fainted:a.fainted});
   switch(a.name){
-    case "种地":add("farm","举锄翻土","field","去田里，双手举锄翻松土。 ");break;
-    case "播种":add("sow","蹲下播种","field","蹲下来，把种子撒进田里。");break;
+    case "种地":add("farm","举锄翻土","field","想去田里把土翻松，种点东西。");break;
+    case "播种":add("sow","蹲下播种","field","得把种子撒下去，盼着它们发芽。");break;
     case "打理农场":
-      if(/浇了/.test(a.text)&&!/不用浇/.test(a.text))add("water","给作物浇水","field","提起水壶，给田里的作物浇水。");
-      if(/收了/.test(a.text))add("harvest","收摘熟菜","field","弯腰摘下熟菜，放进篮里。");
-      if(/种下/.test(a.text))add("sow","蹲下播种","field","在空下来的地里撒种子。");break;
-    case "采集砍柴":add("forage","弯腰采集","grove","沿林边捡野物，放进提篮。");add("chop","挥斧砍柴","grove","站到木桩前，横挥斧头劈柴。");break;
-    case "下矿挖矿":add("mine","挥镐挖矿","deep","进矿洞，举镐敲开矿石。");if(a.combatCount>0)add("fight","拔剑打史莱姆","deep",a.fainted?"迎战史莱姆；这回得赶紧撤回入口。":"拔剑迎战史莱姆，把路清出来。",7000);break;
+      if(/浇了/.test(a.text)&&!/不用浇/.test(a.text))add("water","给作物浇水","field","菜好像渴了，去浇点水。");
+      if(/收了/.test(a.text))add("harvest","收摘熟菜","field","菜熟了，摘下来放进篮里。");
+      if(/种下/.test(a.text))add("sow","蹲下播种","field","空出来的地别闲着，再撒点种子。");break;
+    case "采集砍柴":add("forage","弯腰采集","grove","去林边捡点野物，放进提篮。");add("chop","挥斧砍柴","grove","去劈点柴，冬天烧火用。");break;
+    case "下矿挖矿":add("mine","挥镐挖矿","deep","进矿洞敲点矿石回去。");if(a.combatCount>0)add("fight","拔剑打史莱姆","deep",a.fainted?"有史莱姆挡路……先撤回入口再说。":"前面有史莱姆，拔剑把路清出来。",7000);break;
     case "路上打招呼":add("greet","挥手打招呼","plaza",a.text,3000);break;
-    case "串门聊天":{const name=sg.find(n=>a.text.includes(n))||sg[0];add("chat","面对面聊天","plaza",`去广场找${name}，面对面聊一会儿。`);break;}
-    case "摘果子":add("pickfruit","伸手摘果子","orchard","到林边果树下摘六颗熟果，放进篮子。",7200);break;
-    case "打零工":add("work","先搬货，再修棚","shop","扛起木箱搬到店边，放稳后举锤修棚。",10000);break;
-    case "钓鱼":add("fish","坐下钓鱼","fishing","坐上小凳，抛竿等鱼。");break;
-    case "探险":add("explore","拿地图探险","pond","蹲下查看地图，用放大镜找山路上的线索。");break;
-    case "看书琢磨":add("read","回屋看书","home","回到屋里，摊开借来的书慢慢读。");break;
-    case "在家休息":add("sleep","回屋补觉","home","进屋补一觉，慢慢恢复精神。");break;
-    case "累趴了":add("rest","坐下歇歇","field","坐在田边长凳上，放下手里的活。");break;
-    default:{const kind=XtActivity({label:a.name,text:a.text});add(kind,kind==="busy"?"扫地整理":a.name,wv[a.name]||"plaza",kind==="busy"?"拿起扫帚，整理脚边的空地。":a.text);}
+    case "串门聊天":{const name=sg.find(n=>a.text.includes(n))||sg[0];add("chat","面对面聊天","plaza",`想找${name}聊聊天。`);break;}
+    case "摘果子":add("pickfruit","伸手摘果子","orchard","果子熟了，摘六颗回去放篮子里。",7200);break;
+    case "打零工":add("work","先搬货，再修棚","shop","得去店里搬箱子，再把棚修好。",10000);break;
+    case "钓鱼":add("fish","坐下钓鱼","fishing","想去钓会儿鱼，一个人静静坐坐。");break;
+    case "探险":add("explore","拿地图探险","pond","看看地图，山路那边好像有线索。");break;
+    case "看书琢磨":add("read","回屋看书","home","想回屋把借来的书慢慢读完。");break;
+    case "在家休息":add("sleep","回屋补觉","home","困了，回屋睡一会儿。");break;
+    case "累趴了":add("rest","坐下歇歇","field","累了，先坐会儿歇歇。");break;
+    default:{const kind=XtActivity({label:a.name,text:a.text});add(kind,kind==="busy"?"扫地整理":a.name,wv[a.name]||"plaza",kind==="busy"?"把脚边收拾一下。":a.text);}
   }
   return out;
 }
@@ -26233,7 +26264,7 @@ function mb() {
               }), " · ", f.text]
             }) : T("p", {
               className: "mt-1.5 text-[13px] leading-snug text-[#4a3820]",
-              children: `接下来：去${ya(f?.locId ?? "home").name}。`
+              children: `接下来：想去${ya(f?.locId ?? "home").name}转转。`
             });
           })(), R("div", {
             className: "mt-2 flex gap-1",
