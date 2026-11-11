@@ -4904,6 +4904,11 @@ window.__nodeObeyChance = function (profile, check) {
       toggle=el('button','生活手记',host);toggle.type='button';toggle.className='v2-toggle';toggle.setAttribute('aria-controls',sheet.id);toggle.setAttribute('aria-expanded','false');
       toggle.addEventListener('click',()=>{opened=!opened;paintOpen();});
       doc.body.appendChild(host);last='';paintOpen();
+      setInterval(function(){
+        if(!host||!host.isConnected)return;
+        var inGame=!!doc.querySelector('canvas[aria-label="可以走动的像素小镇地图"]');
+        host.style.display=inGame?'':'none';
+      },500);
     }
     function render(force=false) {
       if(!content||!opened)return;
